@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using WebPWrapper;
 
 namespace MinorShift.Emuera.Content
 {
@@ -17,18 +16,17 @@ namespace MinorShift.Emuera.Content
 		static readonly Dictionary<string, AContentFile> resourceDic = new Dictionary<string, AContentFile>();
 		static readonly Dictionary<string, ASprite> imageDictionary = new Dictionary<string, ASprite>();
 		static readonly Dictionary<int, GraphicsImage> gList;
-        //private static Bitmap bmp;
 
-        //static public T GetContent<T>(string name)where T :AContentItem
-        //{
-        //	if (name == null)
-        //		return null;
-        //	name = name.ToUpper();
-        //	if (!itemDic.ContainsKey(name))
-        //		return null;
-        //	return itemDic[name] as T;
-        //}
-        static public GraphicsImage GetGraphics(int i)
+		//static public T GetContent<T>(string name)where T :AContentItem
+		//{
+		//	if (name == null)
+		//		return null;
+		//	name = name.ToUpper();
+		//	if (!itemDic.ContainsKey(name))
+		//		return null;
+		//	return itemDic[name] as T;
+		//}
+		static public GraphicsImage GetGraphics(int i)
 		{
 			if (gList.ContainsKey(i))
 				return gList[i];
@@ -88,7 +86,8 @@ namespace MinorShift.Emuera.Content
 				{
 					//".csv"のみを拾うように
 					if (0 != ".csv".CompareTo(Path.GetExtension(filepath).ToLower()))
-						continue;                       //アニメスプライト宣言。nullでないとき、フレーム追加モード
+						continue;
+					//アニメスプライト宣言。nullでないとき、フレーム追加モード
 					SpriteAnime currentAnime = null;
 					string directory = Path.GetDirectoryName(filepath).ToUpper() + "\\";
 					string filename = Path.GetFileName(filepath);
@@ -148,7 +147,31 @@ namespace MinorShift.Emuera.Content
 				graph.GDispose();
 			gList.Clear();
 		}
+		#region EM_私家版_ファイル占用解除
+		// filepathの安全性(ゲームフォルダ以外のフォルダか)を確認しない
+		static public Bitmap LoadImage(string filepath)
+		{
+			Bitmap bmp = null;
+			FileStream fs = null;
+			if (!File.Exists(filepath)) return null;
 
+			try
+			{
+				fs = new FileStream(filepath, FileMode.Open);
+				var factory = new ImageProcessor.ImageFactory();
+				factory.Load(fs);
+				bmp = (Bitmap)factory.Image;
+			}
+			catch { }
+			finally
+			{
+				fs?.Close();
+				fs?.Dispose();
+			}
+			return bmp;
+
+		}
+		#endregion
 		/// <summary>
 		/// resourcesフォルダ中のcsvの1行を読んで新しいリソースを作る(or既存のアニメーションスプライトに1フレーム追加する)
 		/// </summary>
@@ -206,13 +229,10 @@ namespace MinorShift.Emuera.Content
 					ParserMediator.Warn("指定された画像ファイルが見つかりませんでした:" + arg2, sp, 1);
 					return null;
 				}
-				Bitmap bmp = null;
-				using (WebP webp = new WebP())
-				if (Path.GetExtension(filepath).ToUpperInvariant() == ".WEBP")
-					bmp = webp.Load(filepath);
-				else
-					bmp = new Bitmap(filepath);
-				
+				#region EM_私家版_webp
+				// Bitmap bmp = new Bitmap(filepath);
+				var bmp = LoadImage(filepath);
+				#endregion
 				if (bmp == null)
 				{
 					ParserMediator.Warn("指定されたファイルの読み込みに失敗しました:" + arg2, sp, 1);
@@ -234,12 +254,12 @@ namespace MinorShift.Emuera.Content
 				}
 				resourceDic.Add(parentName, img);
 			}
-            if (!(resourceDic[parentName] is ConstImage parentImage) || !parentImage.IsCreated)
-            {
-                ParserMediator.Warn("作成に失敗したリソースを元にスプライトを作成しようとしました:" + arg2, sp, 1);
-                return null;
-            }
-            Rectangle rect = new Rectangle(new Point(0, 0), parentImage.Bitmap.Size);
+			if (!(resourceDic[parentName] is ConstImage parentImage) || !parentImage.IsCreated)
+			{
+				ParserMediator.Warn("作成に失敗したリソースを元にスプライトを作成しようとしました:" + arg2, sp, 1);
+				return null;
+			}
+			Rectangle rect = new Rectangle(new Point(0, 0), parentImage.Bitmap.Size);
 			Point pos = new Point();
 			int delay = 1000;
 			//name,parentname, x,y,w,h ,offset_x,offset_y, delayTime

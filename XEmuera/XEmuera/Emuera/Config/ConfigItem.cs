@@ -127,9 +127,9 @@ namespace MinorShift.Emuera
 				ret = tryStringsToColor(str, out c);
 				if (ret)
 					((ConfigItem<Color>)(AConfigItem)this).Value = c;
-				else
-					throw new CodeEE("値をColor指定子として認識できません");
-			}
+                else
+                    throw new CodeEE("値をColor指定子として認識できません");
+            }
 			else if (this is ConfigItem<char>)
 			{
 				char c;
@@ -143,114 +143,115 @@ namespace MinorShift.Emuera
 				ret = Int32.TryParse(str, out i);
 				if (ret)
 					((ConfigItem<Int32>)(AConfigItem)this).Value = i;
-				else
-					throw new CodeEE("数字でない文字が含まれています");
-			}
+                else
+                    throw new CodeEE("数字でない文字が含まれています");
+            }
 			else if (this is ConfigItem<Int64>)
 			{
 				Int64 i;
 				ret = Int64.TryParse(str, out i);
-				if (ret)
-					((ConfigItem<Int64>)(AConfigItem)this).Value = i;
-				else
-					throw new CodeEE("数字でない文字が含まれています");
+                if (ret)
+                    ((ConfigItem<Int64>)(AConfigItem)this).Value = i;
+                else
+                    throw new CodeEE("数字でない文字が含まれています");
 			}
-			else if (this is ConfigItem<List<Int64>>)
-			{
-				((ConfigItem<List<Int64>>)(AConfigItem)this).Value.Clear();
-				Int64 i;
-				string[] strs = str.Split('/');
-				foreach (string st in strs)
-				{
-					ret = Int64.TryParse(st.Trim(), out i);
-					if (ret)
-						((ConfigItem<List<Int64>>)(AConfigItem)this).Value.Add(i);
-					else
-					{
-						throw new CodeEE("数字でない文字が含まれています");
-					}
-				}
-			}
-			else if (this is ConfigItem<string>)
-			{
+            else if (this is ConfigItem<List<Int64>>)
+            {
+                ((ConfigItem<List<Int64>>)(AConfigItem)this).Value.Clear();
+                Int64 i;
+                string[] strs = str.Split('/');
+                foreach (string st in strs)
+                {
+                    ret = Int64.TryParse(st.Trim(), out i);
+                    if (ret)
+                        ((ConfigItem<List<Int64>>)(AConfigItem)this).Value.Add(i);
+                    else
+                    {
+                        throw new CodeEE("数字でない文字が含まれています");
+                    }
+                }
+            }
+            else if (this is ConfigItem<string>)
+            {
+                ret = true;
+                ((ConfigItem<string>)(AConfigItem)this).Value = str;
+            }
+            else if (this is ConfigItem<List<string>>)
+            {
+				#region EM_私家版_LoadText＆SaveText機能拡張
+				// ret = true;
+				// ((ConfigItem<List<string>>)(AConfigItem)this).Value.Add(str);
 				ret = true;
-				((ConfigItem<string>)(AConfigItem)this).Value = str;
-			}
-			else if (this is ConfigItem<List<string>>)
-			{
-				{
-					#region EM_私家版_LoadText＆SaveText機能拡張
-					ret = true;
-					var list = ((ConfigItem<List<string>>)(AConfigItem)this).Value;
-					tryStringToStringList(str, ref list);
-					((ConfigItem<List<string>>)(AConfigItem)this).Value = list;
-					#endregion
-				}
+				var list = ((ConfigItem<List<string>>)(AConfigItem)this).Value;
+				tryStringToStringList(str, ref list);
+				((ConfigItem<List<string>>)(AConfigItem)this).Value = list;
+				#endregion
 			}
 			else if (this is ConfigItem<TextDrawingMode>)
-			{
-				str = str.ToUpper();
-				ret = Enum.IsDefined(typeof(TextDrawingMode), str);
-				if (ret)
-				{
-					((ConfigItem<TextDrawingMode>)(AConfigItem)this).Value
-					 = (TextDrawingMode)Enum.Parse(typeof(TextDrawingMode), str);
-				}
-				else
-					throw new CodeEE("不正な指定です");
-			}
-			else if (this is ConfigItem<ReduceArgumentOnLoadFlag>)
-			{
-				str = str.ToUpper();
-				ret = Enum.IsDefined(typeof(ReduceArgumentOnLoadFlag), str);
-				if (ret)
-				{
-					((ConfigItem<ReduceArgumentOnLoadFlag>)(AConfigItem)this).Value
-					 = (ReduceArgumentOnLoadFlag)Enum.Parse(typeof(ReduceArgumentOnLoadFlag), str);
-				}
-				else
-					throw new CodeEE("不正な指定です");
-			}
-			else if (this is ConfigItem<DisplayWarningFlag>)
-			{
-				str = str.ToUpper();
-				ret = Enum.IsDefined(typeof(DisplayWarningFlag), str);
-				if (ret)
-				{
-					((ConfigItem<DisplayWarningFlag>)(AConfigItem)this).Value
-					 = (DisplayWarningFlag)Enum.Parse(typeof(DisplayWarningFlag), str);
-				}
-				else
-					throw new CodeEE("不正な指定です");
-			}
-			else if (this is ConfigItem<UseLanguage>)
-			{
-				str = str.ToUpper();
-				ret = Enum.IsDefined(typeof(UseLanguage), str);
-				if (ret)
-				{
-					((ConfigItem<UseLanguage>)(AConfigItem)this).Value
-						= (UseLanguage)Enum.Parse(typeof(UseLanguage), str);
-				}
-				else
-					throw new CodeEE("不正な指定です");
-			}
-			else if (this is ConfigItem<TextEditorType>)
-			{
-				str = str.ToUpper();
-				ret = Enum.IsDefined(typeof(TextEditorType), str);
-				if (ret)
-				{
-					((ConfigItem<TextEditorType>)(AConfigItem)this).Value
-						= (TextEditorType)Enum.Parse(typeof(TextEditorType), str);
-				}
-				else
-					throw new CodeEE("不正な指定です");
-			}
+            {
+                str = str.ToUpper();
+                ret = Enum.IsDefined(typeof(TextDrawingMode), str);
+                if (ret)
+                {
+                    ((ConfigItem<TextDrawingMode>)(AConfigItem)this).Value
+                     = (TextDrawingMode)Enum.Parse(typeof(TextDrawingMode), str);
+                }
+                else
+                    throw new CodeEE("不正な指定です");
+            }
+            else if (this is ConfigItem<ReduceArgumentOnLoadFlag>)
+            {
+                str = str.ToUpper();
+                ret = Enum.IsDefined(typeof(ReduceArgumentOnLoadFlag), str);
+                if (ret)
+                {
+                    ((ConfigItem<ReduceArgumentOnLoadFlag>)(AConfigItem)this).Value
+                     = (ReduceArgumentOnLoadFlag)Enum.Parse(typeof(ReduceArgumentOnLoadFlag), str);
+                }
+                else
+                    throw new CodeEE("不正な指定です");
+            }
+            else if (this is ConfigItem<DisplayWarningFlag>)
+            {
+                str = str.ToUpper();
+                ret = Enum.IsDefined(typeof(DisplayWarningFlag), str);
+                if (ret)
+                {
+                    ((ConfigItem<DisplayWarningFlag>)(AConfigItem)this).Value
+                     = (DisplayWarningFlag)Enum.Parse(typeof(DisplayWarningFlag), str);
+                }
+                else
+                    throw new CodeEE("不正な指定です");
+            }
+            else if (this is ConfigItem<UseLanguage>)
+            {
+                str = str.ToUpper();
+                ret = Enum.IsDefined(typeof(UseLanguage), str);
+                if (ret)
+                {
+                    ((ConfigItem<UseLanguage>)(AConfigItem)this).Value
+                        = (UseLanguage)Enum.Parse(typeof(UseLanguage), str);
+                }
+                else
+                    throw new CodeEE("不正な指定です");
+            }
+            else if (this is ConfigItem<TextEditorType>)
+            {
+                str = str.ToUpper();
+                ret = Enum.IsDefined(typeof(TextEditorType), str);
+                if (ret)
+                {
+                    ((ConfigItem<TextEditorType>)(AConfigItem)this).Value
+                        = (TextEditorType)Enum.Parse(typeof(TextEditorType), str);
+                }
+                else
+                    throw new CodeEE("不正な指定です");
+            }
             //else
             //    throw new ExeEE("型不明なコンフィグ");
 			return ret;
 		}
+
 
 		#region EM_私家版_LoadText＆SaveText機能拡張
 		private bool tryStringToStringList(string arg, ref List<string> vs)
@@ -264,7 +265,6 @@ namespace MinorShift.Emuera
 			return true;
 		}
 		#endregion
-
 
 		private bool tryStringToBool(string arg, ref bool p)
 		{

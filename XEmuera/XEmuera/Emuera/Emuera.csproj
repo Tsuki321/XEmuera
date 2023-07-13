@@ -43,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -52,8 +53,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -238,12 +241,194 @@
     <Compile Include="Sub\SubWord.cs" />
     <Compile Include="Sub\EraBinaryDataWriter.cs" />
     <Compile Include="_Library\GDI.cs" />
+    <Compile Include="_Library\ImageProcessor\BitDepth.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Exceptions\ImageFormatException.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Exceptions\ImageProcessingException.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Exceptions\Logging\DefaultLogger.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Exceptions\Logging\ILogger.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Exceptions\QuantizationException.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\AssemblyExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\DoubleExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\FloatExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\ImageExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\IntegerExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Extensions\RectangleExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Helpers\IOHelper.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Helpers\TypeFinder.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Helpers\UpgradeableReadLock.cs" />
+    <Compile Include="_Library\ImageProcessor\Common\Helpers\WriteLock.cs" />
+    <Compile Include="_Library\ImageProcessor\Configuration\ImageProcessorBootstrapper.cs" />
+    <Compile Include="_Library\ImageProcessor\Configuration\NativeBinaryFactory.cs" />
+    <Compile Include="_Library\ImageProcessor\Configuration\NativeMethods.cs" />
+    <Compile Include="_Library\ImageProcessor\ImageFactory.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\AnchorPosition.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\AnimationProcessMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\CmykColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\Color32.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\ColorExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\HSLAColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\RGBAColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\RgbaComponent.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Colors\YCbCrColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\ComputerArchitectureInfo.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Convolution.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\CropLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\CropMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\FastBitmap.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Artistic\HalftoneFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Artistic\OilPaintingFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Binarization\BinaryThreshold.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\ConvolutionFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\I2DEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\IEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\KayyaliEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\KirschEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\Laplacian3X3EdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\Laplacian5X5EdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\LaplacianOfGaussianEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\PrewittEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\RobertsCrossEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\ScharrEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\EdgeDetection\SobelEdgeFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\Class1.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\EmbeddedHaarCascades.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\GroupMatching.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarCascade.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarCascadeSerializationObject.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarCascadeStage.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarCascadeWriter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarClassifier.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarFeature.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarFeatureNode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarCascade\HaarRectangle.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\HaarObjectDetector.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\ObjectDetectorScalingMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\ObjectDetectorSearchMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\RectangleGroupMatching.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\BlackWhiteMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\ColorMatrixes.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\ComicMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\GothamMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\GreyScaleMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\HiSatchMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\IMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\InvertMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\LomographMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\LoSatchMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\MatrixFilterBase.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\MatrixFilters.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\PolaroidMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Filters\Photo\SepiaMatrixFilter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\BitmapFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\FormatBase.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\FormatUtilities.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\GifDecoder.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\GifEncoder.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\GifFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\GifFrame.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\IAnimatedImageFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\IQuantizableImageFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\ISupportedImageFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\JpegFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\NativeMethods.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\PngFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\TiffFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Formats\WebPFormat.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\GaussianLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Adjustments.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Converters\BigEndianBitConverter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Converters\EndianBitConverter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Converters\Endianness.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Converters\LittleEndianBitConverter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\Effects.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\GraphicsHelper.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\ImageMaths.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Helpers\PixelOperations.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\IComputerArchitectureInfo.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\ImageLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Interpolation.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\ExifBitConverter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\ExifPropertyTag.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\ExifPropertyTagConstants.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\ExifPropertyTagType.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\ImageFactoryMetaExtensions.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\Int32Converter.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\PropertyTagResolutionUnit.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\MetaData\Rational.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\IQuantizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\OctreeQuantizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\Quantizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\Box.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\ColorMoment.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\CubeCut.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\Histogram.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\ImageBuffer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\IWuQuantizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\PaletteColorHistory.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\PaletteLookup.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\WuQuantizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Quantizers\WuQuantizer\WuQuantizerBase.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\ResizeHelper.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\ResizeLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\ResizeMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\Resizer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\RoundedCornerLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\Imaging\TextLayer.cs" />
+    <Compile Include="_Library\ImageProcessor\MetaDataMode.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Alpha.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\AutoRotate.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Background.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\BackgroundColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Brightness.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Contrast.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Crop.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\DetectEdges.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\DetectObjects.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\EntropyCrop.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Filter.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Flip.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Format.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Gamma.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\GaussianBlur.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\GaussianSharpen.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Halftone.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Hue.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\IGraphicsProcessor.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Mask.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Meta.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Overlay.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Pixelate.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Quality.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\ReplaceColor.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Resize.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Resolution.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Rotate.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\RotateBounded.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\RoundedCorners.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Saturation.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Tint.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Vignette.cs" />
+    <Compile Include="_Library\ImageProcessor\Processors\Watermark.cs" />
     <Compile Include="_Library\SFMT.cs" />
     <Compile Include="_Library\LangManager.cs" />
-    <Compile Include="_Library\WebPWrapper.cs" />
     <Compile Include="_Library\WinInput.cs" />
     <Compile Include="_Library\WinmmTimer.cs" />
     <Compile Include="_Library\Sys.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="WMPLib">
+      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -273,18 +458,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="WMPLib">
-      <Guid>{6BF52A50-394A-11D3-B153-00C04F79FAA6}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
+    <Content Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\Resources\haarcascade_frontalface_alt.xml" />
+    <Content Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\Resources\haarcascade_frontalface_default.xml" />
+    <Content Include="_Library\ImageProcessor\Imaging\Filters\ObjectDetection\Resources\haarcascade_frontalface_legacy.xml" />
+    <Content Include="_Library\ImageProcessor\Resources\Unmanaged\README.txt" />
+    <Content Include="_Library\ImageProcessor\Resources\Unmanaged\x64\libwebp.dll" />
+    <Content Include="_Library\ImageProcessor\Resources\Unmanaged\x86\libwebp.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

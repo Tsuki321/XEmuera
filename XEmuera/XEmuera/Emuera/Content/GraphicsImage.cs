@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MinorShift.Emuera.Content
 {
@@ -31,10 +30,11 @@ namespace MinorShift.Emuera.Content
 		Size size;
 		Brush brush = null;
 		Pen pen = null;
-        #region EE_GDRAWTEXT
-        Font font = null;
-		#endregion
+		Font font = null;
+		#region EE_GDRAWTEXT
 		FontStyle style = default;
+		#endregion
+
 		//Bitmap b;
 		//Graphics g;
 
@@ -57,7 +57,7 @@ namespace MinorShift.Emuera.Content
 		//	//locked = false;
 		//}
 
-#region Bitmap書き込み・作成
+		#region Bitmap書き込み・作成
 
 		/// <summary>
 		/// GCREATE(int ID, int width, int height)
@@ -95,13 +95,12 @@ namespace MinorShift.Emuera.Content
 			g.Clear(c);
 		}
 
-        /// <summary>
-        /// GDRAWTEXT int ID, str text, int x, int y
-        /// エラーチェックは呼び出し元でのみ行う
-        /// </summary>
-
-        #region EE_GDRAWTEXT 元のソースコードにあったものを改良
-        public void GDrawString(string text, int x, int y)
+		/// <summary>
+		/// GDRAWTEXTGDRAWTEXT int ID, str text, int x, int y
+		/// エラーチェックは呼び出し元でのみ行う
+		/// </summary>
+		#region EE_GDRAWTEXT 元のソースコードにあったものを改良
+		public void GDrawString(string text, int x, int y)
 		{
 			if (g == null)
 				throw new NullReferenceException();
@@ -120,6 +119,28 @@ namespace MinorShift.Emuera.Content
 			}
 		}
 		#endregion
+
+		/// <summary>
+		/// GDRAWTEXTGDRAWTEXT int ID, str text, int x, int y, int width, int height
+		/// エラーチェックは呼び出し元でのみ行う
+		/// </summary>
+		public void GDrawString(string text, int x, int y, int width, int height)
+		{
+			if (g == null)
+				throw new NullReferenceException();
+			Font usingFont = font;
+			if (usingFont == null)
+				usingFont = Config.Font;
+			if (brush != null)
+			{
+				g.DrawString(text, usingFont, brush, new RectangleF(x,y,width,height));
+			}
+			else
+			{
+				using (SolidBrush b = new SolidBrush(Config.ForeColor))
+					g.DrawString(text, usingFont, b, new RectangleF(x, y, width, height));
+			}
+		}
 
 		/// <summary>
 		/// GDRAWRECTANGLE(int ID, int x, int y, int width, int height)
@@ -278,11 +299,12 @@ namespace MinorShift.Emuera.Content
 				destImg.UnlockBits(bmpData);
 			}
 		}
-        #region EE_GDRAWGWITHROTATE
-        /// <summary>
-        /// GROTATE(int ID, int angle, int x, int y)
-        /// </summary>
-        public void GRotate(Int64 a, int x, int y)
+
+		#region EE_GDRAWGWITHROTATE
+		/// <summary>
+		/// GROTATE(int ID, int angle, int x, int y)
+		/// </summary>
+		public void GRotate(Int64 a, int x, int y)
 		{
 			if (g == null)
 				throw new NullReferenceException();
@@ -310,15 +332,16 @@ namespace MinorShift.Emuera.Content
 		}
 		#endregion
 
+		#region EE_GDRAWTEXT フォントスタイルも指定できるように
+		// public void GSetFont(Font r)
 		public void GSetFont(Font r, FontStyle fs)
 		{
 			if (font != null)
 				font.Dispose();
 			font = r;
-            #region EE_GDRAWTEXT フォントスタイルも指定できるように
-            style = fs;
-			#endregion
+			style = fs;
 		}
+		#endregion
 		public void GSetBrush(Brush r)
 		{
 			if (brush != null)
@@ -506,10 +529,10 @@ namespace MinorShift.Emuera.Content
         {
             Dispose();
         }
-		#endregion
+#endregion
 
-        #region 状態判定（Bitmap読み書きを伴わない）
-        public override bool IsCreated { get { return g != null; } }
+#region 状態判定（Bitmap読み書きを伴わない）
+		public override bool IsCreated { get { return g != null; } }
 		/// <summary>
 		/// int GWIDTH(int ID)
 		/// </summary>
@@ -518,14 +541,15 @@ namespace MinorShift.Emuera.Content
 		/// int GHEIGHT(int ID)
 		/// </summary>
 		public int Height { get { return size.Height; } }
-        #region EE_GDRAWTEXTに付随する様々な要素
-        public string Fontname { get { return font.Name; } }
+
+		#region EE_GDRAWTEXTに付随する様々な要素
+		public string Fontname { get { return font.Name; } }
 		public int Fontsize { get { return (int)font.Size; } }
 
 		public int Fontstyle
-        {
-            get
-            {
+		{
+			get
+			{
 				int ret = 0;
 				if ((style & FontStyle.Bold) == FontStyle.Bold)
 					ret |= 1;
@@ -541,7 +565,6 @@ namespace MinorShift.Emuera.Content
 
 		public Font Fnt { get { return font; } }
 		#endregion
-
 
 
 

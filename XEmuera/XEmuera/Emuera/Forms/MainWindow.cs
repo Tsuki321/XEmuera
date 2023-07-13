@@ -637,9 +637,11 @@ namespace MinorShift.Emuera
 			DialogResult result = saveFileDialog.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-                #region EE_OUTPUTLOG
-                console.OutputSystemLog(Path.GetFullPath(saveFileDialog.FileName));
+				#region EE_OUTPUTLOG
+				// console.OutputLog(Path.GetFullPath(saveFileDialog.FileName));
+				console.OutputSystemLog(Path.GetFullPath(saveFileDialog.FileName));
 				#endregion
+
 			}
 		}
 
@@ -804,7 +806,7 @@ namespace MinorShift.Emuera
             //    richTextBox1.Text = richTextBox1.Text.Remove(1);
             PressEnterKey(false, false);
             textBox_flag = true;
-        }
+		}
 		#region EM_私家版_INPUT系機能拡張
 		Keys? modifiersWhileWaintingInputWithMouse = null;
 		private void richTextBox1_ModifierRecorder_KeyUp(object sender, KeyEventArgs e)

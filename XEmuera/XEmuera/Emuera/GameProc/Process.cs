@@ -237,19 +237,20 @@ namespace MinorShift.Emuera.GameProc
             skipPrint = true;
             return (callFunction("CALLTRAINEND", false, false));
         }
-        #region EE_INPUTMOUSEKEYのボタン対応
-        public void InputResult5(int r0, int r1, int r2, int r3, int r4, long r5)
+		#region EE_INPUTMOUSEKEYのボタン対応
+		// public void InputResult5(int r0, int r1, int r2, int r3, int r4)
+		public void InputResult5(int r0, int r1, int r2, int r3, int r4, long r5)
 		{
 			long[] result = vEvaluator.RESULT_ARRAY;
 			result[0] = r0;
 			result[1] = r1;
 			result[2] = r2;
 			result[3] = r3;
-			result[4] = r4;
-			result[5] = r5;
+			result[4] = r4; result[5] = r5;
+
 		}
-        #endregion
-        public void InputInteger(Int64 i)
+		#endregion
+		public void InputInteger(Int64 i)
 		{
 			vEvaluator.RESULT = i;
 		}
@@ -458,10 +459,10 @@ namespace MinorShift.Emuera.GameProc
 			console.ThrowError(playSound);
 			ScriptPosition position = null;
             if ((exc is EmueraException ee) && (ee.Position != null))
-				position = ee.Position;
+                position = ee.Position;
             else if ((current != null) && (current.Position != null))
-				position = current.Position;
-			string posString = "";
+                position = current.Position;
+            string posString = "";
 			if (position != null)
 			{
 				if (position.LineNo >= 0)
@@ -482,9 +483,9 @@ namespace MinorShift.Emuera.GameProc
                     }
                     else
                     {
-						console.PrintErrorButton(posString + "エラーが発生しました:" + Program.ExeName, position);
+                        console.PrintErrorButton(posString + "エラーが発生しました:" + Program.ExeName, position);
 						printRawLine(position);
-                        console.PrintError("エラー内容：" + exc.Message);
+						console.PrintError("エラー内容：" + exc.Message);
                     }
                     console.PrintError("現在の関数：@" + current.ParentLabelLine.LabelName + "（" + current.ParentLabelLine.Position.Filename + "の" + current.ParentLabelLine.Position.LineNo.ToString() + "行目）");
                     console.PrintError("関数呼び出しスタック：");
@@ -546,5 +547,6 @@ namespace MinorShift.Emuera.GameProc
 			else
 				return "";
 		}
+
 	}
 }

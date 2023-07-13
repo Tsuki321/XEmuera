@@ -178,11 +178,12 @@ namespace MinorShift.Emuera
 		public static string DatDir { get; private set; }
 		public static string ContentDir { get; private set; }
 		public static string ExeName { get; private set; }
-        #region EE_PLAYSOUND系
-        public static string MusicDir {get; private set; }
-        #endregion
+		#region EE_PLAYSOUND系
+		public static string MusicDir { get; private set; }
+		#endregion
 
-        public static bool Reboot = false;
+
+		public static bool Reboot = false;
 		//public static int RebootClientX = 0;
 		public static int RebootClientY = 0;
 		public static FormWindowState RebootWinState = FormWindowState.Normal;
