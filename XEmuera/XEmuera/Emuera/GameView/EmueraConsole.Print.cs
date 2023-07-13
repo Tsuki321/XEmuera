@@ -620,7 +620,10 @@ namespace MinorShift.Emuera.GameView
 			{
 				if (window.Created)
 				{
-					PrintSystemLine("※※※ログファイルを" + filename.Replace(Program.ExeDir, "") + "に出力しました※※※");
+					var showFilename = filename;
+					if (Program.ExeDir != "")
+						showFilename = filename.Replace(Program.ExeDir, "");
+					PrintSystemLine("※※※ログファイルを" + showFilename + "に出力しました※※※");
 					RefreshStrings(true);
 				}
 				return true;
@@ -644,7 +647,10 @@ namespace MinorShift.Emuera.GameView
 			{
 				if (window.Created)
 				{
-					PrintSystemLine("※※※ログファイルを" + filename.Replace(Program.ExeDir, "") + "に出力しました※※※");
+					var showFilename = filename;
+					if (Program.ExeDir != "")
+						showFilename = filename.Replace(Program.ExeDir, "");
+					PrintSystemLine("※※※ログファイルを" + showFilename + "に出力しました※※※");
 					RefreshStrings(true);
 				}
 				return true;
