@@ -71,9 +71,9 @@ namespace MinorShift.Emuera.Content
 			Bitmap = new Bitmap(x, y, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 			size = new Size(x, y);
 			g = Graphics.FromImage(Bitmap);
-		}
+        }
 
-		internal void GCreateFromF(Bitmap bmp, bool useGDI)
+        internal void GCreateFromF(Bitmap bmp, bool useGDI)
 		{
 			if (useGDI)
 				throw new NotImplementedException();
@@ -107,7 +107,7 @@ namespace MinorShift.Emuera.Content
 			Font usingFont = font;
 			var format = new StringFormat(StringFormat.GenericTypographic);
 			if (usingFont == null)
-				usingFont = Config.Font;
+				usingFont = new Font(Config.FontName, 100, GlobalStatic.Console.StringStyle.FontStyle, GraphicsUnit.Pixel);
 			if (brush != null)
 			{
 				g.DrawString(text, usingFont, brush, x, y, format);
