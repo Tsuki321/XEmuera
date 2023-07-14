@@ -28,7 +28,7 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				ReturnType = typeof(Int64);
 				argumentTypeArray = null;
-				CanRestructure = false;
+				CanRestructure = true;
 			}
 			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
 			{
@@ -245,7 +245,7 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				ReturnType = typeof(Int64);
 				argumentTypeArray = new Type[] { typeof(string) };
-				CanRestructure = true;
+				CanRestructure = false;
 			}
 
 			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
@@ -274,7 +274,7 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				ReturnType = typeof(string);
 				argumentTypeArray = new Type[] { typeof(string) };
-				CanRestructure = true;
+				CanRestructure = false;
 			}
 			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
@@ -657,19 +657,19 @@ namespace MinorShift.Emuera.GameData.Function
 		{
 			public HtmlSubStringMethod()
 			{
-				ReturnType = typeof(Int64);
+				ReturnType = typeof(string);
 				argumentTypeArray = new Type[] { typeof(string), typeof(Int64) };
 				CanRestructure = false;
 			}
 
-			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
 				string str = arguments[0].GetStrValue(exm);
 				string[] strs = MinorShift.Emuera.GameView.HtmlManager.HtmlSubString(str, (int)arguments[1].GetIntValue(exm));
 				string[] output = GlobalStatic.Process.VEvaluator.RESULTS_ARRAY;
 				int outputlength = Math.Min(output.Length, strs.Length);
 				Array.Copy(strs, output, outputlength);
-				return 1;
+				return output[0];
 			}
 		}
 		private sealed class RegexpMatchMethod : FunctionMethod
@@ -3999,7 +3999,7 @@ namespace MinorShift.Emuera.GameData.Function
 				// argumentTypeArray = new Type[] { typeof(string), typeof(string), typeof(string) };
 				argumentTypeArray = null;
 				HasUniqueRestructure = true;
-				CanRestructure = true;
+				CanRestructure = false;
 			}
 
 			public override bool UniqueRestructure(ExpressionMediator exm, IOperandTerm[] arguments)
