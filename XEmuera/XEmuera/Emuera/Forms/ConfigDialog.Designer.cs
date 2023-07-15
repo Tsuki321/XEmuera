@@ -106,6 +106,7 @@
             this.checkBox10 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.tabPageSystem2 = new System.Windows.Forms.TabPage();
+            this.checkBox30 = new System.Windows.Forms.CheckBox();
             this.checkBox29 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.checkBox27 = new System.Windows.Forms.CheckBox();
@@ -142,7 +143,7 @@
             this.label16 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBox30 = new System.Windows.Forms.CheckBox();
+            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabEnvironment.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).BeginInit();
@@ -688,6 +689,7 @@
             // 
             // tabPageSystem2
             // 
+            this.tabPageSystem2.Controls.Add(this.checkBox31);
             this.tabPageSystem2.Controls.Add(this.checkBox30);
             this.tabPageSystem2.Controls.Add(this.checkBox29);
             this.tabPageSystem2.Controls.Add(this.checkBox26);
@@ -698,6 +700,12 @@
             this.tabPageSystem2.Name = "tabPageSystem2";
             this.tabPageSystem2.UseVisualStyleBackColor = true;
             this.tabPageSystem2.Click += new System.EventHandler(this.tabPageSystem2_Click);
+            // 
+            // checkBox30
+            // 
+            resources.ApplyResources(this.checkBox30, "checkBox30");
+            this.checkBox30.Name = "checkBox30";
+            this.checkBox30.UseVisualStyleBackColor = true;
             // 
             // checkBox29
             // 
@@ -963,11 +971,11 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // checkBox30
+            // checkBox31
             // 
-            resources.ApplyResources(this.checkBox30, "checkBox30");
-            this.checkBox30.Name = "checkBox30";
-            this.checkBox30.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.checkBox31, "checkBox31");
+            this.checkBox31.Name = "checkBox31";
+            this.checkBox31.UseVisualStyleBackColor = true;
             // 
             // ConfigDialog
             // 
@@ -1134,5 +1142,6 @@
         private System.Windows.Forms.CheckBox checkBox9;
 		private System.Windows.Forms.CheckBox checkBox29;
         private System.Windows.Forms.CheckBox checkBox30;
+        private System.Windows.Forms.CheckBox checkBox31;
     }
 }

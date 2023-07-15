@@ -130,6 +130,9 @@ namespace MinorShift.Emuera
 			#region EE版_UPDATECHECK
 			ForbidUpdateCheck = instance.GetConfigValue<bool>(ConfigCode.ForbidUpdateCheck);
 			#endregion
+			#region EE版_ERDConfig
+			UseERD = instance.GetConfigValue<bool>(ConfigCode.UseERD);
+			#endregion
 
 			#region EM_私家版_LoadText＆SaveText機能拡張
 			ValidExtension = instance.GetConfigValue<List<string>>(ConfigCode.ValidExtension);
@@ -585,9 +588,12 @@ namespace MinorShift.Emuera
 
 		#region EE版_UPDATECHECK
 		public static bool ForbidUpdateCheck { get; private set; }
-        #endregion
-        #region EM_私家版_LoadText＆SaveText機能拡張
-        public static List<string> ValidExtension { get; private set; }
+		#endregion
+		#region EE版_ERDConfig
+		public static bool UseERD { get; private set; }
+		#endregion
+		#region EM_私家版_LoadText＆SaveText機能拡張
+		public static List<string> ValidExtension { get; private set; }
 		#endregion
 
 	}

@@ -3,6 +3,7 @@ using System.IO;
 using MinorShift.Emuera.Sub;
 using System;
 using System.Windows.Forms;
+using System.Text;
 namespace MinorShift.Emuera
 {
 	internal static class KeyMacro
@@ -48,7 +49,7 @@ namespace MinorShift.Emuera
 
 			try
 			{
-				writer = new StreamWriter(macroPath, false, Config.Encode);
+				writer = new StreamWriter(macroPath, false, Encoding.GetEncoding("UTF-8"));
 				for (int g = 0; g < MaxGroup; g++)
 				{
 					writer.WriteLine(gID + g.ToString() + ":" + groupName[g]);
