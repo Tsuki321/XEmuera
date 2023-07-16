@@ -106,6 +106,7 @@
             this.checkBox10 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.tabPageSystem2 = new System.Windows.Forms.TabPage();
+            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.checkBox30 = new System.Windows.Forms.CheckBox();
             this.checkBox29 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
@@ -143,7 +144,9 @@
             this.label16 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBox31 = new System.Windows.Forms.CheckBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.tabControl.SuspendLayout();
             this.tabEnvironment.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).BeginInit();
@@ -689,10 +692,13 @@
             // 
             // tabPageSystem2
             // 
+            this.tabPageSystem2.Controls.Add(this.textBox3);
+            this.tabPageSystem2.Controls.Add(this.label25);
             this.tabPageSystem2.Controls.Add(this.checkBox31);
             this.tabPageSystem2.Controls.Add(this.checkBox30);
             this.tabPageSystem2.Controls.Add(this.checkBox29);
             this.tabPageSystem2.Controls.Add(this.checkBox26);
+            this.tabPageSystem2.Controls.Add(this.checkBox32);
             this.tabPageSystem2.Controls.Add(this.checkBox27);
             this.tabPageSystem2.Controls.Add(this.checkBoxSystemTripleSymbol);
             this.tabPageSystem2.Controls.Add(this.label24);
@@ -700,6 +706,12 @@
             this.tabPageSystem2.Name = "tabPageSystem2";
             this.tabPageSystem2.UseVisualStyleBackColor = true;
             this.tabPageSystem2.Click += new System.EventHandler(this.tabPageSystem2_Click);
+            // 
+            // checkBox31
+            // 
+            resources.ApplyResources(this.checkBox31, "checkBox31");
+            this.checkBox31.Name = "checkBox31";
+            this.checkBox31.UseVisualStyleBackColor = true;
             // 
             // checkBox30
             // 
@@ -971,11 +983,21 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // checkBox31
+            // textBox3
             // 
-            resources.ApplyResources(this.checkBox31, "checkBox31");
-            this.checkBox31.Name = "checkBox31";
-            this.checkBox31.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.textBox3, "textBox3");
+            this.textBox3.Name = "textBox3";
+            // 
+            // label25
+            // 
+            resources.ApplyResources(this.label25, "label25");
+            this.label25.Name = "label25";
+            // 
+            // checkBox32
+            // 
+            resources.ApplyResources(this.checkBox32, "checkBox32");
+            this.checkBox32.Name = "checkBox32";
+            this.checkBox32.UseVisualStyleBackColor = true;
             // 
             // ConfigDialog
             // 
@@ -1143,5 +1165,8 @@
 		private System.Windows.Forms.CheckBox checkBox29;
         private System.Windows.Forms.CheckBox checkBox30;
         private System.Windows.Forms.CheckBox checkBox31;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.CheckBox checkBox32;
     }
 }

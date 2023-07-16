@@ -123,6 +123,9 @@ namespace MinorShift.Emuera
 			#region EM_私家版_LoadText＆SaveText機能拡張
 			configArray[i++] = new ConfigItem<List<string>>(ConfigCode.ValidExtension, "LOADTEXTとSAVETEXTで使える拡張子", new List<string> { "txt" });
 			#endregion
+			#region EM_私家版_セーブ圧縮
+			configArray[i++] = new ConfigItem<bool>(ConfigCode.ZipSaveData, "セーブデータを圧縮して保存する", false);
+			#endregion
 
 			i = 0;
 			debugArray[i++] = new ConfigItem<bool>(ConfigCode.DebugShowWindow, "起動時にデバッグウインドウを表示する", true);

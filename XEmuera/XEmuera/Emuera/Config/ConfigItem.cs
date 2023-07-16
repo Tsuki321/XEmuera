@@ -94,6 +94,21 @@ namespace MinorShift.Emuera
 				Color c = ((ConfigItem<Color>)(AConfigItem)this).Value;
 				return string.Format("{0},{1},{2}", c.R, c.G, c.B);
 			}
+
+			#region EM_私家版_LoadText＆SaveText機能拡張
+			if (this is ConfigItem<List<string>>)
+			{
+				var sb = new StringBuilder();
+				var v = ((ConfigItem<List<string>>)(AConfigItem)this).Value;
+				foreach (var str in v)
+				{
+					if (sb.Length > 0)
+						sb.Append(",");
+					sb.Append(str);
+				}
+				return sb.ToString();
+			}
+			#endregion
 			return val.ToString();
 		}
 		

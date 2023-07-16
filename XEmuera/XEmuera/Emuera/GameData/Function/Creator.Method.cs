@@ -63,14 +63,19 @@ namespace MinorShift.Emuera.GameData.Function
 				argumentTypeArray = null;
 				CanRestructure = false;
 			}
+			public XmlGetMethod(bool byname) : this()
+			{
+				byName = byname;
+			}
+			private bool byName = false;
 			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
 			{
 				if (arguments.Length < 2)
 					return string.Format("{0}関数:少なくとも2の引数が必要です", name);
 				if (arguments.Length > 4)
 					return string.Format("{0}関数:引数が多すぎます", name);
-				//if (arguments[0].GetOperandType() != typeof(string))
-				//    return string.Format("{0}関数:1番目の引数が文字列ではありません", name);
+				if (byName && arguments[0].GetOperandType() != typeof(string))
+					return string.Format("{0}関数:1番目の引数が文字列ではありません", name);
 				if (arguments[1].GetOperandType() != typeof(string))
 					return string.Format("{0}関数:2番目の引数が文字列ではありません", name);
 				if (arguments.Length >= 3)
@@ -97,9 +102,9 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				XmlDocument doc = null;
 				XmlNodeList nodes = null;
-				if (arguments[0].GetOperandType() == typeof(Int64))
+				if (arguments[0].GetOperandType() == typeof(Int64) || (byName && arguments[0].GetOperandType() == typeof(string)))
 				{
-					var idx = arguments[0].GetIntValue(exm);
+					var idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 					var dict = exm.VEvaluator.VariableData.DataXmlDocument;
 					if (dict.ContainsKey(idx)) doc = dict[idx];
 					else return -1;
@@ -816,15 +821,15 @@ namespace MinorShift.Emuera.GameData.Function
 					return string.Format("{0}関数:少なくとも{1}の引数が必要です", name, (op == Operation.Create ? 2 : 1));
 				if (arguments.Length > (op == Operation.Create ? 2 : 1))
 					return string.Format("{0}関数:引数が多すぎます", name);
-				if (arguments[0].GetOperandType() != typeof(Int64))
-					return string.Format("{0}関数:1番目の引数が整数ではありません", name);
+				//if (arguments[0].GetOperandType() != typeof(Int64))
+				//	return string.Format("{0}関数:1番目の引数が整数ではありません", name);
 				if (op == Operation.Create && arguments[1].GetOperandType() != typeof(string))
 					return string.Format("{0}関数:2番目の引数が文字列ではありません", name);
 				return null;
 			}
 			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
-				var idx = (int)arguments[0].GetIntValue(exm);
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
 				if (op == Operation.Create)
 				{
@@ -864,19 +869,26 @@ namespace MinorShift.Emuera.GameData.Function
 				argumentTypeArray = null;
 				CanRestructure = false;
 			}
+			public XmlSetMethod(bool byname) : this()
+			{
+				byName = byname;
+			}
+			private bool byName = false;
 			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
 			{
 				if (arguments.Length < 3)
 					return string.Format("{0}関数:少なくとも3の引数が必要です", name);
 				if (arguments.Length > 5)
 					return string.Format("{0}関数:引数が多すぎます", name);
-				if (arguments[0].GetOperandType() != typeof(Int64)
+				if (!byName && arguments[0].GetOperandType() != typeof(Int64)
 					&& (!(arguments[0] is VariableTerm varTerm)
 					|| varTerm.Identifier.IsCalc
 					|| !varTerm.Identifier.IsArray1D
 					|| !varTerm.Identifier.IsString
 					|| varTerm.Identifier.IsConst))
 					return string.Format("{0}関数:1番目の引数が一次元文字列配列変数でも整数でもありません", name);
+				if (byName && arguments[0].GetOperandType() != typeof(string))
+					return string.Format("{0}関数:1番目の引数が文字列型ではありません", name);
 				for (int i = 1; i < arguments.Length; i++)
 				{
 					if (i == 1 || i == 2)
@@ -902,10 +914,10 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				XmlDocument doc;
 				bool saveToArg0 = true;
-				if (arguments[0].GetOperandType() == typeof(Int64))
+				if (arguments[0].GetOperandType() == typeof(Int64) || (byName && arguments[0].GetOperandType() == typeof(string)))
 				{
 					saveToArg0 = false;
-					var idx = arguments[0].GetIntValue(exm);
+					var idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 					var dict = exm.VEvaluator.VariableData.DataXmlDocument;
 					if (dict.ContainsKey(idx)) doc = dict[idx];
 					else return -1;
@@ -959,12 +971,20 @@ namespace MinorShift.Emuera.GameData.Function
 			public XmlToStrMethod()
 			{
 				ReturnType = typeof(string);
-				argumentTypeArray = new Type[] { typeof(Int64) }; ;
+				argumentTypeArray = null;
 				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1)
+					return string.Format("{0}関数:1の引数が必要です", name);
+				if (arguments.Length > 1)
+					return string.Format("{0}関数:引数が多すぎます", name);
+				return null;
 			}
 			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
-				var idx = (int)arguments[0].GetIntValue(exm);
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
 				if (!xmlDict.ContainsKey(idx)) return string.Empty;
 				return xmlDict[idx].OuterXml;
@@ -979,10 +999,13 @@ namespace MinorShift.Emuera.GameData.Function
 				argumentTypeArray = null;
 				CanRestructure = false;
 				this.op = op;
-				methodName = op == Operation.Node ? "XML_ADDNODE" : "XML_ADDATTRIBUTE";
 			}
+			public XmlAddNodeMethod(Operation op, bool byname) : this(op)
+			{
+				byName = byname;
+			}
+			private bool byName = false;
 			Operation op;
-			string methodName;
 			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
 			{
 				int max = op == Operation.Attribute ? 6 : 5;
@@ -990,13 +1013,15 @@ namespace MinorShift.Emuera.GameData.Function
 					return string.Format("{0}関数:少なくとも3の引数が必要です", name);
 				if (arguments.Length > max)
 					return string.Format("{0}関数:引数が多すぎます", name);
-				if (arguments[0].GetOperandType() != typeof(Int64)
+				if (!byName && arguments[0].GetOperandType() != typeof(Int64)
 					&& (!(arguments[0] is VariableTerm varTerm)
 					|| varTerm.Identifier.IsCalc
 					|| !varTerm.Identifier.IsArray1D
 					|| !varTerm.Identifier.IsString
 					|| varTerm.Identifier.IsConst))
 					return string.Format("{0}関数:1番目の引数が一次元文字列配列変数でも整数でもありません", name);
+				if (byName && arguments[0].GetOperandType() != typeof(string))
+					return string.Format("{0}関数:1番目の引数が文字列型ではありません", name);
 				for (int i = 1; i < arguments.Length; i++)
 				{
 					if (i == 1 || i == 2 || (i == 3 && op == Operation.Attribute))
@@ -1052,10 +1077,10 @@ namespace MinorShift.Emuera.GameData.Function
 				int method = arguments.Length >= methodPos ? (int)arguments[methodPos - 1].GetIntValue(exm) : 0;
 				if (method > 2 || method < 0) method = 0;
 				bool saveToArg0 = true;
-				if (arguments[0].GetOperandType() == typeof(Int64))
+				if (arguments[0].GetOperandType() == typeof(Int64) || (byName && arguments[0].GetOperandType() == typeof(string)))
 				{
 					saveToArg0 = false;
-					var idx = arguments[0].GetIntValue(exm);
+					var idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 					var dict = exm.VEvaluator.VariableData.DataXmlDocument;
 					if (dict.ContainsKey(idx)) doc = dict[idx];
 					else return -1;
@@ -1070,7 +1095,7 @@ namespace MinorShift.Emuera.GameData.Function
 					}
 					catch (XmlException e)
 					{
-						throw new CodeEE(methodName + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
+						throw new CodeEE(Name + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
 					}
 				}
 
@@ -1082,7 +1107,7 @@ namespace MinorShift.Emuera.GameData.Function
 				}
 				catch (System.Xml.XPath.XPathException e)
 				{
-					throw new CodeEE(methodName + "関数:XPath\"" + path + "\"の解析エラー:" + e.Message);
+					throw new CodeEE(Name + "関数:XPath\"" + path + "\"の解析エラー:" + e.Message);
 				}
 				if (nodes.Count > 0)
 				{
@@ -1099,7 +1124,7 @@ namespace MinorShift.Emuera.GameData.Function
 						}
 						catch (XmlException e)
 						{
-							throw new CodeEE(methodName + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
+							throw new CodeEE(Name + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
 						}
 						var newNode = childNode.FirstChild;
 						child = doc.CreateNode(newNode.NodeType, newNode.Name, newNode.NamespaceURI);
@@ -1140,10 +1165,13 @@ namespace MinorShift.Emuera.GameData.Function
 				argumentTypeArray = null;
 				CanRestructure = false;
 				this.op = op;
-				methodName = op == Operation.Node ? "XML_REMOVENODE" : "XML_REMOVEATTRIBUTE";
 			}
+			public XmlRemoveNodeMethod(Operation op, bool byname) : this(op)
+			{
+				byName = byname;
+			}
+			private bool byName = false;
 			Operation op;
-			string methodName;
 			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
 			{
 				if (arguments.Length < 2)
@@ -1196,10 +1224,10 @@ namespace MinorShift.Emuera.GameData.Function
 				int method = arguments.Length >= 4 ? (int)arguments[3].GetIntValue(exm) : 0;
 				if (method > 2 || method < 0) method = 0;
 				bool saveToArg0 = true;
-				if (arguments[0].GetOperandType() == typeof(Int64))
+				if (arguments[0].GetOperandType() == typeof(Int64) || (byName && arguments[0].GetOperandType() == typeof(string)))
 				{
 					saveToArg0 = false;
-					var idx = arguments[0].GetIntValue(exm);
+					var idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 					var dict = exm.VEvaluator.VariableData.DataXmlDocument;
 					if (dict.ContainsKey(idx)) doc = dict[idx];
 					else return -1;
@@ -1214,7 +1242,7 @@ namespace MinorShift.Emuera.GameData.Function
 					}
 					catch (XmlException e)
 					{
-						throw new CodeEE(methodName + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
+						throw new CodeEE(Name + "関数:\"" + xml + "\"の解析エラー:" + e.Message);
 					}
 				}
 
@@ -1226,7 +1254,7 @@ namespace MinorShift.Emuera.GameData.Function
 				}
 				catch (System.Xml.XPath.XPathException e)
 				{
-					throw new CodeEE(methodName + "関数:XPath\"" + path + "\"の解析エラー:" + e.Message);
+					throw new CodeEE(Name + "関数:XPath\"" + path + "\"の解析エラー:" + e.Message);
 				}
 				if (nodes.Count > 0)
 				{
@@ -1253,6 +1281,11 @@ namespace MinorShift.Emuera.GameData.Function
 				argumentTypeArray = null;
 				CanRestructure = false;
 			}
+			public XmlReplaceMethod(bool byname) : this()
+			{
+				byName = byname;
+			}
+			private bool byName = false;
 			bool Replace(XmlNode node, XmlNode newNode)
 			{
 				if (node.ParentNode != null)
@@ -1268,15 +1301,17 @@ namespace MinorShift.Emuera.GameData.Function
 					return string.Format("{0}関数:少なくとも2の引数が必要です", name);
 				if (arguments.Length > 4)
 					return string.Format("{0}関数:引数が多すぎます", name);
-				if (arguments.Length == 2 && arguments[0].GetOperandType() != typeof(Int64))
-					return string.Format("{0}関数:1番目の引数が整数ではありません", name);
-				if (arguments.Length > 2 && arguments[0].GetOperandType() != typeof(Int64)
+				//if (arguments.Length == 2 && arguments[0].GetOperandType() != typeof(Int64))
+				//	return string.Format("{0}関数:1番目の引数が整数ではありません", name);
+				if (!byName && arguments.Length > 2 && arguments[0].GetOperandType() != typeof(Int64)
 					&& (!(arguments[0] is VariableTerm varTerm)
 					|| varTerm.Identifier.IsCalc
 					|| !varTerm.Identifier.IsArray1D
 					|| !varTerm.Identifier.IsString
 					|| varTerm.Identifier.IsConst))
 					return string.Format("{0}関数:1番目の引数が一次元文字列配列変数でも整数でもありません", name);
+				if (byName && arguments.Length > 2 && arguments[0].GetOperandType() != typeof(string))
+					return string.Format("{0}関数:1番目の引数が文字列型ではありません", name);
 				for (int i = 1; i < arguments.Length; i++)
 				{
 					if (i < 3)
@@ -1305,10 +1340,10 @@ namespace MinorShift.Emuera.GameData.Function
 				}
 				bool saveToArg0 = true;
 				XmlDocument doc = null;
-				if (arguments[0].GetOperandType() == typeof(Int64))
+				if (arguments[0].GetOperandType() == typeof(Int64) || (byName && arguments[0].GetOperandType() == typeof(string)) || (arguments[0].GetOperandType() == typeof(string) && arguments.Length == 2))
 				{
 					saveToArg0 = false;
-					var idx = arguments[0].GetIntValue(exm);
+					var idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
 					var dict = exm.VEvaluator.VariableData.DataXmlDocument;
 					if (!dict.ContainsKey(idx)) return -1;
 					if (arguments.Length == 2)
@@ -6452,5 +6487,35 @@ namespace MinorShift.Emuera.GameData.Function
 			}
 		}
 		#endregion
-	}
+		#region EE_textbox拡張
+		private sealed class GetTextBoxMethod : FunctionMethod
+		{
+			public GetTextBoxMethod()
+			{
+				ReturnType = typeof(string);
+				argumentTypeArray = new Type[] { };
+				CanRestructure = false;
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				return GlobalStatic.MainWindow.TextBox.Text;
+			}
+		}
+		private sealed class ChangeTextBoxMethod : FunctionMethod
+		{
+			public ChangeTextBoxMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[] { typeof(string) };
+				CanRestructure = true;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				GlobalStatic.MainWindow.ChangeTextBox(arguments[0].GetStrValue(exm));
+				return 1;
+			}
+		}
+        #endregion
+
+    }
 }

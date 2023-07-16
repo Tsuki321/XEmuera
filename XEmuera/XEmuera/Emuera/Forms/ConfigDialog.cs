@@ -146,6 +146,9 @@ namespace MinorShift.Emuera.Forms
 			setCheckBox(checkBox29, ConfigCode.SystemNoTarget);
 			setCheckBox(checkBox30, ConfigCode.ForbidUpdateCheck);
 			setCheckBox(checkBox31, ConfigCode.UseERD);
+			#region EM_私家版_セーブ圧縮
+			setCheckBox(checkBox32, ConfigCode.ZipSaveData);
+			#endregion
 			setNumericUpDown(numericUpDown2, ConfigCode.WindowX);
 			setNumericUpDown(numericUpDown3, ConfigCode.WindowY);
 			setNumericUpDown(numericUpDown4, ConfigCode.MaxLog);
@@ -165,6 +168,7 @@ namespace MinorShift.Emuera.Forms
 			setColorBox(colorBoxBG, ConfigCode.BackColor);
 			setColorBox(colorBoxSelecting, ConfigCode.FocusColor);
 			setColorBox(colorBoxBacklog, ConfigCode.LogColor);
+
 
 			ConfigItem<TextDrawingMode> itemTDM = (ConfigItem<TextDrawingMode>)ConfigData.Instance.GetConfigItem(ConfigCode.TextDrawingMode);
 			switch (itemTDM.Value)
@@ -275,6 +279,14 @@ namespace MinorShift.Emuera.Forms
             textBox1.Text = Config.TextEditor;
             textBox2.Text = Config.EditorArg;
             textBox2.Enabled = itemET.Value == TextEditorType.USER_SETTING;
+
+			#region EM_私家版_LoadText＆SaveText機能拡張
+			{
+				ConfigItem<List<string>> item = (ConfigItem<List<string>>)ConfigData.Instance.GetConfigItem(ConfigCode.ValidExtension);
+				textBox3.Text = item.ValueToString();
+				textBox3.Enabled = !item.Fixed;
+			}
+			#endregion
 		}
 
 		private void SaveConfig()
@@ -420,6 +432,13 @@ namespace MinorShift.Emuera.Forms
 
             config.GetConfigItem(ConfigCode.TextEditor).SetValue<string>(textBox1.Text);
             config.GetConfigItem(ConfigCode.EditorArgument).SetValue<string>(textBox2.Text);
+
+			#region EM_私家版_LoadText＆SaveText機能拡張
+			config.GetConfigItem(ConfigCode.ValidExtension).TryParse(textBox3.Text);
+			#endregion
+			#region EM_私家版_セーブ圧縮
+			config.GetConfigItem(ConfigCode.ZipSaveData).SetValue<bool>(checkBox32.Checked);
+			#endregion
 
 			config.SaveConfig();
 		}

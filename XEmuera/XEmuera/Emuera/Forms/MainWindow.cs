@@ -78,6 +78,13 @@ namespace MinorShift.Emuera
 		public ToolTip ToolTip { get { return toolTipButton; } }
 		private EmueraConsole console = null;
 
+        #region EE_textbox拡張
+		public void ChangeTextBox(string str)
+        {
+			this.richTextBox1.Text = str;
+        }
+		#endregion
+
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			//1823 INPUTMOUSEKEY Key入力全てを捕まえてERB側で処理する
