@@ -10,6 +10,7 @@ using MinorShift.Emuera.Sub;
 using MinorShift.Emuera.GameProc;
 using System.IO;
 using MinorShift.Emuera.GameView;
+using EvilMask.Emuera;
 
 namespace MinorShift.Emuera.Forms
 {
@@ -40,6 +41,30 @@ namespace MinorShift.Emuera.Forms
 		{
 			emuera = process;
 			mainConsole = console;
+		}
+
+		public void TranslateUI()
+		{
+			this.Text = Lang.UI.DebugDialog.Text;
+			
+			this.toolStripMenuItem1.Text = Lang.UI.MainWindow.File.Text;
+			this.ウォッチリストの保存ToolStripMenuItem.Text = Lang.UI.DebugDialog.File.SaveWatchList.Text;
+			this.ウォッチリストの読込ToolStripMenuItem.Text = Lang.UI.DebugDialog.File.LoadWatchList.Text;
+			this.閉じるToolStripMenuItem.Text = Lang.UI.DebugDialog.Close.Text;
+
+			this.設定ToolStripMenuItem.Text = Lang.UI.DebugDialog.Setting.Text;
+			this.設定ToolStripMenuItem1.Text = Lang.UI.DebugDialog.Setting.Config.Text;
+
+			this.tabPageWatch.Text = Lang.UI.DebugDialog.VariableWatch.Text;
+			this.columnHeader1.Text = Lang.UI.DebugDialog.VariableWatch.Object.Text;
+			this.columnHeader3.Text = Lang.UI.DebugDialog.VariableWatch.Value.Text;
+
+			this.tabPageTrace.Text = Lang.UI.DebugDialog.StackTrace.Text;
+			this.tabPageConsole.Text = Lang.UI.DebugDialog.Console.Text;
+
+			this.checkBoxTopMost.Text = Lang.UI.DebugDialog.StayOnTop.Text;
+			this.button2.Text = Lang.UI.DebugDialog.UpdateData.Text;
+			this.button1.Text = Lang.UI.DebugDialog.Close.Text;
 		}
 
 		public string ConsoleText
@@ -456,6 +481,7 @@ namespace MinorShift.Emuera.Forms
 			bool tempTopMost = TopMost;
 			this.TopMost = false;
 			DebugConfigDialog dialog = new DebugConfigDialog();
+			dialog.TranslateUI();
             dialog.StartPosition = FormStartPosition.CenterParent;
 			dialog.SetConfig(this);
 			dialog.ShowDialog();

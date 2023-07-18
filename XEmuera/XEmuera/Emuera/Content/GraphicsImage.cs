@@ -95,6 +95,17 @@ namespace MinorShift.Emuera.Content
 			g.Clear(c);
 		}
 
+		#region EM_私家版_GCLEAR拡張
+		public void GClear(Color c, int x, int y, int w, int h)
+		{
+			if (g == null)
+				throw new NullReferenceException();
+			g.SetClip(new Rectangle(x, y, w, h), System.Drawing.Drawing2D.CombineMode.Replace);
+			g.Clear(c);
+			g.ResetClip();
+		}
+		#endregion
+
 		/// <summary>
 		/// GDRAWTEXTGDRAWTEXT int ID, str text, int x, int y
 		/// エラーチェックは呼び出し元でのみ行う

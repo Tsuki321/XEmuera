@@ -9,6 +9,8 @@ using MinorShift._Library;
 using MinorShift.Emuera.GameData;
 using MinorShift.Emuera.GameData.Function;
 using System.IO;
+using trsl = EvilMask.Emuera.Lang.SystemLine;
+using trerror = EvilMask.Emuera.Lang.Error;
 
 namespace MinorShift.Emuera.GameProc
 {
@@ -49,7 +51,7 @@ namespace MinorShift.Emuera.GameProc
 					string filename = headerFiles[i].Key;
 					string file = headerFiles[i].Value;
 					if (displayReport)
-						output.PrintSystemLine(filename + "読み込み中・・・");
+						output.PrintSystemLine(string.Format(trsl.LoadingFile.Text, filename));
 					noError = loadHeaderFile(file, filename);
 					if (!noError)
 						break;
@@ -86,7 +88,7 @@ namespace MinorShift.Emuera.GameProc
 
 			if (!eReader.Open(filepath, filename))
 			{
-				throw new CodeEE(eReader.Filename + "のオープンに失敗しました");
+				throw new CodeEE(string.Format(trerror.FailedOpenFile.Text, eReader.Filename));
 				//return false;
 			}
 			try
@@ -98,12 +100,12 @@ namespace MinorShift.Emuera.GameProc
 					position = new ScriptPosition(filename, eReader.LineNo);
 					LexicalAnalyzer.SkipWhiteSpace(st);
 					if (st.Current != '#')
-						throw new CodeEE("ヘッダーの中に#で始まらない行があります", position);
+						throw new CodeEE(trerror.NotStartedSharpLineInHeader.Text, position);
 					st.ShiftNext();
 					string sharpID = LexicalAnalyzer.ReadSingleIdentifier(st);
 					if (sharpID == null)
 					{
-						ParserMediator.Warn("解釈できない#行です", position, 1);
+						ParserMediator.Warn(trerror.CanNotInterpretSharpLine.Text, position, 1);
 						return false;
 					}
 					if (Config.ICFunction)
@@ -128,7 +130,7 @@ namespace MinorShift.Emuera.GameProc
 							//analyzeSharpDim(st, position, sharpID == "DIMS");
 							break;
 						default:
-							throw new CodeEE("#" + sharpID + "は解釈できないプリプロセッサです", position);
+							throw new CodeEE(string.Format(trerror.UnknownPreprocessorInSharpLine.Text, sharpID), position);
 					}
 				}
 			}
@@ -158,7 +160,7 @@ namespace MinorShift.Emuera.GameProc
 			//LexicalAnalyzer.SkipWhiteSpace(st);呼び出し前に行う。
 			string srcID = LexicalAnalyzer.ReadSingleIdentifier(st);
 			if (srcID == null)
-				throw new CodeEE("置換元の識別子がありません", position);
+				throw new CodeEE(trerror.MissingReplacementSource.Text, position);
 			if (Config.ICVariable)
 				srcID = srcID.ToUpper();
 
@@ -193,16 +195,16 @@ namespace MinorShift.Emuera.GameProc
 			{
 				wc.ShiftNext();//'('を読み飛ばす
 				if (wc.Current.Type == ')')
-					throw new CodeEE("関数型マクロの引数を0個にすることはできません", position);
+					throw new CodeEE(trerror.FuncMacroArgIs0.Text, position);
 				while (!wc.EOL)
 				{
 					IdentifierWord word = wc.Current as IdentifierWord;
 					if (word == null)
-						throw new CodeEE("置換元の引数指定の書式が間違っています", position);
+						throw new CodeEE(trerror.WrongFormatReplacementSource.Text, position);
 					word.SetIsMacro();
 					string id = word.Code;
 					if (argID.Contains(id))
-						throw new CodeEE("置換元の引数に同じ文字が2回以上使われています", position);
+						throw new CodeEE(trerror.DuplicateCharacterReplcaementSource.Text, position);
 					argID.Add(id);
 					wc.ShiftNext();
 					if (wc.Current.Type == ',')
@@ -212,15 +214,15 @@ namespace MinorShift.Emuera.GameProc
 					}
 					if (wc.Current.Type == ')')
 						break;
-					throw new CodeEE("置換元の引数指定の書式が間違っています", position);
+					throw new CodeEE(trerror.WrongFormatReplacementSource.Text, position);
 				}
 				if (wc.EOL)
-					throw new CodeEE("')'が閉じられていません", position);
+					throw new CodeEE(trerror.NotCloseBrackets.Text, position);
 
 				wc.ShiftNext();
 			}
 			if (wc.EOL)
-				throw new CodeEE("置換先の式がありません", position);
+				throw new CodeEE(trerror.MissingSubstitution.Text, position);
 			WordCollection destWc = new WordCollection();
 			while (!wc.EOL)
 			{
@@ -251,7 +253,7 @@ namespace MinorShift.Emuera.GameProc
 				destWc.Pointer = 0;
 			}
 			if (hasArg)//1808a3 関数型マクロの封印
-				throw new CodeEE("関数型マクロは宣言できません", position);
+				throw new CodeEE(trerror.CanNotDeclaredFuncMacro.Text, position);
 			DefineMacro mac = new DefineMacro(srcID, destWc, argID.Count);
 			idDic.AddMacro(mac);
 		}

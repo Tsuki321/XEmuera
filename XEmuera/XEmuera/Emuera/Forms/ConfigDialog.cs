@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Text;
+using EvilMask.Emuera;
 
 namespace MinorShift.Emuera.Forms
 {
@@ -16,9 +17,9 @@ namespace MinorShift.Emuera.Forms
 		Save = 1,
 		SaveReboot = 2,
 	}
-
 	internal partial class ConfigDialog : Form
 	{
+		FlowLayoutPanel[] pages;
 		public ConfigDialog()
 		{
 			InitializeComponent();
@@ -47,6 +48,173 @@ namespace MinorShift.Emuera.Forms
 			numericUpDownPosX.Maximum = 10000;//WindowPosX
 			numericUpDownPosY.Maximum = 10000;
 
+			pages = new FlowLayoutPanel[] {
+				flowLayoutPanel13,
+				flowLayoutPanel17,
+				flowLayoutPanel23,
+				flowLayoutPanel27,
+				flowLayoutPanel29,
+				flowLayoutPanel30,
+				flowLayoutPanel32,
+				flowLayoutPanel33,
+			};
+		}
+		internal void SetupLang(string[] langs) {
+			var fisrt = this.comboBox7.Items[0];
+			int selected = 0;
+			int idx = 1;
+			this.comboBox7.Items.Clear();
+			this.comboBox7.Items.Add(fisrt);
+
+			ConfigItem<string> item = (ConfigItem<string>)ConfigData.Instance.GetConfigItem(ConfigCode.EmueraLang);
+			foreach (var lang in langs)
+			{
+				this.comboBox7.Items.Add(lang);
+				if (lang == item.Value) selected = idx;
+				idx++;
+			}
+			this.comboBox7.SelectedIndex = selected;
+			comboBox7.Enabled = !item.Fixed;
+		}
+		internal void TranslateUI()
+		{
+			this.Text = Lang.UI.ConfigDialog.Text;
+
+			this.tabEnvironment.Text = Lang.UI.ConfigDialog.Environment.Text;
+			this.checkBox3.Text = Lang.UI.ConfigDialog.Environment.UseMouse.Text;
+			this.checkBox4.Text = Lang.UI.ConfigDialog.Environment.UseMenu.Text;
+			this.checkBox5.Text = Lang.UI.ConfigDialog.Environment.UseDebugCommand.Text;
+			this.checkBox6.Text = Lang.UI.ConfigDialog.Environment.AllowMultipleInstances.Text;
+			this.checkBox18.Text = Lang.UI.ConfigDialog.Environment.UseKeyMacro.Text;
+			this.checkBox7.Text = Lang.UI.ConfigDialog.Environment.AutoSave.Text;
+			this.checkBox24.Text = Lang.UI.ConfigDialog.Environment.UseSaveFolder.Text;
+			this.checkBox33.Text = Lang.UI.ConfigDialog.Environment.EnglishConfigOutput.Text;
+			this.label6.Text = Lang.UI.ConfigDialog.Environment.MaxLog.Text;
+			this.label17.Text = Lang.UI.ConfigDialog.Environment.InfiniteLoopAlertTime.Text;
+			this.label20.Text = Lang.UI.ConfigDialog.Environment.SaveDataPerPage.Text;
+			this.label22.Text = Lang.UI.ConfigDialog.Environment.TextEditor.Text;
+			this.button4.Text = Lang.UI.ConfigDialog.Environment.Browse.Text;
+			this.label23.Text = Lang.UI.ConfigDialog.Environment.TextEditorCommandline.Text;
+			this.comboBox6.Items[3] = Lang.UI.ConfigDialog.Environment.TextEditorCommandline.UserSetting.Text;
+
+			this.tabPageView.Text = Lang.UI.ConfigDialog.Display.Text;
+			this.label18.Text = Lang.UI.ConfigDialog.Display.TextDrawingMode.Text;
+			this.label9.Text = Lang.UI.ConfigDialog.Display.FPS.Text;
+			this.label5.Text = Lang.UI.ConfigDialog.Display.PrintCPerLine.Text;
+			this.label1.Text = Lang.UI.ConfigDialog.Display.PrintCLength.Text;
+			this.checkBox14.Text = Lang.UI.ConfigDialog.Display.ButtonWrap.Text;
+			this.label26.Text = Lang.UI.ConfigDialog.Display.EmueraLang.Text;
+
+			this.tabPageWindow.Text = Lang.UI.ConfigDialog.Window.Text;
+			this.label2.Text = Lang.UI.ConfigDialog.Window.WindowWidth.Text;
+			this.label3.Text = Lang.UI.ConfigDialog.Window.WindowHeight.Text;
+			this.button1.Text = Lang.UI.ConfigDialog.Window.GetWindowSize.Text;
+			this.checkBox8.Text = Lang.UI.ConfigDialog.Window.ChangeableWindowHeight.Text;
+			this.checkBox21.Text = Lang.UI.ConfigDialog.Window.WindowMaximixed.Text;
+			this.checkBox17.Text = Lang.UI.ConfigDialog.Window.SetWindowPos.Text;
+			this.label19.Text = Lang.UI.ConfigDialog.Window.WindowX.Text;
+			this.label10.Text = Lang.UI.ConfigDialog.Window.WindowY.Text;
+			this.button3.Text = Lang.UI.ConfigDialog.Window.GetWindowPos.Text;
+			this.ScrollRange.Text = Lang.UI.ConfigDialog.Window.LinesPerScroll.Text;
+
+			this.tabPageFont.Text = Lang.UI.ConfigDialog.Font.Text;
+			this.colorBoxBG.ButtonText = Lang.UI.ConfigDialog.Font.BackgroundColor.Text;
+			this.colorBoxFG.ButtonText = Lang.UI.ConfigDialog.Font.TextColor.Text;
+			this.colorBoxSelecting.ButtonText = Lang.UI.ConfigDialog.Font.HighlightColor.Text;
+			this.colorBoxBacklog.ButtonText = Lang.UI.ConfigDialog.Font.LogHistoryColor.Text;
+			this.label4.Text = Lang.UI.ConfigDialog.Font.FontName.Text;
+			this.button2.Text = Lang.UI.ConfigDialog.Font.GetFontNames.Text;
+			this.label8.Text = Lang.UI.ConfigDialog.Font.FontSize.Text;
+			this.label7.Text = Lang.UI.ConfigDialog.Font.LineHeight.Text;
+
+			this.tabPageSystem.Text = Lang.UI.ConfigDialog.System.Text;
+			this.label21.Text = Lang.UI.ConfigDialog.System.Warning.Text;
+			this.checkBox1.Text = Lang.UI.ConfigDialog.System.IgnoreCase.Text;
+			this.checkBox2.Text = Lang.UI.ConfigDialog.System.UseRename.Text;
+			this.checkBox10.Text = Lang.UI.ConfigDialog.System.UseReplace.Text;
+			this.checkBox15.Text = Lang.UI.ConfigDialog.System.SearchSubfolder.Text;
+			this.checkBox16.Text = Lang.UI.ConfigDialog.System.SortFileNames.Text;
+			this.checkBox20.Text = Lang.UI.ConfigDialog.System.SystemFuncOverride.Text;
+			this.checkBox19.Text = Lang.UI.ConfigDialog.System.SystemFuncOverrideWarn.Text;
+			this.checkBox22.Text = Lang.UI.ConfigDialog.System.DuplicateFuncWarn.Text;
+			this.checkBoxSystemFullSpace.Text = Lang.UI.ConfigDialog.System.WSIncludesFullWidth.Text;
+			this.label11.Text = Lang.UI.ConfigDialog.System.ANSI.Text;
+
+			this.tabPageSystem2.Text = Lang.UI.ConfigDialog.System2.Text;
+			this.label24.Text = Lang.UI.ConfigDialog.System.Warning.Text;
+			this.checkBoxSystemTripleSymbol.Text = Lang.UI.ConfigDialog.System2.IgnoreTripleSymbol.Text;
+			this.checkBox26.Text = Lang.UI.ConfigDialog.System2.SaveInBinary.Text;
+			this.checkBox27.Text = Lang.UI.ConfigDialog.System2.SaveInUTF8.Text;
+			this.checkBox32.Text = Lang.UI.ConfigDialog.System2.CompressSave.Text;
+			this.checkBox29.Text = Lang.UI.ConfigDialog.System2.NoAutoCompleteCVar.Text;
+			this.checkBox30.Text = Lang.UI.ConfigDialog.System2.DisallowUpdateCheck.Text;
+			this.checkBox31.Text = Lang.UI.ConfigDialog.System2.UseERD.Text;
+			this.checkBox34.Text = Lang.UI.ConfigDialog.System2.VarsizeDimConfig.Text;
+			this.label25.Text = Lang.UI.ConfigDialog.System2.SaveLoadExt.Text;
+
+			this.tabPageCompati.Text = Lang.UI.ConfigDialog.Compatibility.Text;
+			this.label30.Text = Lang.UI.ConfigDialog.Compatibility.Warning.Text;
+			this.checkBoxCompatiErrorLine.Text = Lang.UI.ConfigDialog.Compatibility.ExecuteErrorLine.Text;
+			this.checkBoxCompatiCALLNAME.Text = Lang.UI.ConfigDialog.Compatibility.NameForCallname.Text;
+			this.checkBoxCompatiRAND.Text = Lang.UI.ConfigDialog.Compatibility.EramakerRAND.Text;
+			this.checkBox9.Text = Lang.UI.ConfigDialog.Compatibility.EramakerTIMES.Text;
+			this.checkBoxFuncNoIgnoreCase.Text = Lang.UI.ConfigDialog.Compatibility.NoIgnoreCase.Text;
+			this.checkBox28.Text = Lang.UI.ConfigDialog.Compatibility.CallEvent.Text;
+			this.checkBoxCompatiSP.Text = Lang.UI.ConfigDialog.Compatibility.UseSPCharacters.Text;
+			this.checkBoxCompatiLinefeedAs1739.Text = Lang.UI.ConfigDialog.Compatibility.ButtonWarp.Text;
+			this.checkBox12.Text = Lang.UI.ConfigDialog.Compatibility.OmitArgs.Text;
+			this.checkBox25.Text = Lang.UI.ConfigDialog.Compatibility.AutoTOSTR.Text;
+			this.button7.Text = Lang.UI.ConfigDialog.Compatibility.EramakerStandard.Text;
+			this.button8.Text = Lang.UI.ConfigDialog.Compatibility.EmueraStandard.Text;
+
+			this.tabPageDebug.Text = Lang.UI.ConfigDialog.Debug.Text;
+			this.checkBox23.Text = Lang.UI.ConfigDialog.Debug.CompatibilityWarn.Text;
+			this.checkBox13.Text = Lang.UI.ConfigDialog.Debug.LoadingReport.Text;
+			this.label12.Text = Lang.UI.ConfigDialog.Debug.ReduceArgs.Text;
+			this.comboBoxReduceArgumentOnLoad.Items[0] = Lang.UI.ConfigDialog.Debug.ReduceArgs.Never.Text;
+			this.comboBoxReduceArgumentOnLoad.Items[1] = Lang.UI.ConfigDialog.Debug.ReduceArgs.OnUpdate.Text;
+			this.comboBoxReduceArgumentOnLoad.Items[2] = Lang.UI.ConfigDialog.Debug.ReduceArgs.Always.Text;
+			this.label15.Text = Lang.UI.ConfigDialog.Debug.WarnLevel.Text;
+			this.comboBox5.Items[0] = Lang.UI.ConfigDialog.Debug.WarnLevel.Level0.Text;
+			this.comboBox5.Items[1] = Lang.UI.ConfigDialog.Debug.WarnLevel.Level1.Text;
+			this.comboBox5.Items[2] = Lang.UI.ConfigDialog.Debug.WarnLevel.Level2.Text;
+			this.comboBox5.Items[3] = Lang.UI.ConfigDialog.Debug.WarnLevel.Level3.Text;
+			this.checkBox11.Text = Lang.UI.ConfigDialog.Debug.IgnoreUnusedFuncs.Text;
+			this.label13.Text = Lang.UI.ConfigDialog.Debug.FuncNotFoundWarn.Text;
+			this.comboBox3.Items[0] = Lang.UI.ConfigDialog.Debug.WarnSetting.Ignore.Text;
+			this.comboBox3.Items[1] = Lang.UI.ConfigDialog.Debug.WarnSetting.TotalNumber.Text;
+			this.comboBox3.Items[2] = Lang.UI.ConfigDialog.Debug.WarnSetting.OncePerFile.Text;
+			this.comboBox3.Items[3] = Lang.UI.ConfigDialog.Debug.WarnSetting.Always.Text;
+			this.label14.Text = Lang.UI.ConfigDialog.Debug.UnusedFuncWarn.Text;
+			this.comboBox4.Items[0] = Lang.UI.ConfigDialog.Debug.WarnSetting.Ignore.Text;
+			this.comboBox4.Items[1] = Lang.UI.ConfigDialog.Debug.WarnSetting.TotalNumber.Text;
+			this.comboBox4.Items[2] = Lang.UI.ConfigDialog.Debug.WarnSetting.OncePerFile.Text;
+			this.comboBox4.Items[3] = Lang.UI.ConfigDialog.Debug.WarnSetting.Always.Text;
+			this.button5.Text = Lang.UI.ConfigDialog.Debug.PlayerStandard.Text;
+			this.button6.Text = Lang.UI.ConfigDialog.Debug.DeveloperStandard.Text;
+
+			this.buttonSave.Text = Lang.UI.ConfigDialog.Save.Text;
+			this.buttonReboot.Text = Lang.UI.ConfigDialog.SaveAndRestart.Text;
+			this.buttonCancel.Text = Lang.UI.ConfigDialog.Cancel.Text;
+			this.label16.Text = Lang.UI.ConfigDialog.ChangeWontTakeEffectUntilRestart.Text;
+
+			var diff = tabControl.Size - tabControl.DisplayRectangle.Size + ((Size)tabControl.Padding);
+			var size = new Size(0, 0);
+			foreach(var page in pages)
+			{
+				if (page.Size.Width + page.Margin.Size.Width> size.Width) size.Width = page.Size.Width + page.Margin.Size.Width;
+				if (page.Size.Height + page.Margin.Size.Height > size.Height ) size.Height  = page.Size.Height + page.Margin.Size.Height;
+			}
+			this.tabControl.Size = new Size(size.Width + diff.Width, tabControl.Size.Height);
+			diff = tabControl.Size - tabControl.DisplayRectangle.Size + ((Size)tabControl.Padding);
+			tabControl.Size = size + diff;
+			
+			foreach (var page in pages)
+			{
+				diff = tabControl.DisplayRectangle.Size - page.Size;
+				page.Location = new Point(diff.Width / 2, diff.Height / 2);
+			}
+			
 		}
 
 		private void buttonSave_Click(object sender, EventArgs e)
@@ -131,6 +299,9 @@ namespace MinorShift.Emuera.Forms
 			setCheckBox(checkBoxCompatiErrorLine, ConfigCode.CompatiErrorLine);
 			setCheckBox(checkBoxCompatiCALLNAME, ConfigCode.CompatiCALLNAME);
 			setCheckBox(checkBox24, ConfigCode.UseSaveFolder);
+			#region EM_私家版_Emuera多言語化改造
+			setCheckBox(checkBox33, ConfigCode.EnglishConfigOutput);
+			#endregion
 			setCheckBox(checkBox27, ConfigCode.SystemSaveInUTF8);
 			setCheckBox(checkBoxCompatiRAND, ConfigCode.CompatiRAND);
 			setCheckBox(checkBoxCompatiLinefeedAs1739, ConfigCode.CompatiLinefeedAs1739);
@@ -146,6 +317,7 @@ namespace MinorShift.Emuera.Forms
 			setCheckBox(checkBox29, ConfigCode.SystemNoTarget);
 			setCheckBox(checkBox30, ConfigCode.ForbidUpdateCheck);
 			setCheckBox(checkBox31, ConfigCode.UseERD);
+			setCheckBox(checkBox34, ConfigCode.VarsizeDimConfig);
 			#region EM_私家版_セーブ圧縮
 			setCheckBox(checkBox32, ConfigCode.ZipSaveData);
 			#endregion
@@ -334,6 +506,7 @@ namespace MinorShift.Emuera.Forms
 			config.GetConfigItem(ConfigCode.SystemNoTarget).SetValue<bool>(checkBox29.Checked);
 			config.GetConfigItem(ConfigCode.ForbidUpdateCheck).SetValue<bool>(checkBox30.Checked);
 			config.GetConfigItem(ConfigCode.UseERD).SetValue<bool>(checkBox31.Checked);
+			config.GetConfigItem(ConfigCode.VarsizeDimConfig).SetValue<bool>(checkBox34.Checked);
 
 			config.GetConfigItem(ConfigCode.WindowX).SetValue<int>((int)numericUpDown2.Value);
 			config.GetConfigItem(ConfigCode.WindowY).SetValue<int>((int)numericUpDown3.Value);
@@ -438,6 +611,20 @@ namespace MinorShift.Emuera.Forms
 			#endregion
 			#region EM_私家版_セーブ圧縮
 			config.GetConfigItem(ConfigCode.ZipSaveData).SetValue<bool>(checkBox32.Checked);
+			#endregion
+			#region EM_私家版_多言語化改造
+			if (comboBox7.SelectedIndex == 0)
+			{
+				config.GetConfigItem(ConfigCode.EmueraLang).SetValue<string>(string.Empty);
+				ConfigData.Instance.GetConfigItem(ConfigCode.EmueraLang).SetValue<string>(string.Empty);
+			}
+			else
+			{
+				config.GetConfigItem(ConfigCode.EmueraLang).SetValue<string>(comboBox7.SelectedItem as string);
+				ConfigData.Instance.GetConfigItem(ConfigCode.EmueraLang).SetValue<string>(comboBox7.SelectedItem as string);
+			}
+			config.GetConfigItem(ConfigCode.EnglishConfigOutput).SetValue<bool>(checkBox33.Checked);
+			Config.UpdateLangSetting(config);
 			#endregion
 
 			config.SaveConfig();
@@ -629,9 +816,5 @@ namespace MinorShift.Emuera.Forms
             textBox2.Enabled = ((ComboBox)sender).SelectedIndex == 3;
         }
 
-        private void tabPageSystem2_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Text;
+using EvilMask.Emuera;
 
 namespace MinorShift.Emuera.Forms
 {
@@ -20,6 +21,36 @@ namespace MinorShift.Emuera.Forms
 			numericUpDownDWH.Maximum = 10000;
 			numericUpDownDWX.Maximum = 10000;
 			numericUpDownDWY.Maximum = 10000;
+		}
+
+		public void TranslateUI()
+        {
+			this.Text = Lang.UI.DebugConfigDialog.Text;
+			this.tabPageDebug3.Text = Lang.UI.DebugConfigDialog.Name.Text;
+			this.label29.Text = Lang.UI.DebugConfigDialog.Warning.Text;
+			this.checkBoxShowDW.Text = Lang.UI.DebugConfigDialog.OpenDebugWindowOnStartup.Text;
+			this.checkBoxDWTM.Text = Lang.UI.DebugConfigDialog.AlwaysOnTop.Text;
+			this.label28.Text = Lang.UI.DebugConfigDialog.WindowWidth.Text;
+			this.label27.Text = Lang.UI.DebugConfigDialog.WindowHeight.Text;
+			this.button6.Text = Lang.UI.ConfigDialog.Window.GetWindowSize.Text;
+			this.checkBoxSetDWPos.Text = Lang.UI.DebugConfigDialog.SetWindowPos.Text;
+			this.label26.Text = Lang.UI.DebugConfigDialog.WindowX.Text;
+			this.label25.Text = Lang.UI.DebugConfigDialog.WindowY.Text;
+			this.button5.Text = Lang.UI.ConfigDialog.Window.GetWindowPos.Text;
+			this.label16.Text = Lang.UI.ConfigDialog.ChangeWontTakeEffectUntilRestart.Text;
+			this.buttonSave.Text = Lang.UI.ConfigDialog.Save.Text;
+			this.buttonCancel.Text = Lang.UI.ConfigDialog.Cancel.Text;
+
+
+			var diff = tabControl.Size - tabControl.DisplayRectangle.Size + ((Size)tabControl.Padding);
+			Size size;
+			{
+				var page = flowLayoutPanel5;
+				page.Dock = DockStyle.None;
+				size = page.Size + page.Margin.Size;
+				page.Dock = DockStyle.Fill;
+			}
+			tabControl.Size = size + diff;
 		}
 
 		private void buttonSave_Click(object sender, EventArgs e)

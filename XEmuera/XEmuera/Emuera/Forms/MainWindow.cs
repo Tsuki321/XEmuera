@@ -12,6 +12,7 @@ using MinorShift.Emuera.GameData;
 using MinorShift.Emuera.GameProc;
 using MinorShift.Emuera.GameView;
 using MinorShift.Emuera.Forms;
+using EvilMask.Emuera;
 
 namespace MinorShift.Emuera
 {
@@ -37,7 +38,6 @@ namespace MinorShift.Emuera
             folderSelectDialog.ShowNewFolderButton = false;
 
 			openFileDialog.InitialDirectory = Program.ErbDir;
-            openFileDialog.Filter = "ERBファイル (*.erb)|*.erb";
             openFileDialog.FileName = "";
             openFileDialog.Multiselect = true;
             openFileDialog.RestoreDirectory = true;
@@ -67,6 +67,18 @@ namespace MinorShift.Emuera
 			this.richTextBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseWheel);
 			this.mainPicBox.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseWheel);
 			this.vScrollBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseWheel);
+
+			this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
+
+			#region EM_私家版_INPUT系機能拡張
+			this.richTextBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_ModifierRecorder_KeyUp);
+			this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_ModifierRecorder_KeyDown);
+			#endregion
+
+			#region EM_私家版_Emuera多言語化改造
+			this.labelMacroGroupChanged.Font = new Font(Lang.MFont, 24F, FontStyle.Regular, GraphicsUnit.Point, (byte)128);
+			this.richTextBox1.Font = new Font(Config.Font.FontFamily, 18F, FontStyle.Regular, GraphicsUnit.Pixel);
+			#endregion
 		}
 		private ToolStripMenuItem[] macroMenuItems = new ToolStripMenuItem[KeyMacro.MaxFkey];
         private System.Diagnostics.FileVersionInfo emueraVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -78,7 +90,50 @@ namespace MinorShift.Emuera
 		public ToolTip ToolTip { get { return toolTipButton; } }
 		private EmueraConsole console = null;
 
-        #region EE_textbox拡張
+		#region EM_私家版_Icon指定機能
+		public void SetupIcon(Icon icon)
+		{
+			this.Icon = icon;
+		}
+		#endregion
+
+		#region EM_私家版_Emuera多言語化改造
+		public void TranslateUI()
+		{
+			this.fileToolStripMenuItem.Text = Lang.UI.MainWindow.File.Text;
+			this.rebootToolStripMenuItem.Text = Lang.UI.MainWindow.File.Restart.Text;
+			this.ログをクリップボードにコピーToolStripMenuItem.Text = Lang.UI.MainWindow.File.CopyLogToClipboard.Text;
+			this.ログを保存するSToolStripMenuItem.Text = Lang.UI.MainWindow.File.SaveLog.Text;
+			this.タイトルへ戻るTToolStripMenuItem.Text = Lang.UI.MainWindow.File.BackToTitle.Text;
+			this.コードを読み直すcToolStripMenuItem.Text = Lang.UI.MainWindow.File.ReloadAllScripts.Text;
+			this.フォルダを読み直すFToolStripMenuItem.Text = Lang.UI.MainWindow.File.ReloadFolder.Text;
+			this.ファイルを読み直すFToolStripMenuItem.Text = Lang.UI.MainWindow.File.ReloadScriptFile.Text;
+			this.exitToolStripMenuItem.Text = Lang.UI.MainWindow.File.Exit.Text;
+			this.openFileDialog.Filter = Lang.UI.MainWindow.FileFilter.Text + " (*.erb)|*.erb";
+
+			this.デバッグToolStripMenuItem.Text = Lang.UI.MainWindow.Debug.Text;
+			this.デバッグウインドウを開くToolStripMenuItem.Text = Lang.UI.MainWindow.Debug.OpenDebugWindow.Text;
+			this.デバッグ情報の更新ToolStripMenuItem.Text = Lang.UI.MainWindow.Debug.UpdateDebugInfo.Text;
+
+			this.ヘルプHToolStripMenuItem.Text = Lang.UI.MainWindow.Help.Text;
+			this.コンフィグCToolStripMenuItem.Text = Lang.UI.MainWindow.Help.Config.Text;
+
+			this.マクロToolStripMenuItem.Text = Lang.UI.MainWindow.ContextMenu.KeyMacro.Text;
+			for (int i = 0; i < this.マクロToolStripMenuItem.DropDownItems.Count; i++)
+				this.マクロToolStripMenuItem.DropDownItems[i].Text = Lang.UI.MainWindow.ContextMenu.KeyMacro.Text + i.ToString("D2");
+			this.マクログループToolStripMenuItem.Text = Lang.UI.MainWindow.ContextMenu.KeyMacroGroup.Text;
+			for (int i = 0; i < this.マクログループToolStripMenuItem.DropDownItems.Count; i++)
+				this.マクログループToolStripMenuItem.DropDownItems[i].Text = Lang.UI.MainWindow.ContextMenu.KeyMacroGroup.Group.Text + i;
+
+			this.切り取り.Text = Lang.UI.MainWindow.ContextMenu.Cut.Text;
+			this.コピー.Text = Lang.UI.MainWindow.ContextMenu.Copy.Text;
+			this.貼り付け.Text = Lang.UI.MainWindow.ContextMenu.Paste.Text;
+			this.削除.Text = Lang.UI.MainWindow.ContextMenu.Delete.Text;
+			this.実行.Text = Lang.UI.MainWindow.ContextMenu.Execute.Text;
+		}
+		#endregion
+
+		#region EE_textbox拡張
 		public void ChangeTextBox(string str)
         {
 			this.richTextBox1.Text = str;
@@ -668,8 +723,10 @@ namespace MinorShift.Emuera
 
 		public void ShowConfigDialog()
 		{
-			
+			string lang = Config.EmueraLang;
 			ConfigDialog dialog = new ConfigDialog();
+			dialog.TranslateUI();
+			dialog.SetupLang(Lang.GetLangList());
             dialog.StartPosition = FormStartPosition.CenterParent;
 			dialog.SetConfig(this);
 			dialog.ShowDialog();
@@ -678,6 +735,12 @@ namespace MinorShift.Emuera
                 console.forceStopTimer();
                 Program.Reboot = true;
                 this.Close();
+			}
+			if (Config.EmueraLang != lang)
+			{
+				Lang.ReloadLang();
+				KeyMacro.ResetNames();
+				this.TranslateUI();
 			}
 		}
 
@@ -752,6 +815,7 @@ namespace MinorShift.Emuera
             try
             {
                 ClipBoardDialog dialog = new ClipBoardDialog();
+				dialog.Text = Lang.UI.ClipBoardDialog.Text;
                 dialog.Setup(console);
                 dialog.ShowDialog();
             }

@@ -6,6 +6,7 @@ using MinorShift._Library;
 using MinorShift.Emuera.GameView;
 using MinorShift.Emuera.GameData.Expression;
 using System.IO;
+using EvilMask.Emuera;
 
 namespace MinorShift.Emuera
 {
@@ -60,35 +61,68 @@ namespace MinorShift.Emuera
 			ExeName = Path.GetFileNameWithoutExtension(Sys.ExeName);
 
 			//解析モードの判定だけ先に行う
-			int argsStart = 0;
-			if ((args.Length > 0) && (args[0].Equals("-DEBUG", StringComparison.CurrentCultureIgnoreCase)))
-			{
-				argsStart = 1;//デバッグモードかつ解析モード時に最初の1っこ(-DEBUG)を飛ばす
-				debugMode = true;
+			//int argsStart = 0;
+			#region EM_私家版_Emuera多言語化改造
+			List<string> otherArgs = new List<string>();
+			foreach (var arg in args)
+            {
+				//if ((args.Length > 0) && (args[0].Equals("-DEBUG", StringComparison.CurrentCultureIgnoreCase)))
+				if (arg.Equals("-DEBUG", StringComparison.CurrentCultureIgnoreCase))
+				{
+					// argsStart = 1;//デバッグモードかつ解析モード時に最初の1っこ(-DEBUG)を飛ばす
+					debugMode = true;
+				}
+				else if (arg.Equals("-GENLANG", StringComparison.CurrentCultureIgnoreCase))
+				{
+					Lang.GenerateDefaultLangFile();
+				}
+				else otherArgs.Add(arg);
 			}
-			if (args.Length > argsStart)
+			//if (args.Length > argsStart)
+			if (otherArgs.Count > 0)
 			{
 				//必要なファイルのチェックにはConfig読み込みが必須なので、ここではフラグだけ立てておく
 				AnalysisMode = true;
 			}
+			#endregion
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			ConfigData.Instance.LoadConfig();
+
+
+			#region EM_私家版_Emuera多言語化改造
+			Lang.LoadLanguageFile();
+			#endregion
+			#region EM_私家版_Icon指定機能
+			Icon icon = null;
+			{
+				var bmp = Utils.LoadImage(Utils.GetValidPath(Config.EmueraIcon));
+				if (bmp != null)
+				{
+					icon = Utils.MakeIconFromBmpFile(bmp);
+					bmp.Dispose();
+				}
+			}
+			#endregion
+
 			//二重起動の禁止かつ二重起動
 			if ((!Config.AllowMultipleInstances) && (Sys.PrevInstance()))
 			{
-				MessageBox.Show("多重起動を許可する場合、emuera.configを書き換えて下さい", "既に起動しています");
+				//MessageBox.Show("多重起動を許可する場合、emuera.configを書き換えて下さい", "既に起動しています");
+				MessageBox.Show(Lang.UI.MainWindow.MsgBox.MultiInstanceInfo.Text, Lang.UI.MainWindow.MsgBox.InstaceExists.Text);
 				return;
 			}
 			if (!Directory.Exists(CsvDir))
 			{
-				MessageBox.Show("csvフォルダが見つかりません", "フォルダなし");
+				//MessageBox.Show("csvフォルダが見つかりません", "フォルダなし");
+				MessageBox.Show(Lang.UI.MainWindow.MsgBox.NoCsvFolder.Text, Lang.UI.MainWindow.MsgBox.FolderNotFound.Text);
 				return;
 			}
 			if (!Directory.Exists(ErbDir))
 			{
-				MessageBox.Show("erbフォルダが見つかりません", "フォルダなし");
+				//MessageBox.Show("erbフォルダが見つかりません", "フォルダなし");
+				MessageBox.Show(Lang.UI.MainWindow.MsgBox.NoErbFolder.Text, Lang.UI.MainWindow.MsgBox.FolderNotFound.Text);
 				return;
 			}
 			if (debugMode)
@@ -102,7 +136,7 @@ namespace MinorShift.Emuera
 					}
 					catch
 					{
-						MessageBox.Show("debugフォルダの作成に失敗しました", "フォルダなし");
+						MessageBox.Show(Lang.UI.MainWindow.MsgBox.FailedCreateDebugFolder.Text, Lang.UI.MainWindow.MsgBox.FolderNotFound.Text);
 						return;
 					}
 				}
@@ -110,16 +144,21 @@ namespace MinorShift.Emuera
 			if (AnalysisMode)
 			{
 				AnalysisFiles = new List<string>();
-				for (int i = argsStart; i < args.Length; i++)
+				#region EM_私家版_Emuera多言語化改造
+				// for (int i = argsStart; i < args.Length; i++)
+				foreach (var arg in otherArgs)
 				{
-					if (!File.Exists(args[i]) && !Directory.Exists(args[i]))
+					//if (!File.Exists(args[i]) && !Directory.Exists(args[i]))
+					if (!File.Exists(arg) && !Directory.Exists(arg))
 					{
-						MessageBox.Show("与えられたファイル・フォルダは存在しません");
+						MessageBox.Show(Lang.UI.MainWindow.MsgBox.ArgPathNotExists.Text);
 						return;
 					}
-					if ((File.GetAttributes(args[i]) & FileAttributes.Directory) == FileAttributes.Directory)
+					//if ((File.GetAttributes(args[i]) & FileAttributes.Directory) == FileAttributes.Directory)
+					if ((File.GetAttributes(arg) & FileAttributes.Directory) == FileAttributes.Directory)
 					{
-						List<KeyValuePair<string, string>> fnames = Config.GetFiles(args[i] + "\\", "*.ERB");
+						//List<KeyValuePair<string, string>> fnames = Config.GetFiles(args[i] + "\\", "*.ERB");
+						List<KeyValuePair<string, string>> fnames = Config.GetFiles(arg + "\\", "*.ERB");
 						for (int j = 0; j < fnames.Count; j++)
 						{
 							AnalysisFiles.Add(fnames[j].Value);
@@ -127,14 +166,17 @@ namespace MinorShift.Emuera
 					}
 					else
 					{
-						if (Path.GetExtension(args[i]).ToUpper() != ".ERB")
+						//if (Path.GetExtension(args[i]).ToUpper() != ".ERB")
+						if (Path.GetExtension(arg).ToUpper() != ".ERB")
 						{
-							MessageBox.Show("ドロップ可能なファイルはERBファイルのみです");
+							MessageBox.Show(Lang.UI.MainWindow.MsgBox.InvalidArg.Text);
 							return;
 						}
-						AnalysisFiles.Add(args[i]);
+						//AnalysisFiles.Add(args[i]);
+						AnalysisFiles.Add(arg);
 					}
 				}
+				#endregion
 			}
 			MainWindow win = null;
 			while (true)
@@ -142,6 +184,13 @@ namespace MinorShift.Emuera
 				StartTime = WinmmTimer.TickCount;
 				using (win = new MainWindow())
 				{
+					#region EM_私家版_Emuera多言語化改造
+					win.TranslateUI();
+					#endregion
+					#region EM_私家版_Icon指定機能
+					if (icon != null)
+						win.SetupIcon(icon);
+					#endregion
 					Application.Run(win);
 					Content.AppContents.UnloadContents();
 					if (!Reboot)
