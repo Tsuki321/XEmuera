@@ -316,7 +316,7 @@ namespace MinorShift.Emuera.GameProc
 									if (erdFileNames.ContainsKey(key))
 									{
 										var info = erdFileNames[key];
-										GlobalStatic.ConstantData.UserDefineLoadData(info, data.Name + "@" + dim, data.Lengths[0], Config.DisplayReport, dimline.SC);
+										GlobalStatic.ConstantData.UserDefineLoadData(info, data.Name + "@" + dim, data.Lengths[dim-1], Config.DisplayReport, dimline.SC);
 									}
 									System.Windows.Forms.Application.DoEvents();
 								}
@@ -329,7 +329,7 @@ namespace MinorShift.Emuera.GameProc
 									if (erdFileNames.ContainsKey(key))
 									{
 										var info = erdFileNames[key];
-										GlobalStatic.ConstantData.UserDefineLoadData(info, data.Name + "@" + dim, data.Lengths[0], Config.DisplayReport, dimline.SC);
+										GlobalStatic.ConstantData.UserDefineLoadData(info, data.Name + "@" + dim, data.Lengths[dim-1], Config.DisplayReport, dimline.SC);
 									}
 									System.Windows.Forms.Application.DoEvents();
 								}
