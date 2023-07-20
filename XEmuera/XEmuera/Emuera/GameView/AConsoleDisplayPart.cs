@@ -14,7 +14,10 @@ namespace MinorShift.Emuera.GameView
 
 		public string Str { get; protected set; }
 		public string AltText { get; protected set; }
-		public int PointX { get; set; }
+		#region EM_私家版_描画拡張
+		// public int PointX { get; set; }
+		public virtual int PointX { get; set; }
+		#endregion
 		public float XsubPixel { get; set; }
 		public float WidthF { get; set; }
 		public int Width { get; set; }
@@ -32,6 +35,16 @@ namespace MinorShift.Emuera.GameView
 				return "";
 			return Str;
 		}
+
+		#region EM_私家版_描画拡張
+		public ConsoleButtonString Parent { get; set; }
+		public int Depth { get; set; }
+		public virtual StringBuilder BuildString(StringBuilder sb)
+		{
+			if (Str != null) sb.Append(Str);
+			return sb;
+		}
+		#endregion
 	}
 
 	/// <summary>

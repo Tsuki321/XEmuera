@@ -578,6 +578,8 @@ namespace MinorShift.Emuera
             this.mainPicBox.TabIndex = 0;
             this.mainPicBox.TabStop = false;
             this.mainPicBox.Paint += new System.Windows.Forms.PaintEventHandler(this.mainPicBox_Paint);
+            this.mainPicBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.mainPicBox_MouseClickCBCheck);
+            this.mainPicBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mainPicBox_MouseDoubleClickCBCheck);
             this.mainPicBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mainPicBox_MouseDown);
             this.mainPicBox.MouseLeave += new System.EventHandler(this.mainPicBox_MouseLeave);
             this.mainPicBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mainPicBox_MouseMove);

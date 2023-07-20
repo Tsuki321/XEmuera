@@ -284,6 +284,9 @@ namespace MinorShift.Emuera.Sub
 				char c = st.Current;
 				if (char.IsDigit(c) || (c == '.'))
 				{
+					if ((c == '.') && (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ","))
+						st.Replace(st.CurrentPosition, 1, ",");
+
 					st.ShiftNext();
 					continue;
 				}

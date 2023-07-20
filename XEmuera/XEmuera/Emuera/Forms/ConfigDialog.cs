@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing.Text;
 using EvilMask.Emuera;
+using trmb = EvilMask.Emuera.Lang.MessageBox;
 
 namespace MinorShift.Emuera.Forms
 {
@@ -48,6 +49,17 @@ namespace MinorShift.Emuera.Forms
 			numericUpDownPosX.Maximum = 10000;//WindowPosX
 			numericUpDownPosY.Maximum = 10000;
 
+			#region EE_AnchorのCB機能移植
+			numericUpDownCBMaxCB.Minimum = 1;//CB Length of Clipboard
+			numericUpDownCBMaxCB.Maximum = 200;
+			numericUpDownCBBufferSize.Minimum = 50; //CB Buffer Size
+			numericUpDownCBBufferSize.Maximum = 5000;
+			numericUpDownCBScrollCount.Minimum = 1; //CB Scroll lines per key press
+			numericUpDownCBScrollCount.Maximum = 100;
+			numericUpDownCBMinTimer.Minimum = 300; //CB Min timer between updates
+			numericUpDownCBMinTimer.Maximum = 60000;
+			#endregion
+
 			pages = new FlowLayoutPanel[] {
 				flowLayoutPanel13,
 				flowLayoutPanel17,
@@ -57,6 +69,7 @@ namespace MinorShift.Emuera.Forms
 				flowLayoutPanel30,
 				flowLayoutPanel32,
 				flowLayoutPanel33,
+				flowLayoutPanel35,
 			};
 		}
 		internal void SetupLang(string[] langs) {
@@ -192,6 +205,25 @@ namespace MinorShift.Emuera.Forms
 			this.comboBox4.Items[3] = Lang.UI.ConfigDialog.Debug.WarnSetting.Always.Text;
 			this.button5.Text = Lang.UI.ConfigDialog.Debug.PlayerStandard.Text;
 			this.button6.Text = Lang.UI.ConfigDialog.Debug.DeveloperStandard.Text;
+
+			this.tabPageClipboard.Text = Lang.UI.ConfigDialog.Clipboard.Text;
+			this.checkBoxCBuseCB.Text = Lang.UI.ConfigDialog.Clipboard.CopyToClipboard.Text;
+			this.checkBoxCBIgnoreTags.Text = Lang.UI.ConfigDialog.Clipboard.IgnoreTags.Text;
+			this.label29.Text = Lang.UI.ConfigDialog.Clipboard.ReplaceTags.Text;
+			this.checkBoxCBNewLinesOnly.Text = Lang.UI.ConfigDialog.Clipboard.NewLineOnly.Text;
+			this.checkBoxCBClearBuffer.Text = Lang.UI.ConfigDialog.Clipboard.ClearClipboard.Text;
+			this.label27.Text = Lang.UI.ConfigDialog.Clipboard.TriggerToUse.Text;
+			this.checkBoxCBTriggerLeftClick.Text = Lang.UI.ConfigDialog.Clipboard.LClick.Text;
+			this.checkBoxCBTriggerMiddleClick.Text = Lang.UI.ConfigDialog.Clipboard.MClick.Text;
+			this.checkBoxCBTriggerDoubleLeftClick.Text = Lang.UI.ConfigDialog.Clipboard.DoubleClick.Text;
+			this.checkBoxCBTriggerAnyKeyWait.Text = Lang.UI.ConfigDialog.Clipboard.AnyKeyWait.Text;
+			this.checkBoxCBTriggerInputWait.Text = Lang.UI.ConfigDialog.Clipboard.InputWait.Text;
+			this.label28.Text = Lang.UI.ConfigDialog.Clipboard.LinesToClipboard.Text;
+			this.label31.Text = Lang.UI.ConfigDialog.Clipboard.TotalBuffer.Text;
+			this.label32.Text = Lang.UI.ConfigDialog.Clipboard.LinesToScroll.Text;
+			this.label33.Text = Lang.UI.ConfigDialog.Clipboard.UpdateTime.Text;
+			this.label34.Text = Lang.UI.ConfigDialog.Clipboard.ScrollThrough.Text;
+
 
 			this.buttonSave.Text = Lang.UI.ConfigDialog.Save.Text;
 			this.buttonReboot.Text = Lang.UI.ConfigDialog.SaveAndRestart.Text;
@@ -459,6 +491,23 @@ namespace MinorShift.Emuera.Forms
 				textBox3.Enabled = !item.Fixed;
 			}
 			#endregion
+			#region EE_AnchorのCB機能移植
+			setCheckBox(checkBoxCBuseCB, ConfigCode.CBUseClipboard);
+			setCheckBox(checkBoxCBIgnoreTags, ConfigCode.CBIgnoreTags);
+			textBoxCBReplaceTags.Text = Config.CBReplaceTags;
+			setCheckBox(checkBoxCBNewLinesOnly, ConfigCode.CBNewLinesOnly);
+			setCheckBox(checkBoxCBClearBuffer, ConfigCode.CBClearBuffer);
+			setCheckBox(checkBoxCBTriggerLeftClick, ConfigCode.CBTriggerLeftClick);
+			setCheckBox(checkBoxCBTriggerMiddleClick, ConfigCode.CBTriggerMiddleClick);
+			setCheckBox(checkBoxCBTriggerDoubleLeftClick, ConfigCode.CBTriggerDoubleLeftClick);
+			setCheckBox(checkBoxCBTriggerAnyKeyWait, ConfigCode.CBTriggerAnyKeyWait);
+			setCheckBox(checkBoxCBTriggerInputWait, ConfigCode.CBTriggerInputWait);
+			setNumericUpDown(numericUpDownCBMaxCB, ConfigCode.CBMaxCB);
+			setNumericUpDown(numericUpDownCBBufferSize, ConfigCode.CBBufferSize);
+			setNumericUpDown(numericUpDownCBScrollCount, ConfigCode.CBScrollCount);
+			setNumericUpDown(numericUpDownCBMinTimer, ConfigCode.CBMinTimer);
+			#endregion
+
 		}
 
 		private void SaveConfig()
@@ -626,6 +675,23 @@ namespace MinorShift.Emuera.Forms
 			config.GetConfigItem(ConfigCode.EnglishConfigOutput).SetValue<bool>(checkBox33.Checked);
 			Config.UpdateLangSetting(config);
 			#endregion
+			#region EE_AnchorのCB機能移植
+			config.GetConfigItem(ConfigCode.CBUseClipboard).SetValue<bool>(checkBoxCBuseCB.Checked);
+			config.GetConfigItem(ConfigCode.CBIgnoreTags).SetValue<bool>(checkBoxCBIgnoreTags.Checked);
+			config.GetConfigItem(ConfigCode.CBReplaceTags).SetValue<string>(textBoxCBReplaceTags.Text);
+			config.GetConfigItem(ConfigCode.CBNewLinesOnly).SetValue<bool>(checkBoxCBNewLinesOnly.Checked);
+			config.GetConfigItem(ConfigCode.CBClearBuffer).SetValue<bool>(checkBoxCBClearBuffer.Checked);
+			config.GetConfigItem(ConfigCode.CBTriggerLeftClick).SetValue<bool>(checkBoxCBTriggerLeftClick.Checked);
+			config.GetConfigItem(ConfigCode.CBTriggerMiddleClick).SetValue<bool>(checkBoxCBTriggerMiddleClick.Checked);
+			config.GetConfigItem(ConfigCode.CBTriggerDoubleLeftClick).SetValue<bool>(checkBoxCBTriggerDoubleLeftClick.Checked);
+			config.GetConfigItem(ConfigCode.CBTriggerAnyKeyWait).SetValue<bool>(checkBoxCBTriggerAnyKeyWait.Checked);
+			config.GetConfigItem(ConfigCode.CBTriggerInputWait).SetValue<bool>(checkBoxCBTriggerInputWait.Checked);
+			config.GetConfigItem(ConfigCode.CBMaxCB).SetValue<int>((int)numericUpDownCBMaxCB.Value);
+			config.GetConfigItem(ConfigCode.CBBufferSize).SetValue<int>((int)numericUpDownCBBufferSize.Value);
+			config.GetConfigItem(ConfigCode.CBScrollCount).SetValue<int>((int)numericUpDownCBScrollCount.Value);
+			config.GetConfigItem(ConfigCode.CBMinTimer).SetValue<int>((int)numericUpDownCBMinTimer.Value);
+			#endregion
+
 
 			config.SaveConfig();
 		}
@@ -762,8 +828,8 @@ namespace MinorShift.Emuera.Forms
 			disenabled |= setCheckBoxChecked(checkBox25, false) < 0;
             disenabled |= setCheckBoxChecked(checkBox9, true) < 0;
 			if(disenabled)
-                MessageBox.Show("いくつかの設定は_fixed.configにより変更を許可されていないために変更できませんでした", "設定変更不可");
-        }
+				MessageBox.Show(trmb.NotAllowChangeSetting.Text, trmb.UnableChangeSetting.Text);
+		}
 
 		private void button8_Click(object sender, EventArgs e)
 		{//最新Emuera仕様 - 全部false
@@ -779,11 +845,11 @@ namespace MinorShift.Emuera.Forms
 			disenabled |= setCheckBoxChecked(checkBoxCompatiSP, false) < 0;
             disenabled |= setCheckBoxChecked(checkBox9, false) < 0;
 			if (disenabled)
-                MessageBox.Show("いくつかの設定は_fixed.configにより変更を許可されていないために変更できませんでした", "設定変更不可");
+				MessageBox.Show(trmb.NotAllowChangeSetting.Text, trmb.UnableChangeSetting.Text);
 		}
 
-        //互換性チェックはいじらないように変更
-        private void button5_Click(object sender, EventArgs e)
+		//互換性チェックはいじらないように変更
+		private void button5_Click(object sender, EventArgs e)
         {//解析のユーザー向け設定（デフォルト設定と同じ）
             bool disenabled = false;
             //disenabled |= setCheckBoxChecked(checkBox23, true) < 0;
@@ -794,10 +860,10 @@ namespace MinorShift.Emuera.Forms
             disenabled |= setComboBoxChanged(comboBox3, 0) < 0;
             disenabled |= setComboBoxChanged(comboBox4, 0) < 0;
             if (disenabled)
-                MessageBox.Show("いくつかの設定は_fixed.configにより変更を許可されていないために変更できませんでした", "設定変更不可");
-        }
+				MessageBox.Show(trmb.NotAllowChangeSetting.Text, trmb.UnableChangeSetting.Text);
+		}
 
-        private void button6_Click(object sender, EventArgs e)
+		private void button6_Click(object sender, EventArgs e)
         {//解析の開発者向け設定（関数名以外はしっかりチェックする）
             bool disenabled = false;
             //disenabled |= setCheckBoxChecked(checkBox23, true) < 0;
@@ -808,13 +874,12 @@ namespace MinorShift.Emuera.Forms
             disenabled |= setComboBoxChanged(comboBox3, 0) < 0;
             disenabled |= setComboBoxChanged(comboBox4, 0) < 0;
             if (disenabled)
-                MessageBox.Show("いくつかの設定は_fixed.configにより変更を許可されていないために変更できませんでした", "設定変更不可");
+                MessageBox.Show(trmb.NotAllowChangeSetting.Text, trmb.UnableChangeSetting.Text);
         }
 
         private void comboBox6_SelectedIndexChanged(object sender, EventArgs e)
         {
             textBox2.Enabled = ((ComboBox)sender).SelectedIndex == 3;
         }
-
     }
 }

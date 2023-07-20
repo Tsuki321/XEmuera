@@ -173,5 +173,21 @@ namespace MinorShift.Emuera
 		#region EM_私家版_Icon指定機能
 		EmueraIcon,
 		#endregion
+		#region EE_AnchorのCB機能移植
+		CBUseClipboard,
+		CBIgnoreTags,
+		CBReplaceTags,
+		CBNewLinesOnly,
+		CBClearBuffer,
+		CBTriggerLeftClick,
+		CBTriggerMiddleClick,
+		CBTriggerDoubleLeftClick,
+		CBTriggerAnyKeyWait,
+		CBTriggerInputWait,
+		CBMaxCB,
+		CBBufferSize,
+		CBScrollCount,
+		CBMinTimer,
+		#endregion
 	}
 }

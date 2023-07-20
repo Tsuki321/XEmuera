@@ -60,6 +60,7 @@
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -131,6 +132,8 @@
     <Compile Include="GameData\Variable\VariableTerm.cs" />
     <Compile Include="GameProc\Function\ArgumentBuilder.cs" />
     <Compile Include="GameProc\Function\ArgumentParser.cs" />
+    <Compile Include="GameProc\Function\CircularBuffer.cs" />
+    <Compile Include="GameProc\Function\Clipboard.cs" />
     <Compile Include="GameProc\Function\FunctionArgType.cs" />
     <Compile Include="GameProc\Function\Instraction.Child.cs" />
     <Compile Include="GameProc\Function\Instruction.cs" />
@@ -240,7 +243,10 @@
     <Compile Include="Sub\Word.cs" />
     <Compile Include="Sub\SubWord.cs" />
     <Compile Include="Sub\EraBinaryDataWriter.cs" />
+    <Compile Include="_Library\EvilMask\ConsoleDivPart.cs" />
+    <Compile Include="_Library\EvilMask\ConsoleEscapedParts.cs" />
     <Compile Include="_Library\EvilMask\Lang.cs" />
+    <Compile Include="_Library\EvilMask\Shape.cs" />
     <Compile Include="_Library\EvilMask\Utils.cs" />
     <Compile Include="_Library\GDI.cs" />
     <Compile Include="_Library\ImageProcessor\BitDepth.cs" />

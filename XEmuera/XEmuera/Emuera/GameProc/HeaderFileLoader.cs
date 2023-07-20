@@ -290,9 +290,9 @@ namespace MinorShift.Emuera.GameProc
 							throw new NotImplCodeEE();
 						VariableToken var = null;
 						if (data.CharaData)
-							var = parentProcess.VEvaluator.VariableData.CreateUserDefCharaVariable(data);
+							var = parentProcess.VEvaluator.VariableData.CreateUserDefCharaVariable(data, dimline);
 						else
-							var = parentProcess.VEvaluator.VariableData.CreateUserDefVariable(data);
+							var = parentProcess.VEvaluator.VariableData.CreateUserDefVariable(data, dimline);
 						idDic.AddUseDefinedVariable(var);
 						#region EE_ERD
 						if (Config.UseERD)

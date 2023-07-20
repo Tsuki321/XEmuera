@@ -73,27 +73,27 @@
             this.ウォッチリストの読込ToolStripMenuItem,
             this.閉じるToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(66, 20);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(67, 20);
             this.toolStripMenuItem1.Text = "ファイル(&F)";
             // 
             // ウォッチリストの保存ToolStripMenuItem
             // 
             this.ウォッチリストの保存ToolStripMenuItem.Name = "ウォッチリストの保存ToolStripMenuItem";
-            this.ウォッチリストの保存ToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.ウォッチリストの保存ToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.ウォッチリストの保存ToolStripMenuItem.Text = "ウォッチリストの保存";
             this.ウォッチリストの保存ToolStripMenuItem.Click += new System.EventHandler(this.ウォッチリストの保存ToolStripMenuItem_Click);
             // 
             // ウォッチリストの読込ToolStripMenuItem
             // 
             this.ウォッチリストの読込ToolStripMenuItem.Name = "ウォッチリストの読込ToolStripMenuItem";
-            this.ウォッチリストの読込ToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.ウォッチリストの読込ToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.ウォッチリストの読込ToolStripMenuItem.Text = "ウォッチリストの読込";
             this.ウォッチリストの読込ToolStripMenuItem.Click += new System.EventHandler(this.ウォッチリストの読込ToolStripMenuItem_Click);
             // 
             // 閉じるToolStripMenuItem
             // 
             this.閉じるToolStripMenuItem.Name = "閉じるToolStripMenuItem";
-            this.閉じるToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.閉じるToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.閉じるToolStripMenuItem.Text = "閉じる";
             this.閉じるToolStripMenuItem.Click += new System.EventHandler(this.閉じるToolStripMenuItem_Click);
             // 
@@ -102,21 +102,21 @@
             this.設定ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.設定ToolStripMenuItem1});
             this.設定ToolStripMenuItem.Name = "設定ToolStripMenuItem";
-            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
+            this.設定ToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
             this.設定ToolStripMenuItem.Text = "設定(&C)";
             // 
             // 設定ToolStripMenuItem1
             // 
             this.設定ToolStripMenuItem1.Name = "設定ToolStripMenuItem1";
-            this.設定ToolStripMenuItem1.Size = new System.Drawing.Size(127, 22);
+            this.設定ToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
             this.設定ToolStripMenuItem1.Text = "コンフィグ(&C)";
             this.設定ToolStripMenuItem1.Click += new System.EventHandler(this.設定ToolStripMenuItem1_Click);
             // 
             // tabControlMain
             // 
+            this.tabControlMain.Controls.Add(this.tabPageConsole);
             this.tabControlMain.Controls.Add(this.tabPageWatch);
             this.tabControlMain.Controls.Add(this.tabPageTrace);
-            this.tabControlMain.Controls.Add(this.tabPageConsole);
             this.tabControlMain.Dock = System.Windows.Forms.DockStyle.Top;
             this.tabControlMain.Location = new System.Drawing.Point(0, 24);
             this.tabControlMain.Name = "tabControlMain";
@@ -128,10 +128,10 @@
             // tabPageWatch
             // 
             this.tabPageWatch.Controls.Add(this.listViewWatch);
-            this.tabPageWatch.Location = new System.Drawing.Point(4, 21);
+            this.tabPageWatch.Location = new System.Drawing.Point(4, 22);
             this.tabPageWatch.Name = "tabPageWatch";
             this.tabPageWatch.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageWatch.Size = new System.Drawing.Size(376, 172);
+            this.tabPageWatch.Size = new System.Drawing.Size(376, 171);
             this.tabPageWatch.TabIndex = 0;
             this.tabPageWatch.Text = "変数ウォッチ";
             this.tabPageWatch.UseVisualStyleBackColor = true;
@@ -142,10 +142,11 @@
             this.columnHeader1,
             this.columnHeader3});
             this.listViewWatch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewWatch.HideSelection = false;
             this.listViewWatch.LabelEdit = true;
             this.listViewWatch.Location = new System.Drawing.Point(3, 3);
             this.listViewWatch.Name = "listViewWatch";
-            this.listViewWatch.Size = new System.Drawing.Size(370, 166);
+            this.listViewWatch.Size = new System.Drawing.Size(370, 165);
             this.listViewWatch.TabIndex = 0;
             this.listViewWatch.UseCompatibleStateImageBehavior = false;
             this.listViewWatch.View = System.Windows.Forms.View.Details;
@@ -166,10 +167,10 @@
             // tabPageTrace
             // 
             this.tabPageTrace.Controls.Add(this.textBoxTrace);
-            this.tabPageTrace.Location = new System.Drawing.Point(4, 21);
+            this.tabPageTrace.Location = new System.Drawing.Point(4, 22);
             this.tabPageTrace.Name = "tabPageTrace";
             this.tabPageTrace.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageTrace.Size = new System.Drawing.Size(376, 172);
+            this.tabPageTrace.Size = new System.Drawing.Size(376, 171);
             this.tabPageTrace.TabIndex = 1;
             this.tabPageTrace.Text = "スタックトレース";
             this.tabPageTrace.UseVisualStyleBackColor = true;
@@ -190,10 +191,10 @@
             // 
             this.tabPageConsole.Controls.Add(this.textBoxCommand);
             this.tabPageConsole.Controls.Add(this.textBoxConsole);
-            this.tabPageConsole.Location = new System.Drawing.Point(4, 21);
+            this.tabPageConsole.Location = new System.Drawing.Point(4, 22);
             this.tabPageConsole.Name = "tabPageConsole";
             this.tabPageConsole.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageConsole.Size = new System.Drawing.Size(376, 172);
+            this.tabPageConsole.Size = new System.Drawing.Size(376, 171);
             this.tabPageConsole.TabIndex = 2;
             this.tabPageConsole.Text = "コンソール";
             this.tabPageConsole.UseVisualStyleBackColor = true;

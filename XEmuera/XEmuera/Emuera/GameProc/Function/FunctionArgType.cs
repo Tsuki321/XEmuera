@@ -81,5 +81,11 @@ namespace MinorShift.Emuera.GameProc.Function
 		SP_PRINT_RECT,
 		SP_PRINT_SPACE,
 		#endregion
+		#region EM_DT
+		SP_DT_COLUMN_OPTIONS,
+		#endregion
+		#region EM_私家版_HTML_PRINT拡張
+		SP_HTML_PRINT,
+		#endregion
 	}
 }

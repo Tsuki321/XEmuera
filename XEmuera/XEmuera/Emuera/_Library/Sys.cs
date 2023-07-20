@@ -11,6 +11,9 @@ namespace MinorShift._Library
 		static Sys()
 		{
 			ExePath = Application.ExecutablePath;
+			#region eee_カレントディレクトリー
+			WorkingDir = Directory.GetCurrentDirectory() + "\\";
+			#endregion
 			ExeDir = Path.GetDirectoryName(ExePath) + "\\";
 			ExeName = Path.GetFileName(ExePath);
 		}
@@ -24,6 +27,13 @@ namespace MinorShift._Library
 		/// 実行ファイルのディレクトリ。最後に\を付けたstring
 		/// </summary>
 		public static readonly string ExeDir;
+
+		#region eee_カレントディレクトリー
+		/// <summary>
+		/// 実行ファイルのディレクトリ。最後に\を付けたstring
+		/// </summary>
+		public static readonly string WorkingDir;
+		#endregion
 
 		/// <summary>
 		/// 実行ファイルの名前。ディレクトリなし

@@ -91,12 +91,14 @@ namespace MinorShift.Emuera.GameView
 				color = this.ButtonColor;
 			else if (isBackLog && !colorChanged)
                 color = Config.LogColor;
-				
+
+			#region EM_私家版_描画拡張
 			if (mode == TextDrawingMode.GRAPHICS)
 				graph.DrawString(Str, Font, new SolidBrush(color), new Point(PointX, pointY));
 			else
-				TextRenderer.DrawText(graph, Str, Font, new Point(PointX, pointY), color, TextFormatFlags.NoPrefix);
-
+				// TextRenderer.DrawText(graph, Str, Font, new Point(PointX, pointY), color, TextFormatFlags.NoPrefix);
+				TextRenderer.DrawText(graph, Str, Font, new Point(PointX, pointY), color, TextFormatFlags.NoPrefix | TextFormatFlags.PreserveGraphicsClipping);
+			#endregion
 		}
 
 		public override void GDIDrawTo(int pointY, bool isSelecting, bool isBackLog)

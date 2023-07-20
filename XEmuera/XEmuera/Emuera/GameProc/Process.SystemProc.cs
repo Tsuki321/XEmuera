@@ -146,7 +146,7 @@ namespace MinorShift.Emuera.GameProc
 				console.PrintSystemLine(trsl.AnalysisCompleted.Text);
 				#region EE_OUTPUTLOG
 				// console.OutputLog(Program.ExeDir + "Analysis.log");
-				console.OutputSystemLog(Program.ExeDir + "Analysis.log");
+				console.OutputSystemLog(Program.WorkingDir + "Analysis.log");
 				#endregion
 				console.noOutputLog = true;
 				console.PrintSystemLine(trsl.PressEnterOrClick.Text);
@@ -161,7 +161,7 @@ namespace MinorShift.Emuera.GameProc
 				console.PrintSystemLine(trsl.ExitBecauseCanNotInterpreted3.Text);
 				#region EE_OUTPUTLOG
 				// console.OutputLog(Program.ExeDir + "emuera.log");
-				console.OutputSystemLog(Program.ExeDir + "emuera.log");
+				console.OutputSystemLog(Program.WorkingDir + "emuera.log");
 				#endregion
 				console.noOutputLog = true;
 				console.PrintSystemLine(trsl.PressEnterOrClick.Text);

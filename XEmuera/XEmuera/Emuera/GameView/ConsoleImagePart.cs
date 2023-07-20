@@ -1,60 +1,67 @@
-﻿using MinorShift._Library;
+﻿using EvilMask.Emuera;
+using MinorShift._Library;
 using MinorShift.Emuera.Content;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
+using static EvilMask.Emuera.Utils;
+
 namespace MinorShift.Emuera.GameView
 {
-	#region EM_私家版_HTMLパラメータ拡張
-	internal sealed class MixedNum
-	{
-		public int num = 0;
-		public bool isPx = false;
-	}
-	#endregion
 	class ConsoleImagePart : AConsoleDisplayPart
 	{
 		#region EM_私家版_HTMLパラメータ拡張
 		//public ConsoleImagePart(string resName, string resNameb, int raw_height, int raw_width, int raw_ypos)
-		public ConsoleImagePart(string resName, string resNameb, MixedNum raw_height, MixedNum raw_width, MixedNum raw_ypos)
+		public ConsoleImagePart(string resName, string resNameb, string resNamem, MixedNum raw_height, MixedNum raw_width, MixedNum raw_ypos)
 		{
 			top = 0;
 			bottom = Config.FontSize;
 			Str = "";
 			ResourceName = resName ?? "";
 			ButtonResourceName = resNameb;
+			MappingGraphName = resNamem;
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<img src='");
-			sb.Append(ResourceName);
-			if(ButtonResourceName != null)
-			{
-				sb.Append("' srcb='");
-				sb.Append(ButtonResourceName);
-			}
+			sb.Append("<img src='").Append(ResourceName).Append('\'');
+			if (ButtonResourceName != null)
+				Utils.AddTagArg(sb, "srcb", ButtonResourceName);
+			//{
+			//	sb.Append("' srcb='");
+			//	sb.Append(ButtonResourceName);
+			//}
+			if (!string.IsNullOrEmpty(MappingGraphName))
+				Utils.AddTagArg(sb, "srcm", MappingGraphName);
+			Utils.AddTagMixedNumArg(sb, "height", raw_height);
+			Utils.AddTagMixedNumArg(sb, "width", raw_width);
+			Utils.AddTagMixedNumArg(sb, "ypos", raw_ypos);
+			//{
+			//	sb.Append("' srcm='");
+			//	sb.Append(MappingGraphName);
+			//}
 			//if(raw_height != 0)
-			if (raw_height != null && raw_height.num != 0)
-				{
-				sb.Append("' height='");
-				sb.Append(raw_height.num.ToString());
-				if (raw_height.isPx) sb.Append("px");
-			}
+			//	if (raw_height != null && raw_height.num != 0)
+			//	{
+			//	sb.Append("' height='");
+			//	sb.Append(raw_height.num.ToString());
+			//	if (raw_height.isPx) sb.Append("px");
+			//}
 			//if(raw_width != 0)
-			if(raw_width != null && raw_width.num != 0)
-				{
-				sb.Append("' width='");
-				sb.Append(raw_width.num.ToString());
-				if (raw_width.isPx) sb.Append("px");
-			}
-			//if(raw_ypos != 0)
-			if(raw_ypos != null && raw_ypos.num != 0)
-				{
-				sb.Append("' ypos='");
-				sb.Append(raw_ypos.num.ToString());
-				if (raw_ypos.isPx) sb.Append("px");
-			}
-			sb.Append("'>");
+			//if (raw_width != null && raw_width.num != 0)
+			//	{
+			//	sb.Append("' width='");
+			//	sb.Append(raw_width.num.ToString());
+			//	if (raw_width.isPx) sb.Append("px");
+			//}
+			////if(raw_ypos != 0)
+			//if(raw_ypos != null && raw_ypos.num != 0)
+			//	{
+			//	sb.Append("' ypos='");
+			//	sb.Append(raw_ypos.num.ToString());
+			//	if (raw_ypos.isPx) sb.Append("px");
+			//}
+			// sb.Append("'>");
+			sb.Append(">");
 			AltText = sb.ToString();
 			cImage = AppContents.GetSprite(ResourceName);
 			//if (cImage != null && !cImage.IsCreated)
@@ -117,7 +124,13 @@ namespace MinorShift.Emuera.GameView
 				//if (cImageB != null && !cImageB.IsCreated)
 				//	cImageB = null;
 			}
+			if (MappingGraphName != null)
+			{
+				cImageM = AppContents.GetSprite(MappingGraphName);
+			}
 		}
+		public readonly string MappingGraphName;
+		private readonly ASprite cImageM;
 		#endregion
 		private readonly ASprite cImage;
 		private readonly ASprite cImageB;
@@ -152,7 +165,36 @@ namespace MinorShift.Emuera.GameView
 				return "";
 			return AltText;
 		}
-
+		#region EM_私家版_描画拡張
+		public override StringBuilder BuildString(StringBuilder sb)
+		{
+			if (AltText != null) sb.Append(AltText);
+			return sb;
+		}
+		#endregion
+		#region EM_私家版_imgマースク
+		public Int64 GetMappingColor(int pointX, int pointY)
+		{
+			if (cImageM != null && cImageM.IsCreated)
+			{
+				Size spriteSize;
+				if (cImageM is SpriteF sf)
+				{
+					spriteSize = sf.DestBaseSize;
+				}
+				else if (cImageM is SpriteG sg)
+				{
+					spriteSize = sg.DestBaseSize;
+				}
+				else return 0;
+				pointX = pointX * spriteSize.Width / destRect.Width;
+				pointY = pointY * spriteSize.Height / destRect.Height;
+				var c = cImageM.SpriteGetColor(pointX, pointY);
+				return c.ToArgb() & 0xFFFFFF;
+			}
+			return 0;
+		}
+		#endregion
 		public override void DrawTo(Graphics graph, int pointY, bool isSelecting, bool isBackLog, TextDrawingMode mode)
 		{
 			if (this.Error)

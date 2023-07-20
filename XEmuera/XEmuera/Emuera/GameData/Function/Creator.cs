@@ -279,6 +279,7 @@ namespace MinorShift.Emuera.GameData.Function
                 ["DT_CLEAR"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Clear),
 
                 ["DT_COLUMN_ADD"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Create),
+                ["DT_COLUMN_NAMES"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Names),
                 ["DT_COLUMN_EXIST"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Check),
                 ["DT_COLUMN_REMOVE"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Remove),
                 ["DT_COLUMN_LENGTH"] = new DataTableLengthMethod(DataTableLengthMethod.Operation.Column),
@@ -294,6 +295,12 @@ namespace MinorShift.Emuera.GameData.Function
                 ["DT_CELL_SET"] = new DataTableCellSetMethod(),
 
                 ["DT_SELECT"] = new DataTableSelectMethod(),
+
+                ["DT_TOXML"] = new DataTableToXmlMethod(),
+                ["DT_FROMXML"] = new DataTableFromXmlMethod(),
+
+                ["MOVETEXTBOX"] = new MoveTextBoxMethod(),
+                ["RESUMETEXTBOX"] = new MoveTextBoxMethod(true),
                 #endregion
 
                 #region EEで追加されたやつ
@@ -306,7 +313,9 @@ namespace MinorShift.Emuera.GameData.Function
                 ["GGETFONTSIZE"] = new GraphicsStateMethod(),//("GGETFONTSIZE")
                 ["GGETFONTSTYLE"] = new GraphicsStateMethod(),
                 ["GGETTEXTSIZE"] = new GraphicsGetTextSizeMethod(),
-                //["GGETBRUSH"] = new GraphicsGetBrushMethod(),
+                ["GGETBRUSH"] = new GraphicsStateMethod(),
+                ["GGETPEN"] = new GraphicsStateMethod(),
+                ["GGETPENWIDTH"] = new GraphicsStateMethod(),
                 ["GETMEMORYUSAGE"] = new GetUsingMemoryMethod(),
                 ["CLEARMEMORY"] = new ClearMemoryMethod(),
                 ["GETTEXTBOX"] = new GetTextBoxMethod(),

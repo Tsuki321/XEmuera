@@ -175,13 +175,15 @@ namespace MinorShift.Emuera.Sub
 			{
 				writer.Write((byte)EraSaveDataType.DT);
 				writer.Write(key);
-				var ss = new StringWriter();
-				dt.WriteXmlSchema(ss);
-				writer.Write(ss.ToString());
-
-				ss = new StringWriter();
-				dt.WriteXml(ss);
-				writer.Write(ss.ToString());
+				var sb = new StringBuilder();
+				using (var ss = new StringWriter(sb))
+				{
+					dt.WriteXmlSchema(ss);
+					writer.Write(sb.ToString());
+					sb.Clear();
+					dt.WriteXml(ss);
+					writer.Write(sb.ToString());
+				}
 			}
 			#endregion
 		}

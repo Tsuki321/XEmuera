@@ -6,6 +6,9 @@ using MinorShift.Emuera.Sub;
 using System.Drawing;
 using MinorShift.Emuera.GameData.Expression;
 using trerror = EvilMask.Emuera.Lang.Error;
+using EvilMask.Emuera;
+using static EvilMask.Emuera.Utils;
+using static EvilMask.Emuera.Shape;
 
 namespace MinorShift.Emuera.GameView
 {
@@ -130,6 +133,65 @@ namespace MinorShift.Emuera.GameView
 			ret[1] += str.Substring(last - 1 + delbr * 4, str.Length - last + 1 - delbr * 4);
 			return ret;
 		}
+
+		public static void ParseParam4IntNum(ref int[] nums, string tag, string word, string attrValue)
+		{
+			if (nums == null) nums = new int[4];
+			else throw new CodeEE(string.Format(Lang.Error.DuplicateAttribute.Text, tag, word));
+			string[] tokens = attrValue.Split(',');
+			switch (tokens.Length)
+			{
+				case 1: // all
+					nums[0] = stringToColorInt32(tokens[0].Trim());
+					nums[1] = nums[0];
+					nums[2] = nums[0];
+					nums[3] = nums[0];
+					break;
+				case 2: // top and bottom | left and right
+					nums[0] = stringToColorInt32(tokens[0].Trim());
+					nums[1] = stringToColorInt32(tokens[1].Trim());
+					nums[2] = nums[0];
+					nums[3] = nums[1];
+					break;
+				case 3: //top | left and right | bottom
+					nums[0] = stringToColorInt32(tokens[0].Trim());
+					nums[1] = stringToColorInt32(tokens[1].Trim());
+					nums[2] = stringToColorInt32(tokens[2].Trim());
+					nums[3] = nums[1];
+					break;
+				case 4:  // top | right | bottom | left
+					for (int i = 0; i < 4; i++)
+						nums[i] = stringToColorInt32(tokens[i].Trim());
+					break;
+				default:
+					throw new CodeEE(string.Format(Lang.Error.CanNotInterpretAttribute.Text, attrValue));
+			}
+		}
+		#endregion
+		#region EM_私家版_HTML_divタグ
+		private sealed class HtmlDivTag
+		{
+			public HtmlDivTag(MixedNum x, MixedNum y, MixedNum width, MixedNum height, int depth, int color, StyledBoxModel box, bool isRelative)
+			{
+				X = x;
+				Y = y;
+				Width = width;
+				Height = height;
+				Depth = depth;
+				Color = color;
+				StyledBox = box;
+				IsRelative = isRelative;
+			}
+			public ConsoleDisplayLine[] Lines = null;
+			public MixedNum Width;
+			public MixedNum Height;
+			public MixedNum X;
+			public MixedNum Y;
+			public int Color;
+			public int Depth;
+			public StyledBoxModel StyledBox;
+			public bool IsRelative;
+		}
 		#endregion
 		static HtmlManager()
 		{
@@ -187,6 +249,11 @@ namespace MinorShift.Emuera.GameView
 			public bool FlagClearButtonTooltip = false;//tureの時にボタンのツールチップ属性を無効とする
 			#endregion
 
+			#region EM_私家版_HTML_divタグ
+			public bool StartingSubDivision = false;
+			public HtmlDivTag CurrentDivTag = null;
+			public int SubDivisionWidth;
+			#endregion
 			public bool FlagBr = false;//<br>による強制改行の予約
 			public bool FlagButton = false;//<button></button>によるボタン化の予約
 
@@ -355,7 +422,15 @@ namespace MinorShift.Emuera.GameView
 			strList.CopyTo(ret);
 			return ret;
 		}
-		
+
+		#region EM_私家版_描画拡張
+		sealed class HtmlParentInfo
+		{
+			public HtmlAnalzeState State;
+			public StringStream Stream;
+			public bool HasComment;
+			public bool HasReturn;
+		}
 		/// <summary>
 		/// htmlから表示行の作成
 		/// </summary>
@@ -365,13 +440,36 @@ namespace MinorShift.Emuera.GameView
 		/// <returns></returns>
 		public static ConsoleDisplayLine[] Html2DisplayLine(string str, StringMeasure sm, EmueraConsole console)
 		{
+			return html2DisplayLine(str, sm, console, null, null);
+		}
+		public static ConsoleButtonString[] Html2ButtonList(string str, StringMeasure sm, EmueraConsole console)
+		{
+			var parts = new List<ConsoleButtonString>();
+			html2DisplayLine(str, sm, console, null, parts);
+			return parts.ToArray();
+		}
+		static ConsoleDisplayLine[] html2DisplayLine(string str, StringMeasure sm, EmueraConsole console, HtmlParentInfo parent, List<ConsoleButtonString> buttonsOutput)
+		#endregion
+		{
+			#region EM_私家版_HTML_PRINT拡張
 			List<AConsoleDisplayPart> cssList = new List<AConsoleDisplayPart>();
-			List<ConsoleButtonString> buttonList = new List<ConsoleButtonString>();
-			StringStream st = new StringStream(str);
+			// List<ConsoleButtonString> buttonList = new List<ConsoleButtonString>();
+			List<ConsoleButtonString> buttonList = buttonsOutput == null ? new List<ConsoleButtonString>() : buttonsOutput;
+			#endregion
+			// StringStream st = new StringStream(str);
+			StringStream st = parent != null ? parent.Stream : new StringStream(str);
 			int found;
-			bool hasComment = str.IndexOf("<!--") >= 0;
-			bool hasReturn = str.IndexOf('\n') >= 0;
+			bool hasComment = parent != null ? parent.HasComment : str.IndexOf("<!--") >= 0;
+			bool hasReturn = parent != null ? parent.HasReturn : str.IndexOf('\n') >= 0;
 			HtmlAnalzeState state = new HtmlAnalzeState();
+			#region EM_私家版_HTML_divタグ
+			if (parent != null)
+			{
+				state.SubDivisionWidth = parent.State.SubDivisionWidth;
+				state.CurrentDivTag = parent.State.CurrentDivTag;
+				state.StartingSubDivision = parent.State.StartingSubDivision;
+			}
+			#endregion
 			while (!st.EOS)
 			{
 				found = st.Find('<');
@@ -422,8 +520,46 @@ namespace MinorShift.Emuera.GameView
 					if (part != null)
 						cssList.Add(part);
 					st.ShiftNext();
-				}
 
+					#region EM_私家版_HTML_divタグ
+					if (state.StartingSubDivision)
+					{
+						if (state.CurrentDivTag != null)
+						{
+							if (parent == null)
+							{
+								if (state.CurrentButtonTag != null || state.FontStyle != FontStyle.Regular || state.FonttagList.Count > 0)
+									throw new CodeEE(trerror.TagIsNotClosed.Text);
+								var width = state.CurrentDivTag.Width;
+								state.SubDivisionWidth = MixedNum.ToPixel(width);
+								if (state.CurrentDivTag.StyledBox != null)
+								{
+									var box = state.CurrentDivTag.StyledBox;
+									if (box.margin != null)
+										state.SubDivisionWidth -= MixedNum.ToPixel(box.margin[Direction.Left]) + MixedNum.ToPixel(box.margin[Direction.Right]);
+									if (box.border != null)
+										state.SubDivisionWidth -= MixedNum.ToPixel(box.border[Direction.Left]) + MixedNum.ToPixel(box.border[Direction.Right]);
+									if (box.padding != null)
+										state.SubDivisionWidth -= MixedNum.ToPixel(box.padding[Direction.Left]) + MixedNum.ToPixel(box.padding[Direction.Right]);
+								}
+								state.CurrentDivTag.Lines = html2DisplayLine(null, sm, console, new HtmlParentInfo
+								{
+									HasComment = hasComment,
+									HasReturn = hasReturn,
+									State = state,
+									Stream = st,
+								}, null);
+								var tagInfo = state.CurrentDivTag;
+								state.CurrentDivTag = null;
+								state.StartingSubDivision = false;
+								cssList.Add(new ConsoleDivPart(tagInfo.X, tagInfo.Y, tagInfo.Width, tagInfo.Height, tagInfo.Depth, tagInfo.Color, tagInfo.StyledBox, tagInfo.IsRelative, tagInfo.Lines));
+							}
+						}
+						else
+							break;
+					}
+					#endregion
+				}
 				if (state.FlagBr)
 				{
 					state.LastButtonTag = state.CurrentButtonTag;
@@ -440,12 +576,19 @@ namespace MinorShift.Emuera.GameView
 				state.LastButtonTag = state.CurrentButtonTag;
 			}
 			//</nobr></p>は省略許可
+			#region EM_私家版_HTML_divタグ
+			if (state.CurrentDivTag != null)
+				throw new CodeEE(trerror.TagIsNotClosed.Text);
+			#endregion
 			if (state.CurrentButtonTag != null || state.FontStyle != FontStyle.Regular || state.FonttagList.Count > 0)
 				throw new CodeEE(trerror.TagIsNotClosed.Text);
 			if (cssList.Count > 0)
 				buttonList.Add(cssToButton(cssList, state, console));
+			#region EM_私家版_HTML_PRINT拡張
+			if (buttonsOutput != null) return null;
+			#endregion
 
-			foreach(ConsoleButtonString button in buttonList)
+			foreach (ConsoleButtonString button in buttonList)
 			{
 				if (button != null && button.PointXisLocked)
 				{
@@ -456,12 +599,23 @@ namespace MinorShift.Emuera.GameView
 					break;
 				}
 			}
-			ConsoleDisplayLine[] ret = PrintStringBuffer.ButtonsToDisplayLines(buttonList, sm, state.FlagNobr, false);
-
+			#region EM_私家版_HTML_divタグ
+			// ConsoleDisplayLine[] ret = PrintStringBuffer.ButtonsToDisplayLines(buttonList, sm, state.FlagNobr, false);
+			ConsoleDisplayLine[] ret;
+			if (state.StartingSubDivision && state.CurrentDivTag == null)
+			{
+				ret = PrintStringBuffer.ButtonsToDisplayLines(buttonList, sm, state.FlagNobr, false, state.SubDivisionWidth);
+			}
+			else
+				ret = PrintStringBuffer.ButtonsToDisplayLines(buttonList, sm, state.FlagNobr, false);
 			foreach (ConsoleDisplayLine dl in ret)
 			{
-				dl.SetAlignment(state.Alignment);
+				if (state.StartingSubDivision && state.CurrentDivTag == null)
+					dl.SetAlignment(state.Alignment, state.SubDivisionWidth);
+				else
+					dl.SetAlignment(state.Alignment);
 			}
+			#endregion
 			return ret;
 		}
 
@@ -740,6 +894,13 @@ namespace MinorShift.Emuera.GameView
 						state.FlagClearButtonTooltip = false;
 						return null;
 					#endregion
+					#region EM_私家版_HTML_divタグ
+					case "div":
+						if (state.CurrentDivTag == null)
+							throw new CodeEE(string.Format(trerror.UnexpectedCloseTag.Text, "div"));
+						state.CurrentDivTag = null;
+						return null;
+					#endregion
 					default:
 						throw new CodeEE(string.Format(trerror.CanNotInterpretCloseTag.Text, tag));
 				}
@@ -834,13 +995,14 @@ namespace MinorShift.Emuera.GameView
 						string attrValue;
 						string src = null;
 						string srcb = null;
+						string srcm = null;
 						#region EM_私家版_HTMLパラメータ拡張
 						//int height = 0;
 						//int width = 0;
 						//int ypos = 0;
-						MixedNum height = new MixedNum();
-						MixedNum width = new MixedNum();
-						MixedNum ypos = new MixedNum();
+						MixedNum height = null;
+						MixedNum width = null;
+						MixedNum ypos = null;
 						while (wc != null && !wc.EOL)
 						{
 							word = wc.Current as IdentifierWord;
@@ -864,50 +1026,23 @@ namespace MinorShift.Emuera.GameView
 									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
 								srcb = attrValue;
 							}
+							else if (word.Code.Equals("srcm", StringComparison.OrdinalIgnoreCase))
+							{
+								if (srcm != null)
+									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
+								srcm = attrValue;
+							}
 							else if (word.Code.Equals("height", StringComparison.OrdinalIgnoreCase))
 							{
-								//if (height != 0)
-								if (height.num != 0)
-									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
-								if (attrValue.EndsWith("px", StringComparison.OrdinalIgnoreCase))
-								{
-									if (!int.TryParse(attrValue.Substring(0, attrValue.Length - 2), out height.num))
-										throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "height"));
-									height.isPx = true;
-								}
-								//if (!int.TryParse(attrValue, out height))
-								else if (!int.TryParse(attrValue, out height.num))
-									throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "height"));
+								Utils.ParseMixedNum(ref height, tag, word.Code, attrValue);
 							}
 							else if (word.Code.Equals("width", StringComparison.OrdinalIgnoreCase))
 							{
-								//if (width != 0)
-								if (width.num != 0)
-									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
-								if (attrValue.EndsWith("px", StringComparison.OrdinalIgnoreCase))
-								{
-									if (!int.TryParse(attrValue.Substring(0, attrValue.Length - 2), out width.num))
-										throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "width"));
-									width.isPx = true;
-								}
-								//if (!int.TryParse(attrValue, out width))
-								else if (!int.TryParse(attrValue, out width.num))
-									throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "width"));
+								Utils.ParseMixedNum(ref width, tag, word.Code, attrValue);
 							}
 							else if (word.Code.Equals("ypos", StringComparison.OrdinalIgnoreCase))
 							{
-								//if (ypos != 0)
-								if (ypos.num != 0)
-									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
-								if (attrValue.EndsWith("px", StringComparison.OrdinalIgnoreCase))
-								{
-									if (!int.TryParse(attrValue.Substring(0, attrValue.Length - 2), out ypos.num))
-										throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "ypos"));
-									ypos.isPx = true;
-								}
-								//if (!int.TryParse(attrValue, out ypos))
-								else if (!int.TryParse(attrValue, out ypos.num))
-									throw new CodeEE(string.Format(trerror.AttributeCanNotInterpretNum.Text, tag, "ypos"));
+								Utils.ParseMixedNum(ref ypos, tag, word.Code, attrValue);
 							}
 							else
 								throw new CodeEE(string.Format(trerror.CanNotInterpretAttributeName.Text, tag, word.Code));
@@ -915,9 +1050,116 @@ namespace MinorShift.Emuera.GameView
 						#endregion
 						if (src == null)
 							throw new CodeEE(string.Format(trerror.NotSetAttribute.Text, tag, "src"));
-						return new ConsoleImagePart(src, srcb, height, width, ypos);
+						return new ConsoleImagePart(src, srcb, srcm, height, width, ypos);
 					}
-
+				#region EM_私家版_HTML_divタグ
+				case "div":
+					{
+						if (state.CurrentDivTag != null)
+							throw new CodeEE(string.Format(trerror.NestedTag.Text, "div"));
+						MixedNum x = null;
+						MixedNum y = null;
+						MixedNum width = null;
+						MixedNum height = null;
+						StyledBoxModel box = null;
+						bool isRelative = true;
+						int depth = 0;
+						int color = -1;
+						string attrValue;
+						while (wc != null && !wc.EOL)
+						{
+							word = wc.Current as IdentifierWord;
+							wc.ShiftNext();
+							OperatorWord op = wc.Current as OperatorWord;
+							wc.ShiftNext();
+							LiteralStringWord attr = wc.Current as LiteralStringWord;
+							wc.ShiftNext();
+							if (word == null || op == null || op.Code != OperatorCode.Assignment || attr == null)
+								goto error;
+							attrValue = Unescape(attr.Str);
+							if (word.Code.Equals("height", StringComparison.OrdinalIgnoreCase))
+							{
+								Utils.ParseMixedNum(ref height, tag, word.Code,  attrValue);
+							}
+							else if (word.Code.Equals("width", StringComparison.OrdinalIgnoreCase))
+							{
+								Utils.ParseMixedNum(ref width, tag, word.Code, attrValue);
+							}
+							else if (word.Code.Equals("ypos", StringComparison.OrdinalIgnoreCase))
+							{
+								Utils.ParseMixedNum(ref y, tag, word.Code, attrValue);
+							}
+							else if (word.Code.Equals("xpos", StringComparison.OrdinalIgnoreCase))
+							{
+								Utils.ParseMixedNum(ref x, tag, word.Code, attrValue);
+							}
+							else if (word.Code.Equals("depth", StringComparison.OrdinalIgnoreCase))
+							{
+								if (depth != 0)
+									throw new CodeEE(string.Format(Lang.Error.AttributeCanNotInterpretNum.Text, tag, attr));
+								if (!int.TryParse(attrValue, out depth))
+									throw new CodeEE(string.Format(Lang.Error.AttributeCanNotInterpretNum.Text, tag, attr));
+							}
+							else if (word.Code.Equals("color", StringComparison.OrdinalIgnoreCase))
+							{
+								if (color >= 0)
+									throw new CodeEE(string.Format(trerror.DuplicateAttribute.Text, tag, word.Code));
+								color = stringToColorInt32(attrValue);
+							}
+							else if (word.Code.Equals("size", StringComparison.OrdinalIgnoreCase))
+							{
+								string[] tokens = attrValue.Split(',');
+								if (tokens.Length != 2)
+									throw new CodeEE(string.Format(trerror.ClearbuttonAttributeCanNotInterpretNum.Text, tag, word.Code, attrValue));
+								for (int i = 0; i < tokens.Length; i++)
+								{
+									tokens[i] = tokens[i].Trim();
+									switch (i)
+									{
+										case 0: Utils.ParseMixedNum(ref width, tag, "width", tokens[i]); break;
+										case 1: Utils.ParseMixedNum(ref height, tag, "height", tokens[i]); break;
+									}
+								}
+							}
+							else if (word.Code.Equals("rect", StringComparison.OrdinalIgnoreCase))
+							{
+								string[] tokens = attrValue.Split(',');
+								if (tokens.Length != 4)
+									throw new CodeEE(string.Format(trerror.ClearbuttonAttributeCanNotInterpretNum.Text, tag, word.Code, attrValue));
+								for (int i = 0; i < tokens.Length; i++)
+								{
+									tokens[i] = tokens[i].Trim();
+									switch (i)
+									{
+										case 0: Utils.ParseMixedNum(ref x, tag, "xpos", tokens[i]); break;
+										case 1: Utils.ParseMixedNum(ref y, tag, "ypos", tokens[i]); break;
+										case 2: Utils.ParseMixedNum(ref width, tag, "width", tokens[i]); break;
+										case 3: Utils.ParseMixedNum(ref height, tag, "height", tokens[i]); break;
+									}
+								}
+							}
+							else if (word.Code.Equals("bcolor", StringComparison.OrdinalIgnoreCase))
+							{
+								ParseParam4IntNum(ref Utils.CreateIfNull(ref box).color, tag, word.Code, attrValue);
+							}
+							else if (word.Code.Equals("display", StringComparison.OrdinalIgnoreCase))
+							{
+								if (attrValue.Equals("absolute", StringComparison.OrdinalIgnoreCase)) isRelative = false;
+								else if (attrValue.Equals("relative", StringComparison.OrdinalIgnoreCase)) isRelative = true;
+								else throw new CodeEE(string.Format(Lang.Error.CanNotInterpretAttribute.Text, attrValue));
+							}
+							else if (!Utils.TryParseStyledBoxModel(ref box, tag, word.Code, attrValue))
+								throw new CodeEE(string.Format(trerror.CanNotInterpretAttributeName.Text, tag, word.Code));
+						}
+						if (width == null)
+							throw new CodeEE(string.Format(trerror.NotSetAttribute.Text, tag, "width"));
+						if (height == null)
+							throw new CodeEE(string.Format(trerror.NotSetAttribute.Text, tag, "height"));
+						state.CurrentDivTag = new HtmlDivTag(x, y, width, height, depth, color, box, isRelative);
+						state.StartingSubDivision = true;
+						return null;
+					}
+				#endregion
 				case "shape":
 					{
 						if (wc == null)
@@ -1088,7 +1330,7 @@ namespace MinorShift.Emuera.GameView
 				case "clearbutton":
 					{
 						if (state.FlagClearButton)
-							throw new CodeEE(trerror.NestedClearbuttonTag.Text);
+							throw new CodeEE(string.Format(trerror.NestedTag.Text, "clearbutton"));
 						if (wc!=null)
 							while (!wc.EOL)
 							{

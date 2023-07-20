@@ -342,45 +342,48 @@ namespace MinorShift.Emuera.GameData.Function
 			{
 				ReturnType = typeof(Int64);
 				argumentTypeArrayEx = new ArgTypeList[] {
-					new ArgTypeList{ ArgTypes = { ArgType.String, ArgType.RefString1D, ArgType.Int }, OmitStart = 2 },
-					new ArgTypeList{ ArgTypes = { ArgType.RefInt | ArgType.AllowConstRef, ArgType.RefString1D, ArgType.Int }, OmitStart = 2 },
+					new ArgTypeList{ ArgTypes = { ArgType.String, ArgType.RefString1D, ArgType.Int, ArgType.Int | ArgType.DisallowVoid }, OmitStart = 2 },
+					new ArgTypeList{ ArgTypes = { ArgType.RefInt1D, ArgType.RefString1D, ArgType.Int, ArgType.Int | ArgType.DisallowVoid }, OmitStart = 2 },
 				};
 				CanRestructure = false;
 			}
-			private string CheckVariableTerm(IOperandTerm arg, string name, string v)
+			private string CheckVariableTerm(IOperandTerm arg, string v)
 			{
 				var vname = v == null ? trerror.FirstArg.Text : v;
 				if (!(arg is VariableTerm varTerm) || varTerm.Identifier.IsCalc || varTerm.Identifier.IsConst)
-					return string.Format(trerror.NotVarFunc.Text, name, vname);
+					return string.Format(trerror.NotVarFunc.Text, Name, vname);
 				if (v == null && !varTerm.Identifier.IsArray1D)
-					return string.Format(trerror.Not1DFuncArg.Text, name, "1");
+					return string.Format(trerror.Not1DFuncArg.Text, Name, "1");
 				if (varTerm.Identifier.IsCharacterData)
-					return string.Format(trerror.IsCharaVarFunc.Text, name, vname);
+					return string.Format(trerror.IsCharaVarFunc.Text, Name, vname);
 				if (!varTerm.Identifier.IsArray1D && !varTerm.Identifier.IsArray2D && !varTerm.Identifier.IsArray3D)
-					return string.Format(trerror.NotDimVarFunc.Text, name, vname);
+					return string.Format(trerror.NotDimVarFunc.Text, Name, vname);
 				return null;
 			}
 			private VariableTerm GetConvertedTerm(ExpressionMediator exm, string name)
 			{
 				WordCollection wc = LexicalAnalyzer.Analyse(new StringStream(name), LexEndWith.EoL, LexAnalyzeFlag.None);
 				var term = ExpressionParser.ReduceExpressionTerm(wc, TermEndWith.EoL);
-				var err = CheckVariableTerm(term, "ARRAYMSORTEX", name);
+				var err = CheckVariableTerm(term, name);
 				if (err != null)
 					throw new CodeEE(err);
 				return term as VariableTerm;
 			}
 			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
-				bool isAscending = arguments.Length < 3 || arguments[2].GetIntValue(exm) != 0;
+				bool isAscending = arguments.Length < 3 || arguments[2] == null || arguments[2].GetIntValue(exm) != 0;
+				Int64 fixedLength = arguments.Length < 4 ? -1 : arguments[3].GetIntValue(exm);
+				if (fixedLength == 0) return 0;
 				VariableTerm varTerm = arguments[0] is VariableTerm ? arguments[0] as VariableTerm : GetConvertedTerm(exm, arguments[0].GetStrValue(exm));
 				int[] sortedArray;
 				if (varTerm.Identifier.IsInteger)
 				{
 					List<KeyValuePair<Int64, int>> sortList = new List<KeyValuePair<long, int>>();
 					Int64[] array = (Int64[])varTerm.Identifier.GetArray();
-					for (int i = 0; i < array.Length; i++)
+					var length = fixedLength > 0 ? Math.Min(fixedLength, array.Length) : array.Length;
+					for (int i = 0; i < length; i++)
 					{
-						if (array[i] == 0)
+						if (fixedLength == -1 && array[i] == 0)
 							break;
 						if (array[i] < Int64.MinValue || array[i] > Int64.MaxValue)
 							return 0;
@@ -388,24 +391,21 @@ namespace MinorShift.Emuera.GameData.Function
 					}
 					//素ではintの範囲しか扱えないので一工夫
 					sortList.Sort((a, b) => { return (isAscending ? 1 : -1) * Math.Sign(a.Key - b.Key); });
-					sortedArray = new int[sortList.Count];
-					for (int i = 0; i < sortedArray.Length; i++)
-						sortedArray[i] = sortList[i].Value;
+					sortedArray = sortList.Select(p => p.Value).ToArray();
 				}
 				else
 				{
 					List<KeyValuePair<string, int>> sortList = new List<KeyValuePair<string, int>>();
 					string[] array = (string[])varTerm.Identifier.GetArray();
-					for (int i = 0; i < array.Length; i++)
+					var length = fixedLength > 0 ? Math.Min(fixedLength, array.Length) : array.Length;
+					for (int i = 0; i < length; i++)
 					{
-						if (string.IsNullOrEmpty(array[i]))
+						if (fixedLength == -1 && string.IsNullOrEmpty(array[i]))
 							return 0;
 						sortList.Add(new KeyValuePair<string, int>(array[i], i));
 					}
 					sortList.Sort((a, b) => { return (isAscending ? 1 : -1) * a.Key.CompareTo(b.Key); });
-					sortedArray = new int[sortList.Count];
-					for (int i = 0; i < sortedArray.Length; i++)
-						sortedArray[i] = sortList[i].Value;
+					sortedArray = sortList.Select(p => p.Value).ToArray();
 				}
 				List<VariableTerm> varTerms = new List<VariableTerm>();
 				foreach (var nTerm in (string[])(arguments[1] as VariableTerm).Identifier.GetArray())
@@ -983,7 +983,7 @@ namespace MinorShift.Emuera.GameData.Function
 						{
 							throw new CodeEE(string.Format(trerror.XmlParseError.Text, Name, xml, e.Message));
 						}
-						var newNode = childNode.FirstChild;
+						var newNode = childNode.DocumentElement;
 						child = doc.CreateNode(newNode.NodeType, newNode.Name, newNode.NamespaceURI);
 						for (int i = 0; i < newNode.Attributes.Count; i++)
 						{
@@ -1194,7 +1194,7 @@ namespace MinorShift.Emuera.GameData.Function
 				}
 				if (nodes.Count > 0)
 				{
-					var newNode = newXml.FirstChild;
+					var newNode = newXml.DocumentElement;
 					var child = doc.CreateNode(newNode.NodeType, newNode.Name, newNode.NamespaceURI);
 					for (int i = 0; i < newNode.Attributes.Count; i++)
 					{
@@ -1289,13 +1289,17 @@ namespace MinorShift.Emuera.GameData.Function
 		}
 		private sealed class DataTableColumnManagementMethod : FunctionMethod
 		{
-			public enum Operation { Create, Check, Remove };
+			public enum Operation { Create, Check, Remove, Names };
 			public DataTableColumnManagementMethod(Operation type)
 			{
 				ReturnType = typeof(Int64);
 				if (type == Operation.Create)
 					argumentTypeArrayEx = new ArgTypeList[] {
 						new ArgTypeList{ ArgTypes = { ArgType.String, ArgType.String, ArgType.Any, ArgType.Int }, OmitStart = 2 },
+					};
+				else if (type == Operation.Names)
+					argumentTypeArrayEx = new ArgTypeList[] {
+						new ArgTypeList{ ArgTypes = { ArgType.String, ArgType.RefString1D }, OmitStart = 1 },
 					};
 				else
 					argumentTypeArray = new Type[] { typeof(string), typeof(string) };
@@ -1306,10 +1310,18 @@ namespace MinorShift.Emuera.GameData.Function
 			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
 				string key = arguments[0].GetStrValue(exm);
-				string cName = arguments[1].GetStrValue(exm);
 				var dict = exm.VEvaluator.VariableData.DataDataTables;
 				if (!dict.ContainsKey(key)) return -1;
 				var dt = dict[key];
+				if (op == Operation.Names)
+				{
+					string[] output;
+					if (arguments.Length > 1 && arguments[1] is VariableTerm v) output = v.Identifier.GetArray() as string[];
+					else output = exm.VEvaluator.RESULTS_ARRAY;
+					for (int i = 0; i < dt.Columns.Count; i++) output[i] = dt.Columns[i].ColumnName;
+					return dt.Columns.Count;
+				}
+				string cName = arguments[1].GetStrValue(exm);
 				bool contains = dt.Columns.Contains(cName);
 				switch (op)
 				{
@@ -1543,11 +1555,18 @@ namespace MinorShift.Emuera.GameData.Function
 				if (asId)
 				{
 					if (dt.Rows.Find(idx) is DataRow row && dt.Columns.Contains(name))
-						return op == Operation.Get ? Convert.ToInt64(row[name]) : (row[name] == DBNull.Value ? 1 : 0);
-				} else
+					{
+						var v = row[name];
+						return op == Operation.Get ? v == DBNull.Value ? 0 : Convert.ToInt64(v) : (v == DBNull.Value ? 1 : 0);
+					}
+				}
+				else
 				{
 					if (0 <= idx && idx < dt.Rows.Count && dt.Columns.Contains(name))
-						return op == Operation.Get ? Convert.ToInt64(dt.Rows[(int)idx][name]) : (dt.Rows[(int)idx][name] == DBNull.Value ? 1 : 0);
+					{
+						var v = dt.Rows[(int)idx][name];
+						return op == Operation.Get ? v == DBNull.Value ? 0 : Convert.ToInt64(v) : (v == DBNull.Value ? 1 : 0);
+					}
 				}
 				return op == Operation.IsNull ? -2 : 0;
 			}
@@ -1563,12 +1582,18 @@ namespace MinorShift.Emuera.GameData.Function
 				if (asId)
 				{
 					if (dt.Rows.Find(idx) is DataRow row && dt.Columns.Contains(name))
-						return (string)row[name];
+					{
+						var v = row[name];
+						if (v != DBNull.Value) return (string)v;
+					}
 				}
 				else
 				{
 					if (0 <= idx && idx < dt.Rows.Count && dt.Columns.Contains(name))
-						return (string)dt.Rows[(int)idx][name];
+					{
+						var v = dt.Rows[(int)idx][name];
+						if (v != DBNull.Value) return (string)v;
+					}
 				}
 				return string.Empty;
 			}
@@ -1649,6 +1674,70 @@ namespace MinorShift.Emuera.GameData.Function
 				}
 				if (toResult) output[0] = 0;
 				return 0;
+			}
+		}
+		private sealed class DataTableToXmlMethod : FunctionMethod
+		{
+			public DataTableToXmlMethod()
+			{
+				ReturnType = typeof(string);
+				argumentTypeArrayEx = new ArgTypeList[] {
+					new ArgTypeList{ ArgTypes = { ArgType.String, ArgType.RefString }, OmitStart = 1 },
+				};
+				CanRestructure = false;
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				var key = arguments[0].GetStrValue(exm);
+				var dict = exm.VEvaluator.VariableData.DataDataTables;
+				if (!dict.ContainsKey(key)) return string.Empty;
+				var dt = dict[key];
+				var output = arguments.Length > 1 ? (arguments[1] as VariableTerm).Identifier.GetArray() as string[] : GlobalStatic.VEvaluator.RESULTS_ARRAY;
+				var idx = arguments.Length > 1 ? 0 : 1;
+
+				var sb = new StringBuilder();
+				using (var sw = new StringWriter(sb))
+				{
+					dt.WriteXmlSchema(sw);
+					output[idx] = sb.ToString();
+					sb.Clear();
+					dt.WriteXml(sw);
+					return sb.ToString();
+				}
+			}
+		}
+		private sealed class DataTableFromXmlMethod : FunctionMethod
+		{
+			public DataTableFromXmlMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[] { typeof(string), typeof(string), typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				var key = arguments[0].GetStrValue(exm);
+				var dict = exm.VEvaluator.VariableData.DataDataTables;
+				DataTable dt;
+				try 
+				{
+					dt = new DataTable(key);
+					using (var reader = new StringReader(arguments[1].GetStrValue(exm)))
+					{
+						dt.ReadXmlSchema(reader);
+					}
+					using (var reader = new StringReader(arguments[2].GetStrValue(exm)))
+					{
+						dt.ReadXml(reader);
+					}
+				}
+				catch
+				{
+					return 0;
+				}
+				if (dict.ContainsKey(key)) dict[key] = dt;
+				else dict.Add(key, dt);
+				return 1;
 			}
 		}
 
@@ -1837,6 +1926,27 @@ namespace MinorShift.Emuera.GameData.Function
 					if (key.Count != 1 || val.Count != 1) continue;
 					sMap[key[0].InnerText] = val[0].InnerXml;
 				}
+				return 1;
+			}
+		}
+
+		private sealed class MoveTextBoxMethod : FunctionMethod
+		{
+			public MoveTextBoxMethod(bool b = false)
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[] { typeof(Int64), typeof(Int64), typeof(Int64) };
+				CanRestructure = false;
+				resume = b;
+			}
+			bool resume;
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				if (resume) GlobalStatic.MainWindow.ResetTextBoxPos();
+				else GlobalStatic.MainWindow.SetTextBoxPos(
+					(int)arguments[0].GetIntValue(exm),
+					(int)arguments[1].GetIntValue(exm),
+					(int)arguments[2].GetIntValue(exm));
 				return 1;
 			}
 		}
@@ -5158,6 +5268,13 @@ namespace MinorShift.Emuera.GameData.Function
 						return g.Fontsize;
 					case "GGETFONTSTYLE":
 						return g.Fontstyle;
+					case "GGETPEN":
+						return g.Pen.Color.ToArgb() & 0xffffffffL;
+					case "GGETPENWIDTH":
+						return (long)g.Pen.Width;
+					case "GGETBRUSH":
+						SolidBrush b = (SolidBrush)g.Brush;
+						return b.Color.ToArgb() & 0xffffffffL;
 					#endregion
 				}
 				throw new ExeEE("GraphicsState:" + Name + ":異常な分岐");

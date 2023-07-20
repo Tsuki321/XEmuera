@@ -379,7 +379,7 @@ namespace MinorShift.Emuera.GameData.Variable
 		}
 
 
-		public UserDefinedCharaVariableToken CreateUserDefCharaVariable(UserDefinedVariableData data)
+		public UserDefinedCharaVariableToken CreateUserDefCharaVariable(UserDefinedVariableData data, DimLineWC dimline)
 		{
 			UserDefinedCharaVariableToken ret = null;
 			if (data.CharaData)
@@ -400,10 +400,13 @@ namespace MinorShift.Emuera.GameData.Variable
 						default: throw new ExeEE(trerror.AbnormalVarDeclaration.Text);
 					}
 			}
+			if (constant.IsDefinedCsvVar(data.Name))
+				ParserMediator.Warn(string.Format(trerror.IsDefinedCsvVariable.Text, data.Name), dimline.SC, 1);
+
 			UserDefinedCharaVarList.Add(ret);
 			return ret;
 		}
-		public UserDefinedVariableToken CreateUserDefVariable(UserDefinedVariableData data)
+		public UserDefinedVariableToken CreateUserDefVariable(UserDefinedVariableData data, DimLineWC dimline)
 		{
 			UserDefinedVariableToken ret;
 			if (data.TypeIsStr)
@@ -422,6 +425,8 @@ namespace MinorShift.Emuera.GameData.Variable
 					case 3: ret = new StaticInt3DVariableToken(data); break;
 					default: throw new ExeEE(trerror.AbnormalVarDeclaration.Text);
 				}
+			if (constant.IsDefinedCsvVar(data.Name))
+				ParserMediator.Warn(string.Format(trerror.IsDefinedCsvVariable.Text, data.Name), dimline.SC, 1);
 			if (ret.IsGlobal)
 				userDefinedGlobalVarList.Add(ret);
 			else

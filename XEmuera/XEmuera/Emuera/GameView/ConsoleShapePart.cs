@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using static EvilMask.Emuera.Utils;
 
 namespace MinorShift.Emuera.GameView
 {
@@ -74,11 +75,7 @@ namespace MinorShift.Emuera.GameView
 					else if (param.Length == 4)
 					{
 						//rectF = new RectangleF(paramPixel[0], paramPixel[1], paramPixel[2], paramPixel[3]);
-						var rectF = new RectangleF(
-							param[0].isPx ? param[0].num : ((float)param[0].num * lineHeight) / 100f,
-							param[1].isPx ? param[1].num : ((float)param[1].num * lineHeight) / 100f,
-							param[2].isPx ? param[2].num : ((float)param[2].num * lineHeight) / 100f,
-							param[3].isPx ? param[3].num : ((float)param[3].num * lineHeight) / 100f);
+						var rectF = new RectangleF(MixedNum.ToPixelf(param[0]), MixedNum.ToPixelf(param[1]), MixedNum.ToPixelf(param[2]), MixedNum.ToPixelf(param[3]));
 						//1820a12 サイズ上限撤廃
 						if (rectF.X >= 0 && rectF.Width > 0 && rectF.Height > 0)
 						//	rectF.Y >= 0 && (rectF.Y + rectF.Height) <= lineHeight)
@@ -113,8 +110,15 @@ namespace MinorShift.Emuera.GameView
 				return "";
 			return AltText;
 		}
+		#region EM_私家版_描画拡張
+		public override StringBuilder BuildString(StringBuilder sb)
+		{
+			if (AltText != null) sb.Append(AltText);
+			return sb;
+		}
+		#endregion
 	}
-	
+
 	internal sealed class ConsoleRectangleShapePart : ConsoleShapePart
 	{
 		public ConsoleRectangleShapePart(RectangleF theRect)

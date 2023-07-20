@@ -41,21 +41,29 @@ namespace MinorShift.Emuera
 		static void Main(string[] args)
 		{
 
-			ExeDir = Sys.ExeDir;
+			// ExeDir = Sys.ExeDir;
+			#region eee_カレントディレクトリー
+			WorkingDir = Sys.WorkingDir;
 #if DEBUG
 			//debugMode = true;
 
 			//ExeDirにバリアントのパスを代入することでテスト実行するためのコード。
 			//ローカルパスの末尾には\必須。
 			//ローカルパスを記載した場合は頒布前に削除すること。
-			ExeDir = @"";
-			
+			// ExeDir = @"";
+
 #endif
-			CsvDir = ExeDir + "csv\\";
-			ErbDir = ExeDir + "erb\\";
-			DebugDir = ExeDir + "debug\\";
-			DatDir = ExeDir + "dat\\";
-			ContentDir = ExeDir + "resources\\";
+			//CsvDir = ExeDir + "csv\\";
+			//ErbDir = ExeDir + "erb\\";
+			//DebugDir = ExeDir + "debug\\";
+			//DatDir = ExeDir + "dat\\";
+			//ContentDir = ExeDir + "resources\\";
+			CsvDir = WorkingDir + "csv\\";
+			ErbDir = WorkingDir + "erb\\";
+			DebugDir = WorkingDir + "debug\\";
+			DatDir = WorkingDir + "dat\\";
+			ContentDir = WorkingDir + "resources\\";
+			#endregion
 			//エラー出力用
 			//1815 .exeが東方板のNGワードに引っかかるそうなので除去
 			ExeName = Path.GetFileNameWithoutExtension(Sys.ExeName);
@@ -217,10 +225,13 @@ namespace MinorShift.Emuera
 			}
 		}
 
+		#region eee_カレントディレクトリー
 		/// <summary>
 		/// 実行ファイルのディレクトリ。最後に\を付けたstring
 		/// </summary>
-		public static string ExeDir { get; private set; }
+		// public static string ExeDir { get; private set; }
+		public static string WorkingDir { get; private set; }
+		#endregion
 		public static string CsvDir { get; private set; }
 		public static string ErbDir { get; private set; }
 		public static string DebugDir { get; private set; }

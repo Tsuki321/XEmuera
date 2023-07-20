@@ -406,6 +406,13 @@ namespace MinorShift.Emuera.GameProc.Function
 			addFunction(FunctionCode.FORCE_QUIT_AND_RESTART, argb[FunctionArgType.VOID]);
 			addFunction(FunctionCode.FORCE_BEGIN, new FORCE_BEGIN_Instruction());//強制BEGIN
 			addFunction(FunctionCode.INPUTANY, new INPUTANY_Instruction());
+			addFunction(FunctionCode.TOOLTIP_SETFONT, new TOOLTIP_SETFONT_Instruction());
+			addFunction(FunctionCode.TOOLTIP_SETFONTSIZE, new TOOLTIP_SETFONTSIZE_Instruction());
+			addFunction(FunctionCode.TOOLTIP_CUSTOM, new TOOLTIP_CUSTOM_Instruction());
+			addFunction(FunctionCode.TOOLTIP_FORMAT, new TOOLTIP_FORMAT_Instruction());
+			#endregion
+			#region EM
+			addFunction(FunctionCode.DT_COLUMN_OPTIONS, new DT_COLUMN_OPTIONS_Instruction());
 			#endregion
 
 			Dictionary<string, FunctionMethod> methodList = FunctionMethodCreator.GetMethodList();

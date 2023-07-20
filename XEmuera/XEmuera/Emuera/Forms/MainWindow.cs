@@ -9,10 +9,11 @@ using System.IO;
 using MinorShift._Library;
 using MinorShift.Emuera.Sub;
 using MinorShift.Emuera.GameData;
-using MinorShift.Emuera.GameProc;
+using MinorShift.Emuera.GameProc.Function;
 using MinorShift.Emuera.GameView;
 using MinorShift.Emuera.Forms;
 using EvilMask.Emuera;
+using trmb = EvilMask.Emuera.Lang.MessageBox;
 
 namespace MinorShift.Emuera
 {
@@ -79,6 +80,14 @@ namespace MinorShift.Emuera
 			this.labelMacroGroupChanged.Font = new Font(Lang.MFont, 24F, FontStyle.Regular, GraphicsUnit.Point, (byte)128);
 			this.richTextBox1.Font = new Font(Config.Font.FontFamily, Config.FontSize, FontStyle.Regular, GraphicsUnit.Pixel);
 			#endregion
+
+			#region EM_textbox位置指定拡張
+			textBoxInfo.Left = richTextBox1.Left;
+			textBoxInfo.Top = richTextBox1.Top;
+			textBoxInfo.Size = richTextBox1.Size;
+			textBoxState = TextBoxState.Unchanged;
+			vScrollBar.ValueChanged += new EventHandler(textBoxHandleScrollValueChanged);
+			#endregion
 		}
 		private ToolStripMenuItem[] macroMenuItems = new ToolStripMenuItem[KeyMacro.MaxFkey];
         private System.Diagnostics.FileVersionInfo emueraVer = System.Diagnostics.FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -133,6 +142,60 @@ namespace MinorShift.Emuera
 		}
 		#endregion
 
+		#region EM_textbox位置指定拡張
+		void textBoxHandleScrollValueChanged(Object sender, EventArgs e)
+		{
+			if (TextBoxIgnoreScrollBarChanges) return;
+			if (vScrollBar.Value < vScrollBar.Maximum && TextBoxPosChanged)
+				ScrollBackTextBoxPos();
+			else if (vScrollBar.Value == vScrollBar.Maximum && TextBoxPosScrolledBack)
+				ApplyTextBoxChanges();
+		}
+		struct TextBoxInfo
+		{
+			public int Top, Left;
+			public Size Size;
+		}
+		TextBoxInfo textBoxInfo, nextTextBoxInfo;
+		enum TextBoxState { Unchanged, WatingToChange, Changed, ScrollBack };
+		TextBoxState textBoxState;
+		public bool TextBoxIgnoreScrollBarChanges { get; set; }
+		public bool TextBoxPosChanged { get { return textBoxState == TextBoxState.Changed; } }
+		public bool TextBoxPosScrolledBack { get { return textBoxState == TextBoxState.ScrollBack; } }
+		public bool TextBoxPosWatingToChange { get { return textBoxState == TextBoxState.WatingToChange; } }
+		public void SetTextBoxPos(int xOffset, int yOffset, int width)
+		{
+			nextTextBoxInfo.Left = Math.Max(0, Math.Min(xOffset, ClientSize.Width - 50));
+			nextTextBoxInfo.Top = Math.Min(Math.Max(ClientSize.Height - yOffset - richTextBox1.Height, 0), ClientSize.Height - richTextBox1.Height);
+			nextTextBoxInfo.Size = new Size(Math.Max(50, Math.Min(width, ClientSize.Width - richTextBox1.Left)), richTextBox1.Size.Height);
+			textBoxState = TextBoxState.WatingToChange;
+		}
+		public void ResetTextBoxPos()
+		{
+			SetTextBoxPos(textBoxInfo);
+			textBoxState = TextBoxState.Unchanged;
+		}
+		public void ScrollBackTextBoxPos()
+		{
+			SetTextBoxPos(textBoxInfo);
+			textBoxState = TextBoxState.ScrollBack;
+		}
+		public void ApplyTextBoxChanges()
+		{
+			if (TextBoxPosWatingToChange || TextBoxPosScrolledBack)
+			{
+				SetTextBoxPos(nextTextBoxInfo);
+				textBoxState = TextBoxState.Changed;
+			}
+		}
+		void SetTextBoxPos(TextBoxInfo info)
+		{
+			this.richTextBox1.Left = info.Left;
+			this.richTextBox1.Top = info.Top;
+			this.richTextBox1.Size = info.Size;
+		}
+		#endregion
+
 		#region EE_textbox拡張
 		public void ChangeTextBox(string str)
         {
@@ -175,7 +238,7 @@ namespace MinorShift.Emuera
 						var doit = console != null;
 						if (console != null && console.IsInProcess)
 						{
-							MessageBox.Show("スクリプト動作中には使用できません");
+							MessageBox.Show(trmb.NotAvailableDuringScript.Text);
 							doit = false;
 						}
 						if (doit)
@@ -188,12 +251,12 @@ namespace MinorShift.Emuera
 								{
 									if (!File.Exists(fname))
 									{
-										MessageBox.Show("ファイルがありません");
+										MessageBox.Show(trmb.FileNotFound.Text);
 										doit = false;
 									}
 									else if (Path.GetExtension(fname).ToUpper() != ".ERB")
 									{
-										MessageBox.Show("ERBファイル以外は読み込めません  , ファイル形式エラー"); //
+										MessageBox.Show(trmb.IsNotErb.Text, trmb.FileFormatError.Text); //
 										doit = false;
 									}
 									if (fname.StartsWith(Program.ErbDir, StringComparison.OrdinalIgnoreCase))
@@ -219,23 +282,20 @@ namespace MinorShift.Emuera
 								doit = false;
 							if (console != null && console.IsInProcess)
 							{
-								MessageBox.Show(
-									"スクリプト動作中には使用できません");
+								MessageBox.Show(trmb.NotAvailableDuringScript.Text);
 								doit = false;
 							}
 							if (console.notToTitle)
 							{
 								if (console.byError)
-									MessageBox.Show(
-										"コード解析でエラーが発見されたため、タイトルへは飛べません");
+									MessageBox.Show(trmb.ErrorInAnalysisMode.Text);
 								else
-									MessageBox.Show(
-										"解析モードのためタイトルへは飛べません");
+									MessageBox.Show(trmb.CanNotReturnToTitle.Text);
 								doit = false;
 							}
 							if (doit)
 							{
-								result = MessageBox.Show("タイトル画面に戻りますか？", "タイトルに戻る",
+								result = MessageBox.Show(trmb.ReturnToTitleAsk.Text, trmb.ReturnToTitle.Text,
 									MessageBoxButtons.OKCancel);
 								if (result != DialogResult.OK)
 									doit = false;
@@ -250,7 +310,7 @@ namespace MinorShift.Emuera
 					}
 				case Keys.R when (keyData & Keys.Modifiers & Keys.Control) == Keys.Control:
 				case Keys.Insert when (keyData & Keys.Modifiers & Keys.Control) == Keys.Control:
-					result = MessageBox.Show("再起動しますか？", "再起動", MessageBoxButtons.OKCancel);
+					result = MessageBox.Show(trmb.RestartAsk.Text, trmb.Restart.Text, MessageBoxButtons.OKCancel);
 					if (result == DialogResult.OK)
 					{
 						Reboot();
@@ -279,6 +339,14 @@ namespace MinorShift.Emuera
 				//    if ((console.DebugDialog != null) && (console.DebugDialog.Created))
 				//        console.DebugDialog.UpdateData();
 				//}
+				#region EE_AnchorのCB機能移植
+				case Keys.Up when (keyData & Keys.Modifiers & Keys.Control) == Keys.Control:
+					if (console.CBProc.ScrollUp(1)) return true;
+					break;
+				case Keys.Down when (keyData & Keys.Modifiers & Keys.Control) == Keys.Control:
+					if (console.CBProc.ScrollDown(1)) return true;
+					break;
+				#endregion
 				default:
 					if (Config.UseKeyMacro)
 					{
@@ -487,8 +555,19 @@ namespace MinorShift.Emuera
 			if (console.MoveMouse(e.Location))
 				console.RefreshStrings(true);
 		}
+		#region EE_AnchorのCB機能移植
+		private void mainPicBox_MouseClickCBCheck(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left) console.CBProc.Check(ClipboardProcessor.CBTriggers.LeftClick);
+			else if (e.Button == MouseButtons.Middle) console.CBProc.Check(ClipboardProcessor.CBTriggers.MiddleClick);
+		}
 
-        bool changeTextbyMouse = false;
+		private void mainPicBox_MouseDoubleClickCBCheck(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Left) console.CBProc.Check(ClipboardProcessor.CBTriggers.DoubleLeftClick);
+		}
+		#endregion
+		bool changeTextbyMouse = false;
 		private void mainPicBox_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (!Config.UseMouse)
@@ -499,6 +578,10 @@ namespace MinorShift.Emuera
 //			if (console.IsWaitingPrimitiveMouse)
 			{
 				console.MouseDown(e.Location, e.Button);
+				#region EM_私家版_INPUT系機能拡張
+				if (vScrollBar.Value == vScrollBar.Maximum && console.SelectingButton != null)
+					GlobalStatic.Process.InputInteger(6, console.SelectingButton.GetMappedColor(e.X, e.Y));
+				#endregion
 				return;
 			}
 			bool isBacklog = vScrollBar.Value != vScrollBar.Maximum;
@@ -528,6 +611,8 @@ namespace MinorShift.Emuera
 			{
 				if ((e.Button == MouseButtons.Left) || (e.Button == MouseButtons.Right))
 				{
+					if (!isBacklog)
+						GlobalStatic.Process.InputInteger(3, console.SelectingButton.GetMappedColor(e.X, e.Y));
 					if (modifiersWhileWaintingInputWithMouse != null)
 					{
 						GlobalStatic.Process.InputInteger(2, (long)modifiersWhileWaintingInputWithMouse);
@@ -536,12 +621,12 @@ namespace MinorShift.Emuera
 					if (e.Button == MouseButtons.Right)
 					{
 						GlobalStatic.Process.InputInteger(1, 2);
-						PressEnterKey(true, true);
+						console.PressEnterKey(true, str, true);
 					}
 					else
 					{
 						GlobalStatic.Process.InputInteger(1, 1);
-						PressEnterKey(false, true);
+						console.PressEnterKey(false, str, true);
 					}
 					return;
 				}
@@ -660,7 +745,7 @@ namespace MinorShift.Emuera
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult result = MessageBox.Show("ゲームを終了します", "終了", MessageBoxButtons.OKCancel);
+			DialogResult result = MessageBox.Show(trmb.ExitAsk.Text, trmb.Exit.Text, MessageBoxButtons.OKCancel);
 			if (result != DialogResult.OK)
 				return;
 			this.Close();
@@ -669,7 +754,7 @@ namespace MinorShift.Emuera
 
 		private void rebootToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			DialogResult result = MessageBox.Show("ゲームを再起動します", "再起動", MessageBoxButtons.OKCancel);
+			DialogResult result = MessageBox.Show(trmb.RestartAsk.Text, trmb.Restart.Text, MessageBoxButtons.OKCancel);
 			if (result != DialogResult.OK)
 				return;
 			this.Reboot();
@@ -750,18 +835,18 @@ namespace MinorShift.Emuera
 				return;
 			if (console.IsInProcess)
 			{
-				MessageBox.Show("スクリプト動作中には使用できません");
+				MessageBox.Show(trmb.NotAvailableDuringScript.Text);
                 return;
             }
             if (console.notToTitle)
             {
                 if (console.byError)
-                    MessageBox.Show("コード解析でエラーが発見されたため、タイトルへは飛べません");
+                    MessageBox.Show(trmb.ErrorInAnalysisMode.Text);
                 else
-                    MessageBox.Show("解析モードのためタイトルへは飛べません");
+                    MessageBox.Show(trmb.CanNotReturnToTitle.Text);
                 return;
             }
-            DialogResult result = MessageBox.Show("タイトル画面へ戻ります", "タイトル画面に戻る", MessageBoxButtons.OKCancel);
+            DialogResult result = MessageBox.Show(trmb.ReturnToTitleAsk.Text, trmb.ReturnToTitle.Text, MessageBoxButtons.OKCancel);
 			if (result != DialogResult.OK)
 				return;
 			this.GotoTitle();
@@ -773,10 +858,10 @@ namespace MinorShift.Emuera
 				return;
 			if (console.IsInProcess)
 			{
-				MessageBox.Show("スクリプト動作中には使用できません");
+				MessageBox.Show(trmb.NotAvailableDuringScript.Text);
                 return;
             }
-            DialogResult result = MessageBox.Show("ERBファイルを読み直します", "ERBファイル読み直し", MessageBoxButtons.OKCancel);
+            DialogResult result = MessageBox.Show(trmb.ReloadErbAsk.Text, trmb.ReloadErb.Text, MessageBoxButtons.OKCancel);
 			if (result != DialogResult.OK)
 				return;
 			this.ReloadErb();
@@ -794,7 +879,10 @@ namespace MinorShift.Emuera
 		{
 			if (console == null)
 				return;
-			saveFileDialog.InitialDirectory = Program.ExeDir;
+			#region eee_カレントディレクトリー
+			//saveFileDialog.InitialDirectory = Program.ExeDir;
+			saveFileDialog.InitialDirectory = Program.WorkingDir;
+			#endregion
 			DateTime time = DateTime.Now;
 			string fname = time.ToString("yyyyMMdd-HHmmss");
 			fname += ".log";
@@ -821,7 +909,7 @@ namespace MinorShift.Emuera
             }
             catch (Exception)
             {
-                MessageBox.Show("予期せぬエラーが発生したためクリップボードを開けません");
+                MessageBox.Show(trmb.CanNotOpenClipboard.Text);
                 return;
             }
 		}
@@ -832,7 +920,7 @@ namespace MinorShift.Emuera
 				return;
 			if (console.IsInProcess)
             {
-				MessageBox.Show("スクリプト動作中には使用できません");
+				MessageBox.Show(trmb.NotAvailableDuringScript.Text);
                 return;
             }
             DialogResult result = openFileDialog.ShowDialog();
@@ -843,12 +931,12 @@ namespace MinorShift.Emuera
 				{
 					if (!File.Exists(fname))
 					{
-						MessageBox.Show("ファイルがありません", "File Not Found");
+						MessageBox.Show(trmb.FileNotFound.Text, trmb.FileNotFound.Text);
 						return;
 					}
 					if (Path.GetExtension(fname).ToUpper() != ".ERB")
 					{
-						MessageBox.Show("ERBファイル以外は読み込めません", "ファイル形式エラー");
+						MessageBox.Show(trmb.IsNotErb.Text, trmb.FileFormatError.Text);
 						return;
 					}
 					if (fname.StartsWith(Program.ErbDir, StringComparison.OrdinalIgnoreCase))
@@ -880,7 +968,7 @@ namespace MinorShift.Emuera
 				return;
             if (console.IsInProcess)
             {
-                MessageBox.Show("スクリプト動作中には使用できません");
+                MessageBox.Show(trmb.NotAvailableDuringScript.Text);
                 return;
             }
             //List<KeyValuePair<string, string>> filepath = new List<KeyValuePair<string, string>>();
@@ -907,6 +995,15 @@ namespace MinorShift.Emuera
 			}
 			//e.Deltaには大きな値が入っているので符号のみ採用する
 			int move = -Math.Sign(e.Delta) * vScrollBar.SmallChange * Config.ScrollHeight;
+			#region EE_AnchorのCB機能移植
+			//Clipboard scroll only when using ctrl
+			if (Config.CBUseClipboard && ModifierKeys == Keys.Control)
+			{
+				if (move > 0) console.CBProc.ScrollDown(move);
+				else if (move < 0) console.CBProc.ScrollUp(-move);
+				return;
+			}
+			#endregion
 			//スクロールが必要ないならリターンする
 			if ((vScrollBar.Value == vScrollBar.Maximum && move > 0) || (vScrollBar.Value == vScrollBar.Minimum && move < 0))
 				return;
@@ -918,7 +1015,7 @@ namespace MinorShift.Emuera
 			else
 				vScrollBar.Value = value;
 			bool force_refresh = (vScrollBar.Value == vScrollBar.Maximum) || (vScrollBar.Value == vScrollBar.Minimum);
-		
+
 			//ボタンとの関係をチェック
 			if (Config.UseMouse)
 				force_refresh = console.MoveMouse(mainPicBox.PointToClient(Control.MousePosition)) || force_refresh;

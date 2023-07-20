@@ -371,6 +371,14 @@ namespace MinorShift.Emuera.GameProc.Function
 		FORCE_QUIT_AND_RESTART,
 		FORCE_BEGIN,
 		INPUTANY,
+		TOOLTIP_SETFONT,
+		TOOLTIP_SETFONTSIZE,
+		TOOLTIP_CUSTOM,
+		TOOLTIP_FORMAT,
+		#endregion
+
+		#region EM
+		DT_COLUMN_OPTIONS,
 		#endregion
 	}
 }

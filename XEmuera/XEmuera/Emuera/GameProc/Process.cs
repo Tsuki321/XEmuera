@@ -79,15 +79,19 @@ namespace MinorShift.Emuera.GameProc
 				}
 				ParserMediator.FlushWarningList();
 				//キーマクロ読み込み
-                if (Config.UseKeyMacro && !Program.AnalysisMode)
+				#region eee_カレントディレクトリー
+				if (Config.UseKeyMacro && !Program.AnalysisMode)
                 {
-                    if (File.Exists(Program.ExeDir + "macro.txt"))
+                    //if (File.Exists(Program.ExeDir + "macro.txt"))
+                    if (File.Exists(Program.WorkingDir + "macro.txt"))
                     {
                         if (Config.DisplayReport)
 							console.PrintSystemLine(trsl.LoadingMacro.Text);
-                        KeyMacro.LoadMacroFile(Program.ExeDir + "macro.txt");
+                        //KeyMacro.LoadMacroFile(Program.ExeDir + "macro.txt");
+                        KeyMacro.LoadMacroFile(Program.WorkingDir + "macro.txt");
                     }
 				}
+				#endregion
 				//_replace.csv読み込み
                 if (Config.UseReplaceFile && !Program.AnalysisMode)
                 {

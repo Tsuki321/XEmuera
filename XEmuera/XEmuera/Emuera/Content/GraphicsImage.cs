@@ -119,15 +119,19 @@ namespace MinorShift.Emuera.Content
 			var format = new StringFormat(StringFormat.GenericTypographic);
 			if (usingFont == null)
 				usingFont = new Font(Config.FontName, 100, GlobalStatic.Console.StringStyle.FontStyle, GraphicsUnit.Pixel);
+			System.Drawing.Drawing2D.GraphicsPath gp =
+				new System.Drawing.Drawing2D.GraphicsPath();
+			gp.AddString(text, usingFont.FontFamily, (int)usingFont.Style, usingFont.Height, new Point(x, y), format);
 			if (brush != null)
-			{
-				g.DrawString(text, usingFont, brush, x, y, format);
-			}
+				g.FillPath(brush, gp);
 			else
-			{
-				using (SolidBrush b = new SolidBrush(Config.ForeColor))
-					g.DrawString(text, usingFont, b, x, y, format);
-			}
+				g.FillPath(new SolidBrush(Config.ForeColor), gp);
+
+			if (pen != null)
+				g.DrawPath(pen, gp);
+			else
+				g.DrawPath(new Pen(Config.ForeColor), gp);
+			
 		}
 		#endregion
 
@@ -575,6 +579,8 @@ namespace MinorShift.Emuera.Content
 		}
 
 		public Font Fnt { get { return font; } }
+		public Pen Pen { get { return pen; } }
+		public Brush Brush { get { return brush; } }
 		#endregion
 
 

@@ -1153,6 +1153,20 @@ namespace MinorShift.Emuera.GameData
 			return ret;
 		}
 
+		#region EE_重複定義の確認
+        public bool IsDefinedCsvVar(string varname)
+		{
+			for (int i = (int)(VariableCode.ABLNAME & VariableCode.__LOWERCASE__); i < (int)(VariableCode.__COUNT_CSV_STRING_ARRAY_1D__ & VariableCode.__LOWERCASE__); i++)
+			{
+				var dic = nameToIntDics[i];
+				if (dic.ContainsKey(varname)){
+					return true;
+                }
+			}
+			return false;
+		}
+		#endregion
+
 		public CharacterTemplate GetCharacterTemplate(Int64 index)
 		{
 			foreach (CharacterTemplate chara in CharacterTmplList)

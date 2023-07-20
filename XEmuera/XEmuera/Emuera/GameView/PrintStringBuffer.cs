@@ -119,6 +119,14 @@ namespace MinorShift.Emuera.GameView
 			m_stringList.Clear();
 		}
 
+		#region EM_私家版_HTML_PRINT拡張
+		public void AppendButton(ConsoleButtonString button)
+		{
+			fromCssToButton();
+			m_buttonList.Add(button);
+		}
+		#endregion
+
 		public bool IsEmpty
 		{
 			get
@@ -176,14 +184,20 @@ namespace MinorShift.Emuera.GameView
 			return new ConsoleDisplayLine(dispLineButtonArray, firstLine, temporary);
 		}
 
-		public static ConsoleDisplayLine[] ButtonsToDisplayLines(List<ConsoleButtonString> buttonList, StringMeasure stringMeasure, bool nobr, bool temporary)
+		#region EM_私家版_HTML_divタグ
+		//public static ConsoleDisplayLine[] ButtonsToDisplayLines(List<ConsoleButtonString> buttonList, StringMeasure stringMeasure, bool nobr, bool temporary)
+		public static ConsoleDisplayLine[] ButtonsToDisplayLines(List<ConsoleButtonString> buttonList, StringMeasure stringMeasure, bool nobr, bool temporary, int divWidth = 0)
+		#endregion
 		{
 			if (buttonList.Count == 0)
 				return new ConsoleDisplayLine[0];
 			setWidthToButtonList(buttonList, stringMeasure, nobr);
 			List<ConsoleDisplayLine> lineList = new List<ConsoleDisplayLine>();
 			List<ConsoleButtonString> lineButtonList = new List<ConsoleButtonString>();
-			int windowWidth = Config.DrawableWidth;
+			#region EM_私家版_HTML_divタグ
+			// int windowWidth = Config.DrawableWidth;
+			int windowWidth = divWidth > 0 ? divWidth : Config.DrawableWidth;
+			#endregion
 			bool firstLine = true;
 			for (int i = 0; i < buttonList.Count; i++)
 			{
@@ -208,7 +222,9 @@ namespace MinorShift.Emuera.GameView
 				//クリック可能なボタンでないなら分割する。ただし「ver1739以前の非ボタン折り返しを再現する」ならクリックの可否を区別しない
 				if ((!Config.ButtonWrap) || (lineButtonList.Count == 0) || (!buttonList[i].IsButton && !Config.CompatiLinefeedAs1739))
 				{//ボタン分割する
-					int divIndex = getDivideIndex(buttonList[i], stringMeasure);
+					#region EM_私家版_HTML_divタグ
+					int divIndex = getDivideIndex(buttonList[i], stringMeasure, windowWidth);
+					#endregion
 					if (divIndex > 0)
 					{
 						ConsoleButtonString newButton = buttonList[i].DivideAt(divIndex, stringMeasure);
@@ -474,16 +490,22 @@ namespace MinorShift.Emuera.GameView
 			//}
 		}
 
-		private static int getDivideIndex(ConsoleButtonString button, StringMeasure sm)
+		#region EM_私家版_描画拡張
+		// private static int getDivideIndex(ConsoleButtonString button, StringMeasure sm)
+		private static int getDivideIndex(ConsoleButtonString button, StringMeasure sm, int divWidth = 0)
+		#endregion
 		{
 			AConsoleDisplayPart divCss = null;
 			int pointX = button.PointX;
 			int strLength = 0;
 			int index = 0;
+			#region EM_私家版_描画拡張
+			if (divWidth == 0) divWidth = Config.DrawableWidth;
 			foreach (AConsoleDisplayPart css in button.StrArray)
 			{
-				if (pointX + css.Width > Config.DrawableWidth)
-				{
+				// if (pointX + css.Width > Config.DrawableWidth)
+				if (pointX + css.Width > divWidth)
+					{
 					if (index == 0 && !css.CanDivide)
 						continue;
 					divCss = css;
@@ -495,21 +517,30 @@ namespace MinorShift.Emuera.GameView
 			}
 			if (divCss != null)
 			{
-				int cssDivIndex = getDivideIndex(divCss, sm);
+				// int cssDivIndex = getDivideIndex(divCss, sm);
+				int cssDivIndex = getDivideIndex(divCss, sm, divWidth);
 				if (cssDivIndex > 0)
 					strLength += cssDivIndex;
 			}
+			#endregion
 			return strLength;
 		}
 
-		private static int getDivideIndex(AConsoleDisplayPart part, StringMeasure sm)
+		#region EM_私家版_描画拡張
+		// private static int getDivideIndex(AConsoleDisplayPart part, StringMeasure sm)
+		private static int getDivideIndex(AConsoleDisplayPart part, StringMeasure sm, int divWidth)
+		#endregion
 		{
 			if (!part.CanDivide)
 				return -1;
+			#region EM_私家版_描画拡張
+			if (divWidth == 0) divWidth = Config.DrawableWidth;
 			ConsoleStyledString css = part as ConsoleStyledString;
 			if (part == null)
 				return -1;
-			int widthLimit = Config.DrawableWidth - css.PointX;
+			// int widthLimit = Config.DrawableWidth - css.PointX;
+			int widthLimit = divWidth - css.PointX;
+			#endregion
 			string str = css.Str;
 			Font font = css.Font;
             int highLength = str.Length;//widthLimitを超える最低の文字index(文字数-1)。

@@ -6,9 +6,12 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using MinorShift.Emuera.GameProc.Function;
 using trmb = EvilMask.Emuera.Lang.MessageBox;
 using trerror = EvilMask.Emuera.Lang.Error;
 using trsl = EvilMask.Emuera.Lang.SystemLine;
+using EvilMask.Emuera;
+using static EvilMask.Emuera.Utils;
 
 namespace MinorShift.Emuera.GameView
 {
@@ -34,7 +37,13 @@ namespace MinorShift.Emuera.GameView
 		#endregion
 		public void ClearDisplay()
 		{
+			#region EE_AnchorのCB機能移植
+			CBProc.ClearScreen();
+			#endregion
 			displayLineList.Clear();
+			#region EM_私家版_描画拡張
+			ConsoleEscapedParts.Clear();
+			#endregion
 			logicalLineCount = 0;
 			lineNo = 0;
 			lastDrawnLineNo = -1;
@@ -121,10 +130,14 @@ namespace MinorShift.Emuera.GameView
 
 		private void addDisplayLine(ConsoleDisplayLine line, bool force_LEFT)
 		{
+			#region EE_AnchorのCB機能移植
+			CBProc.AddLine(line, force_LEFT);
+			#endregion
 			if (LastLineIsTemporary)
 				deleteLine(1);
 			//不適正なFontのチェック
 			AConsoleDisplayPart errorStr = null;
+			#region EM_私家版_描画拡張
 			foreach (ConsoleButtonString button in line.Buttons)
 			{
 				foreach (AConsoleDisplayPart css in button.StrArray)
@@ -132,10 +145,26 @@ namespace MinorShift.Emuera.GameView
 					if (css.Error)
 					{
 						errorStr = css;
-						break;
+						goto ScanBreak;
+					}
+				}
+				if (Config.TextDrawingMode != TextDrawingMode.WINAPI)
+				{
+					button.FilterEscaped();
+					if (button.EscapedParts != null)
+					{
+						foreach (var p in button.EscapedParts)
+						{
+							p.Parent = button;
+							ConsoleEscapedParts.Add(p, lineNo, p.Depth,
+								(int)Math.Ceiling((float)p.Top / Config.LineHeight) + lineNo,
+								(int)Math.Floor((float)Math.Max(0, p.Bottom - 1) / Config.LineHeight) + lineNo);
+						}
 					}
 				}
 			}
+		ScanBreak:
+			#endregion
 			if (errorStr != null)
 			{
 				MessageBox.Show(trmb.IllegalFontError.Text, trmb.IllegalFontError.Text);
@@ -160,20 +189,33 @@ namespace MinorShift.Emuera.GameView
 			{
 				logicalLineCount = 0;
 			}
+			#region EM_私家版_描画拡張
 			if (displayLineList.Count > Config.MaxLog)
+			// displayLineList.RemoveAt(0);
+			{
+				if (Config.TextDrawingMode != TextDrawingMode.WINAPI)
+					ConsoleEscapedParts.RemoveAt(displayLineList[0].LineNo);
 				displayLineList.RemoveAt(0);
+			}
+			#endregion
 		}
 
 
 		public void deleteLine(int argNum)
 		{
+			#region EE_AnchorのCB機能移植
+			CBProc.DelLine(Math.Min(argNum, displayLineList.Count)); //FIXIT - Do we need to worry about the count?
+			#endregion
 			int delNum = 0;
 			int num = argNum;
+			#region EM_私家版_描画拡張
+			int topLineNo = int.MaxValue;
 			while (delNum < num)
 			{
 				if (displayLineList.Count == 0)
 					break;
 				ConsoleDisplayLine line = displayLineList[displayLineList.Count - 1];
+				topLineNo = line.LineNo;
 				displayLineList.RemoveAt(displayLineList.Count - 1);
 				lineNo--;
 				if (line.IsLogicalLine)
@@ -182,6 +224,9 @@ namespace MinorShift.Emuera.GameView
 					logicalLineCount--;
 				}
 			}
+			if (topLineNo != int.MaxValue && Config.TextDrawingMode != TextDrawingMode.WINAPI)
+				ConsoleEscapedParts.Remove(topLineNo);
+			#endregion
 			if (lineNo < 0)
 				lineNo += int.MaxValue;
 			lastDrawnLineNo = -1;
@@ -343,10 +388,10 @@ namespace MinorShift.Emuera.GameView
 
 		#region EM_私家版_HTMLパラメータ拡張
 		// public void PrintImg(string str)
-		public void PrintImg(string name, string nameb, MixedNum height, MixedNum width, MixedNum ypos)
+		public void PrintImg(string name, string nameb, string namem, MixedNum height, MixedNum width, MixedNum ypos)
 		{
 			//printBuffer.Append(new ConsoleImagePart(str, null, 0, 0, 0));
-			printBuffer.Append(new ConsoleImagePart(name, nameb, height, width, ypos));
+			printBuffer.Append(new ConsoleImagePart(name, nameb, namem, height, width, ypos));
 		}
 		#endregion
 
@@ -359,20 +404,30 @@ namespace MinorShift.Emuera.GameView
 			printBuffer.Append(part);
 		}
 
-		public void PrintHtml(string str)
+		#region EM_私家版_HTML_PRINT拡張
+		public void PrintHtml(string str, bool toPrintBuffer)
 		{
 			if (string.IsNullOrEmpty(str))
 				return;
 			if (!this.Enabled)
 				return;
-			if (!printBuffer.IsEmpty)
+			if (toPrintBuffer)
 			{
-				ConsoleDisplayLine[] dispList = printBuffer.Flush(stringMeasure, force_temporary);
-				addRangeDisplayLine(dispList);
+				foreach(var button in HtmlManager.Html2ButtonList(str, stringMeasure, this))
+					printBuffer.AppendButton(button);
 			}
-			addRangeDisplayLine(HtmlManager.Html2DisplayLine(str, stringMeasure, this));
+			else
+			{
+				if (!printBuffer.IsEmpty)
+				{
+					ConsoleDisplayLine[] dispList = printBuffer.Flush(stringMeasure, force_temporary);
+					addRangeDisplayLine(dispList);
+				}
+				addRangeDisplayLine(HtmlManager.Html2DisplayLine(str, stringMeasure, this));
+			}
 			RefreshStrings(false);
 		}
+		#endregion
 
 		private int printCWidth = -1;
 		private int printCWidthL = -1;
@@ -613,15 +668,15 @@ namespace MinorShift.Emuera.GameView
 		{
 			// if (filename == null)
 			if (filename == "" || filename == null)
-				filename = Program.ExeDir + "emuera.log";
+				filename = Program.WorkingDir + "emuera.log";
 			else
-				filename = Program.ExeDir + filename;
+				filename = Program.WorkingDir + filename;
 			if (filename.IndexOf("../") >= 0)
 			{
 				MessageBox.Show(trmb.CanNotOutputToParentDirectory.Text, trmb.FailedOutputLog.Text);
 				return false;
 			}
-			if (!filename.StartsWith(Program.ExeDir, StringComparison.CurrentCultureIgnoreCase))
+			if (!filename.StartsWith(Program.WorkingDir, StringComparison.CurrentCultureIgnoreCase))
 			{
 				MessageBox.Show(trmb.CanOnlyOutputToSubDirectory.Text, trmb.FailedOutputLog.Text);
 				return false;
@@ -631,7 +686,7 @@ namespace MinorShift.Emuera.GameView
 			{
 				if (window.Created)
 				{
-					PrintSystemLine(string.Format(trsl.LogFileHasBeenCreated.Text, filename.Replace(Program.ExeDir, "")));
+					PrintSystemLine(string.Format(trsl.LogFileHasBeenCreated.Text, filename.Replace(Program.WorkingDir, "")));
 					RefreshStrings(true);
 				}
 				return true;
@@ -643,9 +698,9 @@ namespace MinorShift.Emuera.GameView
 		public bool OutputSystemLog(string filename)
 		{
 			if (filename == "" || filename == null)
-				filename = Program.ExeDir + "emuera.log";
+				filename = Program.WorkingDir + "emuera.log";
 
-			if (!filename.StartsWith(Program.ExeDir, StringComparison.CurrentCultureIgnoreCase))
+			if (!filename.StartsWith(Program.WorkingDir, StringComparison.CurrentCultureIgnoreCase))
             {
                 MessageBox.Show(trmb.CanOnlyOutputToSubDirectory.Text, trmb.FailedOutputLog.Text);
                 return false;
@@ -655,7 +710,7 @@ namespace MinorShift.Emuera.GameView
 			{
 				if (window.Created)
 				{
-					PrintSystemLine(string.Format(trsl.LogFileHasBeenCreated.Text, filename.Replace(Program.ExeDir, "")));
+					PrintSystemLine(string.Format(trsl.LogFileHasBeenCreated.Text, filename.Replace(Program.WorkingDir, "")));
 					RefreshStrings(true);
 				}
 				return true;
@@ -671,7 +726,10 @@ namespace MinorShift.Emuera.GameView
 				return;
 			for (int i = 0; i < displayLineList.Count; i++)
 			{
-				builder.AppendLine(displayLineList[i].ToString());
+                #region EE_AnchorのCB機能移植
+                //builder.AppendLine(displayLineList[i].ToString());
+				builder.AppendLine(ClipboardProcessor.StripHTML(displayLineList[i].ToString()));
+				#endregion
 			}
 		}
 

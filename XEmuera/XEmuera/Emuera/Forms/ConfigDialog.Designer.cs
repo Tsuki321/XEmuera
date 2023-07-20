@@ -105,10 +105,6 @@
             this.ScrollRange = new System.Windows.Forms.Label();
             this.tabPageFont = new System.Windows.Forms.TabPage();
             this.flowLayoutPanel27 = new System.Windows.Forms.FlowLayoutPanel();
-            this.colorBoxBG = new MinorShift.Emuera.Forms.ColorBox();
-            this.colorBoxFG = new MinorShift.Emuera.Forms.ColorBox();
-            this.colorBoxSelecting = new MinorShift.Emuera.Forms.ColorBox();
-            this.colorBoxBacklog = new MinorShift.Emuera.Forms.ColorBox();
             this.flowLayoutPanel24 = new System.Windows.Forms.FlowLayoutPanel();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -145,8 +141,8 @@
             this.checkBox30 = new System.Windows.Forms.CheckBox();
             this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.checkBox34 = new System.Windows.Forms.CheckBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
             this.label25 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
             this.tabPageCompati = new System.Windows.Forms.TabPage();
             this.flowLayoutPanel33 = new System.Windows.Forms.FlowLayoutPanel();
             this.label30 = new System.Windows.Forms.Label();
@@ -179,12 +175,45 @@
             this.flowLayoutPanel31 = new System.Windows.Forms.FlowLayoutPanel();
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.tabPageClipboard = new System.Windows.Forms.TabPage();
+            this.flowLayoutPanel35 = new System.Windows.Forms.FlowLayoutPanel();
+            this.checkBoxCBuseCB = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBIgnoreTags = new System.Windows.Forms.CheckBox();
+            this.flowLayoutPanel36 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label29 = new System.Windows.Forms.Label();
+            this.textBoxCBReplaceTags = new System.Windows.Forms.TextBox();
+            this.checkBoxCBNewLinesOnly = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBClearBuffer = new System.Windows.Forms.CheckBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel37 = new System.Windows.Forms.FlowLayoutPanel();
+            this.checkBoxCBTriggerLeftClick = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBTriggerMiddleClick = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBTriggerDoubleLeftClick = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBTriggerAnyKeyWait = new System.Windows.Forms.CheckBox();
+            this.checkBoxCBTriggerInputWait = new System.Windows.Forms.CheckBox();
+            this.flowLayoutPanel38 = new System.Windows.Forms.FlowLayoutPanel();
+            this.numericUpDownCBMaxCB = new System.Windows.Forms.NumericUpDown();
+            this.label28 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel39 = new System.Windows.Forms.FlowLayoutPanel();
+            this.numericUpDownCBBufferSize = new System.Windows.Forms.NumericUpDown();
+            this.label31 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel40 = new System.Windows.Forms.FlowLayoutPanel();
+            this.numericUpDownCBScrollCount = new System.Windows.Forms.NumericUpDown();
+            this.label32 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel41 = new System.Windows.Forms.FlowLayoutPanel();
+            this.numericUpDownCBMinTimer = new System.Windows.Forms.NumericUpDown();
+            this.label33 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.colorBoxBG = new MinorShift.Emuera.Forms.ColorBox();
+            this.colorBoxFG = new MinorShift.Emuera.Forms.ColorBox();
+            this.colorBoxSelecting = new MinorShift.Emuera.Forms.ColorBox();
+            this.colorBoxBacklog = new MinorShift.Emuera.Forms.ColorBox();
             this.tabControl.SuspendLayout();
             this.tabEnvironment.SuspendLayout();
             this.flowLayoutPanel13.SuspendLayout();
@@ -238,6 +267,18 @@
             this.tabPageDebug.SuspendLayout();
             this.flowLayoutPanel32.SuspendLayout();
             this.flowLayoutPanel31.SuspendLayout();
+            this.tabPageClipboard.SuspendLayout();
+            this.flowLayoutPanel35.SuspendLayout();
+            this.flowLayoutPanel36.SuspendLayout();
+            this.flowLayoutPanel37.SuspendLayout();
+            this.flowLayoutPanel38.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBMaxCB)).BeginInit();
+            this.flowLayoutPanel39.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBBufferSize)).BeginInit();
+            this.flowLayoutPanel40.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBScrollCount)).BeginInit();
+            this.flowLayoutPanel41.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBMinTimer)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel3.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -274,6 +315,7 @@
             this.tabControl.Controls.Add(this.tabPageSystem2);
             this.tabControl.Controls.Add(this.tabPageCompati);
             this.tabControl.Controls.Add(this.tabPageDebug);
+            this.tabControl.Controls.Add(this.tabPageClipboard);
             resources.ApplyResources(this.tabControl, "tabControl");
             this.tabControl.Multiline = true;
             this.tabControl.Name = "tabControl";
@@ -749,34 +791,6 @@
             this.flowLayoutPanel27.Controls.Add(this.flowLayoutPanel26);
             this.flowLayoutPanel27.Name = "flowLayoutPanel27";
             // 
-            // colorBoxBG
-            // 
-            this.colorBoxBG.ButtonText = "背景色";
-            resources.ApplyResources(this.colorBoxBG, "colorBoxBG");
-            this.colorBoxBG.Name = "colorBoxBG";
-            this.colorBoxBG.SelectingColor = System.Drawing.Color.Transparent;
-            // 
-            // colorBoxFG
-            // 
-            this.colorBoxFG.ButtonText = "文字色";
-            resources.ApplyResources(this.colorBoxFG, "colorBoxFG");
-            this.colorBoxFG.Name = "colorBoxFG";
-            this.colorBoxFG.SelectingColor = System.Drawing.Color.Transparent;
-            // 
-            // colorBoxSelecting
-            // 
-            this.colorBoxSelecting.ButtonText = "選択中文字色";
-            resources.ApplyResources(this.colorBoxSelecting, "colorBoxSelecting");
-            this.colorBoxSelecting.Name = "colorBoxSelecting";
-            this.colorBoxSelecting.SelectingColor = System.Drawing.Color.Transparent;
-            // 
-            // colorBoxBacklog
-            // 
-            this.colorBoxBacklog.ButtonText = "履歴文字色";
-            resources.ApplyResources(this.colorBoxBacklog, "colorBoxBacklog");
-            this.colorBoxBacklog.Name = "colorBoxBacklog";
-            this.colorBoxBacklog.SelectingColor = System.Drawing.Color.Transparent;
-            // 
             // flowLayoutPanel24
             // 
             resources.ApplyResources(this.flowLayoutPanel24, "flowLayoutPanel24");
@@ -1017,15 +1031,15 @@
             this.checkBox34.Name = "checkBox34";
             this.checkBox34.UseVisualStyleBackColor = true;
             // 
-            // textBox3
-            // 
-            resources.ApplyResources(this.textBox3, "textBox3");
-            this.textBox3.Name = "textBox3";
-            // 
             // label25
             // 
             resources.ApplyResources(this.label25, "label25");
             this.label25.Name = "label25";
+            // 
+            // textBox3
+            // 
+            resources.ApplyResources(this.textBox3, "textBox3");
+            this.textBox3.Name = "textBox3";
             // 
             // tabPageCompati
             // 
@@ -1277,6 +1291,209 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // tabPageClipboard
+            // 
+            this.tabPageClipboard.Controls.Add(this.flowLayoutPanel35);
+            resources.ApplyResources(this.tabPageClipboard, "tabPageClipboard");
+            this.tabPageClipboard.Name = "tabPageClipboard";
+            this.tabPageClipboard.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel35
+            // 
+            resources.ApplyResources(this.flowLayoutPanel35, "flowLayoutPanel35");
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBuseCB);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBIgnoreTags);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel36);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBNewLinesOnly);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBClearBuffer);
+            this.flowLayoutPanel35.Controls.Add(this.label27);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel37);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBTriggerDoubleLeftClick);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBTriggerAnyKeyWait);
+            this.flowLayoutPanel35.Controls.Add(this.checkBoxCBTriggerInputWait);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel38);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel39);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel40);
+            this.flowLayoutPanel35.Controls.Add(this.flowLayoutPanel41);
+            this.flowLayoutPanel35.Controls.Add(this.label34);
+            this.flowLayoutPanel35.Name = "flowLayoutPanel35";
+            // 
+            // checkBoxCBuseCB
+            // 
+            resources.ApplyResources(this.checkBoxCBuseCB, "checkBoxCBuseCB");
+            this.checkBoxCBuseCB.Name = "checkBoxCBuseCB";
+            this.toolTip1.SetToolTip(this.checkBoxCBuseCB, resources.GetString("checkBoxCBuseCB.ToolTip"));
+            this.checkBoxCBuseCB.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBIgnoreTags
+            // 
+            resources.ApplyResources(this.checkBoxCBIgnoreTags, "checkBoxCBIgnoreTags");
+            this.checkBoxCBIgnoreTags.Name = "checkBoxCBIgnoreTags";
+            this.toolTip1.SetToolTip(this.checkBoxCBIgnoreTags, resources.GetString("checkBoxCBIgnoreTags.ToolTip"));
+            this.checkBoxCBIgnoreTags.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel36
+            // 
+            resources.ApplyResources(this.flowLayoutPanel36, "flowLayoutPanel36");
+            this.flowLayoutPanel36.Controls.Add(this.label29);
+            this.flowLayoutPanel36.Controls.Add(this.textBoxCBReplaceTags);
+            this.flowLayoutPanel36.Name = "flowLayoutPanel36";
+            // 
+            // label29
+            // 
+            resources.ApplyResources(this.label29, "label29");
+            this.label29.Name = "label29";
+            this.toolTip1.SetToolTip(this.label29, resources.GetString("label29.ToolTip"));
+            // 
+            // textBoxCBReplaceTags
+            // 
+            resources.ApplyResources(this.textBoxCBReplaceTags, "textBoxCBReplaceTags");
+            this.textBoxCBReplaceTags.Name = "textBoxCBReplaceTags";
+            this.toolTip1.SetToolTip(this.textBoxCBReplaceTags, resources.GetString("textBoxCBReplaceTags.ToolTip"));
+            // 
+            // checkBoxCBNewLinesOnly
+            // 
+            resources.ApplyResources(this.checkBoxCBNewLinesOnly, "checkBoxCBNewLinesOnly");
+            this.checkBoxCBNewLinesOnly.Name = "checkBoxCBNewLinesOnly";
+            this.toolTip1.SetToolTip(this.checkBoxCBNewLinesOnly, resources.GetString("checkBoxCBNewLinesOnly.ToolTip"));
+            this.checkBoxCBNewLinesOnly.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBClearBuffer
+            // 
+            resources.ApplyResources(this.checkBoxCBClearBuffer, "checkBoxCBClearBuffer");
+            this.checkBoxCBClearBuffer.Name = "checkBoxCBClearBuffer";
+            this.toolTip1.SetToolTip(this.checkBoxCBClearBuffer, resources.GetString("checkBoxCBClearBuffer.ToolTip"));
+            this.checkBoxCBClearBuffer.UseVisualStyleBackColor = true;
+            // 
+            // label27
+            // 
+            resources.ApplyResources(this.label27, "label27");
+            this.label27.Name = "label27";
+            this.toolTip1.SetToolTip(this.label27, resources.GetString("label27.ToolTip"));
+            // 
+            // flowLayoutPanel37
+            // 
+            resources.ApplyResources(this.flowLayoutPanel37, "flowLayoutPanel37");
+            this.flowLayoutPanel37.Controls.Add(this.checkBoxCBTriggerLeftClick);
+            this.flowLayoutPanel37.Controls.Add(this.checkBoxCBTriggerMiddleClick);
+            this.flowLayoutPanel37.Name = "flowLayoutPanel37";
+            // 
+            // checkBoxCBTriggerLeftClick
+            // 
+            resources.ApplyResources(this.checkBoxCBTriggerLeftClick, "checkBoxCBTriggerLeftClick");
+            this.checkBoxCBTriggerLeftClick.Name = "checkBoxCBTriggerLeftClick";
+            this.toolTip1.SetToolTip(this.checkBoxCBTriggerLeftClick, resources.GetString("checkBoxCBTriggerLeftClick.ToolTip"));
+            this.checkBoxCBTriggerLeftClick.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBTriggerMiddleClick
+            // 
+            resources.ApplyResources(this.checkBoxCBTriggerMiddleClick, "checkBoxCBTriggerMiddleClick");
+            this.checkBoxCBTriggerMiddleClick.Name = "checkBoxCBTriggerMiddleClick";
+            this.toolTip1.SetToolTip(this.checkBoxCBTriggerMiddleClick, resources.GetString("checkBoxCBTriggerMiddleClick.ToolTip"));
+            this.checkBoxCBTriggerMiddleClick.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBTriggerDoubleLeftClick
+            // 
+            resources.ApplyResources(this.checkBoxCBTriggerDoubleLeftClick, "checkBoxCBTriggerDoubleLeftClick");
+            this.checkBoxCBTriggerDoubleLeftClick.Name = "checkBoxCBTriggerDoubleLeftClick";
+            this.toolTip1.SetToolTip(this.checkBoxCBTriggerDoubleLeftClick, resources.GetString("checkBoxCBTriggerDoubleLeftClick.ToolTip"));
+            this.checkBoxCBTriggerDoubleLeftClick.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBTriggerAnyKeyWait
+            // 
+            resources.ApplyResources(this.checkBoxCBTriggerAnyKeyWait, "checkBoxCBTriggerAnyKeyWait");
+            this.checkBoxCBTriggerAnyKeyWait.Name = "checkBoxCBTriggerAnyKeyWait";
+            this.toolTip1.SetToolTip(this.checkBoxCBTriggerAnyKeyWait, resources.GetString("checkBoxCBTriggerAnyKeyWait.ToolTip"));
+            this.checkBoxCBTriggerAnyKeyWait.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxCBTriggerInputWait
+            // 
+            resources.ApplyResources(this.checkBoxCBTriggerInputWait, "checkBoxCBTriggerInputWait");
+            this.checkBoxCBTriggerInputWait.Name = "checkBoxCBTriggerInputWait";
+            this.toolTip1.SetToolTip(this.checkBoxCBTriggerInputWait, resources.GetString("checkBoxCBTriggerInputWait.ToolTip"));
+            this.checkBoxCBTriggerInputWait.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel38
+            // 
+            resources.ApplyResources(this.flowLayoutPanel38, "flowLayoutPanel38");
+            this.flowLayoutPanel38.Controls.Add(this.numericUpDownCBMaxCB);
+            this.flowLayoutPanel38.Controls.Add(this.label28);
+            this.flowLayoutPanel38.Name = "flowLayoutPanel38";
+            // 
+            // numericUpDownCBMaxCB
+            // 
+            resources.ApplyResources(this.numericUpDownCBMaxCB, "numericUpDownCBMaxCB");
+            this.numericUpDownCBMaxCB.Name = "numericUpDownCBMaxCB";
+            this.toolTip1.SetToolTip(this.numericUpDownCBMaxCB, resources.GetString("numericUpDownCBMaxCB.ToolTip"));
+            // 
+            // label28
+            // 
+            resources.ApplyResources(this.label28, "label28");
+            this.label28.Name = "label28";
+            this.toolTip1.SetToolTip(this.label28, resources.GetString("label28.ToolTip"));
+            // 
+            // flowLayoutPanel39
+            // 
+            resources.ApplyResources(this.flowLayoutPanel39, "flowLayoutPanel39");
+            this.flowLayoutPanel39.Controls.Add(this.numericUpDownCBBufferSize);
+            this.flowLayoutPanel39.Controls.Add(this.label31);
+            this.flowLayoutPanel39.Name = "flowLayoutPanel39";
+            // 
+            // numericUpDownCBBufferSize
+            // 
+            resources.ApplyResources(this.numericUpDownCBBufferSize, "numericUpDownCBBufferSize");
+            this.numericUpDownCBBufferSize.Name = "numericUpDownCBBufferSize";
+            this.toolTip1.SetToolTip(this.numericUpDownCBBufferSize, resources.GetString("numericUpDownCBBufferSize.ToolTip"));
+            // 
+            // label31
+            // 
+            resources.ApplyResources(this.label31, "label31");
+            this.label31.Name = "label31";
+            this.toolTip1.SetToolTip(this.label31, resources.GetString("label31.ToolTip"));
+            // 
+            // flowLayoutPanel40
+            // 
+            resources.ApplyResources(this.flowLayoutPanel40, "flowLayoutPanel40");
+            this.flowLayoutPanel40.Controls.Add(this.numericUpDownCBScrollCount);
+            this.flowLayoutPanel40.Controls.Add(this.label32);
+            this.flowLayoutPanel40.Name = "flowLayoutPanel40";
+            // 
+            // numericUpDownCBScrollCount
+            // 
+            resources.ApplyResources(this.numericUpDownCBScrollCount, "numericUpDownCBScrollCount");
+            this.numericUpDownCBScrollCount.Name = "numericUpDownCBScrollCount";
+            this.toolTip1.SetToolTip(this.numericUpDownCBScrollCount, resources.GetString("numericUpDownCBScrollCount.ToolTip"));
+            // 
+            // label32
+            // 
+            resources.ApplyResources(this.label32, "label32");
+            this.label32.Name = "label32";
+            this.toolTip1.SetToolTip(this.label32, resources.GetString("label32.ToolTip"));
+            // 
+            // flowLayoutPanel41
+            // 
+            resources.ApplyResources(this.flowLayoutPanel41, "flowLayoutPanel41");
+            this.flowLayoutPanel41.Controls.Add(this.numericUpDownCBMinTimer);
+            this.flowLayoutPanel41.Controls.Add(this.label33);
+            this.flowLayoutPanel41.Name = "flowLayoutPanel41";
+            // 
+            // numericUpDownCBMinTimer
+            // 
+            resources.ApplyResources(this.numericUpDownCBMinTimer, "numericUpDownCBMinTimer");
+            this.numericUpDownCBMinTimer.Name = "numericUpDownCBMinTimer";
+            this.toolTip1.SetToolTip(this.numericUpDownCBMinTimer, resources.GetString("numericUpDownCBMinTimer.ToolTip"));
+            // 
+            // label33
+            // 
+            resources.ApplyResources(this.label33, "label33");
+            this.label33.Name = "label33";
+            this.toolTip1.SetToolTip(this.label33, resources.GetString("label33.ToolTip"));
+            // 
+            // label34
+            // 
+            resources.ApplyResources(this.label34, "label34");
+            this.label34.Name = "label34";
+            // 
             // label16
             // 
             resources.ApplyResources(this.label16, "label16");
@@ -1307,6 +1524,34 @@
             this.flowLayoutPanel2.Controls.Add(this.buttonReboot);
             this.flowLayoutPanel2.Controls.Add(this.buttonCancel);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            // 
+            // colorBoxBG
+            // 
+            this.colorBoxBG.ButtonText = "背景色";
+            resources.ApplyResources(this.colorBoxBG, "colorBoxBG");
+            this.colorBoxBG.Name = "colorBoxBG";
+            this.colorBoxBG.SelectingColor = System.Drawing.Color.Transparent;
+            // 
+            // colorBoxFG
+            // 
+            this.colorBoxFG.ButtonText = "文字色";
+            resources.ApplyResources(this.colorBoxFG, "colorBoxFG");
+            this.colorBoxFG.Name = "colorBoxFG";
+            this.colorBoxFG.SelectingColor = System.Drawing.Color.Transparent;
+            // 
+            // colorBoxSelecting
+            // 
+            this.colorBoxSelecting.ButtonText = "選択中文字色";
+            resources.ApplyResources(this.colorBoxSelecting, "colorBoxSelecting");
+            this.colorBoxSelecting.Name = "colorBoxSelecting";
+            this.colorBoxSelecting.SelectingColor = System.Drawing.Color.Transparent;
+            // 
+            // colorBoxBacklog
+            // 
+            this.colorBoxBacklog.ButtonText = "履歴文字色";
+            resources.ApplyResources(this.colorBoxBacklog, "colorBoxBacklog");
+            this.colorBoxBacklog.Name = "colorBoxBacklog";
+            this.colorBoxBacklog.SelectingColor = System.Drawing.Color.Transparent;
             // 
             // ConfigDialog
             // 
@@ -1411,6 +1656,26 @@
             this.flowLayoutPanel32.PerformLayout();
             this.flowLayoutPanel31.ResumeLayout(false);
             this.flowLayoutPanel31.PerformLayout();
+            this.tabPageClipboard.ResumeLayout(false);
+            this.tabPageClipboard.PerformLayout();
+            this.flowLayoutPanel35.ResumeLayout(false);
+            this.flowLayoutPanel35.PerformLayout();
+            this.flowLayoutPanel36.ResumeLayout(false);
+            this.flowLayoutPanel36.PerformLayout();
+            this.flowLayoutPanel37.ResumeLayout(false);
+            this.flowLayoutPanel37.PerformLayout();
+            this.flowLayoutPanel38.ResumeLayout(false);
+            this.flowLayoutPanel38.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBMaxCB)).EndInit();
+            this.flowLayoutPanel39.ResumeLayout(false);
+            this.flowLayoutPanel39.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBBufferSize)).EndInit();
+            this.flowLayoutPanel40.ResumeLayout(false);
+            this.flowLayoutPanel40.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBScrollCount)).EndInit();
+            this.flowLayoutPanel41.ResumeLayout(false);
+            this.flowLayoutPanel41.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownCBMinTimer)).EndInit();
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel3.ResumeLayout(false);
@@ -1575,9 +1840,38 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel30;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel33;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel34;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel32;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel31;
         private System.Windows.Forms.CheckBox checkBox33;
         private System.Windows.Forms.CheckBox checkBox34;
+        private System.Windows.Forms.TabPage tabPageClipboard;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel35;
+        private System.Windows.Forms.CheckBox checkBoxCBuseCB;
+        private System.Windows.Forms.CheckBox checkBoxCBIgnoreTags;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TextBox textBoxCBReplaceTags;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel36;
+        private System.Windows.Forms.CheckBox checkBoxCBNewLinesOnly;
+        private System.Windows.Forms.CheckBox checkBoxCBClearBuffer;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel37;
+        private System.Windows.Forms.CheckBox checkBoxCBTriggerLeftClick;
+        private System.Windows.Forms.CheckBox checkBoxCBTriggerMiddleClick;
+        private System.Windows.Forms.CheckBox checkBoxCBTriggerDoubleLeftClick;
+        private System.Windows.Forms.CheckBox checkBoxCBTriggerAnyKeyWait;
+        private System.Windows.Forms.CheckBox checkBoxCBTriggerInputWait;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel38;
+        private System.Windows.Forms.NumericUpDown numericUpDownCBMaxCB;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel39;
+        private System.Windows.Forms.NumericUpDown numericUpDownCBBufferSize;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel40;
+        private System.Windows.Forms.NumericUpDown numericUpDownCBScrollCount;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel41;
+        private System.Windows.Forms.NumericUpDown numericUpDownCBMinTimer;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel32;
     }
 }
