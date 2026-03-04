@@ -90,7 +90,6 @@ namespace MinorShift.Emuera.GameView
 		private readonly List<ClientBackGroundImage> cbgList = new List<ClientBackGroundImage>();
 		private GraphicsImage cbgButtonMap = null;
 		private int selectingCBGButtonInt = -1;
-		private int lastSelectingCBGButtonInt = -1;
 		//ConsoleButtonString selectingButton = null;
 		//ConsoleButtonString lastSelectingButton = null;
 		class ClientBackGroundImage : IComparable<ClientBackGroundImage>
@@ -169,7 +168,6 @@ namespace MinorShift.Emuera.GameView
 		{
 			cbgButtonMap = null;
 			selectingCBGButtonInt = -1;
-			lastSelectingCBGButtonInt = -1;
 		}
 
 		public bool CBG_SetGraphics(GraphicsImage gra, int x, int y, int zdepth)
@@ -202,7 +200,6 @@ namespace MinorShift.Emuera.GameView
 				return false;
 			cbgButtonMap = gra;
 			selectingCBGButtonInt = -1;
-			lastSelectingCBGButtonInt = -1;
 			return true;
 		}
 
@@ -443,15 +440,10 @@ namespace MinorShift.Emuera.GameView
 		public bool ButtonIsSelected(ConsoleButtonString button) { return selectingButton == button; }
 
 		/// <summary>
-		/// ToolTip表示したフラグ
-		/// </summary>
-		bool tooltipUsed = false;
-		/// <summary>
 		/// マウスの直下にあるテキスト。ボタンであってもよい。
-		/// ToolTip表示用。世代無視、履歴中も表示
+		/// 世代無視、履歴中も表示
 		/// </summary>
 		ConsoleButtonString pointingString = null;
-		ConsoleButtonString lastPointingString = null;
 		#endregion
 
 		#region Input & Timer系
@@ -1411,7 +1403,6 @@ namespace MinorShift.Emuera.GameView
 			//window.ToolTip.InitialDelay = delay;
 		}
 
-        int tooltip_duration = 0;
         public void SetToolTipDuration(int duration)
         {
             //tooltip_duration = duration;

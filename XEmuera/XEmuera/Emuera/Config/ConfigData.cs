@@ -39,7 +39,6 @@ namespace MinorShift.Emuera
 		{
 			ConfigsText.Culture = LanguageModel.Get("ja-JP");
 
-			int i = 0;
 			configArray.Add(new ConfigItem(ConfigCode.IgnoreCase, ConfigsText.IgnoreCase, true));
 			configArray.Add(new ConfigItem(ConfigCode.UseRenameFile, ConfigsText.UseRenameFile, false));
 			configArray.Add(new ConfigItem(ConfigCode.UseReplaceFile, ConfigsText.UseReplaceFile, true));

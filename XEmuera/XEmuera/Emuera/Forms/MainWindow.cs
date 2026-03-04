@@ -1051,9 +1051,6 @@ namespace MinorShift.Emuera
 		//		return;
 		//	PressEnterKey(false, false);
 		//}
-
-
-		int macroGroup = 0;
 		//private void マクロToolStripMenuItem_Click(object sender, EventArgs e)
 		//{
 		//	if ((console == null) || (console.IsInProcess))
@@ -1101,8 +1098,6 @@ namespace MinorShift.Emuera
 		//		labelMacroGroupChanged.Visible = false;
 		//	}
 		//}
-
-		int labelTimerCount = 0;
 
 		//private void setNewMacroGroup(int group)
 		//{
