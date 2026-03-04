@@ -1,6 +1,12 @@
 # This workflow builds and packages the XEmuera Xamarin Android application.
 #
 # For more information on GitHub Actions, refer to https://github.com/features/actions
+#
+# For release signing, add the following secrets to the repository:
+#   KEYSTORE_BASE64        - Base64-encoded keystore file (.jks/.keystore)
+#   KEY_STORE_PASSWORD     - Password for the keystore
+#   KEY_ALIAS              - Key alias inside the keystore
+#   KEY_PASSWORD           - Password for the key
 
 name: .NET Core Desktop
 
@@ -51,17 +57,46 @@ jobs:
         echo "y" | & $sdkmanager "platforms;android-31"
       shell: pwsh
 
+    # Decode the keystore for release signing (requires KEYSTORE_BASE64 secret)
+    - name: Decode keystore for signing
+      if: matrix.configuration == 'Release' && env.KEYSTORE_BASE64 != ''
+      run: |
+        $keystoreBytes = [Convert]::FromBase64String("$env:KEYSTORE_BASE64")
+        [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\xemuera.keystore", $keystoreBytes)
+      shell: pwsh
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
 
-    # Build the Android project and generate APK
-    - name: Build the Android project
+    # Build the Android project and generate APK (unsigned for Debug, signed for Release when secrets are set)
+    - name: Build the Android project (unsigned)
+      if: matrix.configuration == 'Debug' || env.KEYSTORE_BASE64 == ''
       run: msbuild $env:Android_Project_Path /t:PackageForAndroid /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+    - name: Build the Android project (signed release)
+      if: matrix.configuration == 'Release' && env.KEYSTORE_BASE64 != ''
+      run: >
+        msbuild $env:Android_Project_Path /t:PackageForAndroid
+        /p:Configuration=$env:Configuration
+        /p:AndroidKeyStore=true
+        /p:AndroidSigningKeyStore="$env:RUNNER_TEMP\xemuera.keystore"
+        /p:AndroidSigningStorePass="$env:KEY_STORE_PASSWORD"
+        /p:AndroidSigningKeyAlias="$env:KEY_ALIAS"
+        /p:AndroidSigningKeyPass="$env:KEY_PASSWORD"
+      env:
+        Configuration: ${{ matrix.configuration }}
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     # Upload the APK: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload build artifacts
