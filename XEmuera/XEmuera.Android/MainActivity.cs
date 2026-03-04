@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using Android.App;
 using Android.Content.PM;
@@ -19,8 +20,56 @@ namespace XEmuera.Droid
 		private static int UIOptions;
 		private static int EmueraUIOptions;
 
+		private static bool CrashHandlersRegistered;
+		private static readonly object CrashLogLock = new object();
+
+		private static void WriteCrashLog(Exception ex)
+		{
+			try
+			{
+				string logDir = Application.Context.GetExternalFilesDir(null)?.AbsolutePath
+					?? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+				string logPath = Path.Combine(logDir, "crash_log.txt");
+				string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]\n{ex}\n\n";
+				lock (CrashLogLock)
+				{
+					File.AppendAllText(logPath, entry);
+				}
+			}
+			catch
+			{
+				// Ignore errors while writing the crash log
+			}
+		}
+
+		private static void RegisterCrashHandlers()
+		{
+			if (CrashHandlersRegistered)
+				return;
+			CrashHandlersRegistered = true;
+
+			AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+			{
+				WriteCrashLog(e.ExceptionObject as Exception ?? new Exception(e.ExceptionObject?.ToString()));
+			};
+
+			AndroidEnvironment.UnhandledExceptionRaiser += (sender, e) =>
+			{
+				WriteCrashLog(e.Exception);
+				e.Handled = true;
+			};
+
+			TaskScheduler.UnobservedTaskException += (sender, e) =>
+			{
+				WriteCrashLog(e.Exception);
+				e.SetObserved();
+			};
+		}
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			RegisterCrashHandlers();
+
 			base.OnCreate(savedInstanceState);
 
 			Instance = this;
