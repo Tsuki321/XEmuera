@@ -192,7 +192,7 @@ namespace MinorShift.Emuera
 
 		private void RefreshScrollBarLayout()
 		{
-			ScrollBarLayout.WidthRequest = Math.Min(400d, uiLayout.Height - ToolButtonGroup.Height - 40d);
+			ScrollBarLayout.HeightRequest = Math.Min(400d, uiLayout.Height - ToolButtonGroup.Height - 40d);
 		}
 
 		protected override bool OnBackButtonPressed()

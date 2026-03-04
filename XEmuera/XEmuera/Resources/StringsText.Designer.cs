@@ -70,6 +70,15 @@ namespace XEmuera.Resources {
         }
         
         /// <summary>
+        ///   查找类似 添加游戏文件夹 的本地化字符串。
+        /// </summary>
+        internal static string AddGameFolder {
+            get {
+                return ResourceManager.GetString("AddGameFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 再按一次返回键退出应用。 的本地化字符串。
         /// </summary>
         internal static string BackButtonToQuit {
@@ -354,6 +363,15 @@ namespace XEmuera.Resources {
         internal static string QuickButton {
             get {
                 return ResourceManager.GetString("QuickButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最近游玩 的本地化字符串。
+        /// </summary>
+        internal static string RecentlyPlayed {
+            get {
+                return ResourceManager.GetString("RecentlyPlayed", resourceCulture);
             }
         }
         

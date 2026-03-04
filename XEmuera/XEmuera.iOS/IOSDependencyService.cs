@@ -76,6 +76,12 @@ namespace XEmuera.iOS
 			throw new NotImplementedException();
 		}
 
+		public void PickFolder(Action<string> callback)
+		{
+			// iOS folder picking is not yet implemented
+			callback?.Invoke(null);
+		}
+
 		public void RequestManageFilesPermissions()
 		{
 			throw new NotImplementedException();

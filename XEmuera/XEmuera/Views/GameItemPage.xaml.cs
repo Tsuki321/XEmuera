@@ -21,6 +21,8 @@ namespace XEmuera.Views
 
 			Title = StringsText.GameList;
 
+			AddFolderButton.Text = StringsText.AddGameFolder;
+
 			GameItemListView.ItemsSource = GameItemModel.AllModels;
 		}
 
@@ -30,6 +32,24 @@ namespace XEmuera.Views
 			{
 				GameItemModel.Load();
 				GameItemListView.EndRefresh();
+			});
+		}
+
+		private void AddFolderButton_Clicked(object sender, EventArgs e)
+		{
+			GameUtils.PlatformService.PickFolder(OnFolderPicked);
+		}
+
+		private void OnFolderPicked(string path)
+		{
+			if (string.IsNullOrWhiteSpace(path))
+				return;
+
+			GameFolderModel.AddFolder(path);
+
+			Task.Run(() =>
+			{
+				GameItemModel.Load();
 			});
 		}
 
