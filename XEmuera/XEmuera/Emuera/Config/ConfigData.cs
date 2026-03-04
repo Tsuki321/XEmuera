@@ -134,7 +134,6 @@ namespace MinorShift.Emuera
 			configArray.Add(new ConfigItem(ConfigCode.LongPressSkip, ConfigsText.LongPressSkip, true));
 			configArray.Add(new ConfigItem(ConfigCode.LongPressSkipTime, ConfigsText.LongPressSkipTime, 800));
 
-			i = 0;
 			debugArray.Add(new ConfigItem(ConfigCode.DebugShowWindow, ConfigsText.DebugShowWindow, true));
 			debugArray.Add(new ConfigItem(ConfigCode.DebugWindowTopMost, ConfigsText.DebugWindowTopMost, true));
 			debugArray.Add(new ConfigItem(ConfigCode.DebugWindowWidth, ConfigsText.DebugWindowWidth, 400));
@@ -143,7 +142,6 @@ namespace MinorShift.Emuera
 			debugArray.Add(new ConfigItem(ConfigCode.DebugWindowPosX, ConfigsText.DebugWindowPosX, 0));
 			debugArray.Add(new ConfigItem(ConfigCode.DebugWindowPosY, ConfigsText.DebugWindowPosY, 0));
 
-			i = 0;
 			replaceArray.Add(new ConfigItem(ConfigCode.MoneyLabel, ConfigsText.MoneyLabel, "$"));
 			replaceArray.Add(new ConfigItem(ConfigCode.MoneyFirst, ConfigsText.MoneyFirst, true));
 			replaceArray.Add(new ConfigItem(ConfigCode.LoadLabel, ConfigsText.LoadLabel, "Now Loading..."));
