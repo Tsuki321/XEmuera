@@ -4,6 +4,14 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 	x:Class="XEmuera.Views.GameItemPage">
 
+	<ContentPage.ToolbarItems>
+		<ToolbarItem
+			x:Name="AddFolderButton"
+			Order="Primary"
+			Priority="0"
+			Clicked="AddFolderButton_Clicked" />
+	</ContentPage.ToolbarItems>
+
 	<ListView
 		x:Name="GameItemListView"
 		RefreshControlColor="{StaticResource ZimaBlueColor}"
@@ -28,6 +36,12 @@
 									Text="{Binding Name}"
 									FontSize="14"
 									TextColor="HotPink" />
+								<Label
+									IsVisible="{Binding IsRecent}"
+									Text="★"
+									FontSize="12"
+									VerticalOptions="Center"
+									TextColor="Gold" />
 								<Label
 									IsVisible="{Binding HasError}"
 									Text="{Binding Error}"

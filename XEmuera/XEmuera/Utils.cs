@@ -96,6 +96,8 @@ namespace XEmuera
 
 			CurrentGamePath = gamePath;
 
+			GameItemModel.SaveRecentGame(gamePath);
+
 			StartEmuera();
 		}
 
@@ -358,6 +360,8 @@ namespace XEmuera
 		bool NeedRebootIfLanguageChanged();
 
 		bool NeedStoragePermissions();
+
+		void PickFolder(Action<string> callback);
 
 		void RequestManageFilesPermissions();
 

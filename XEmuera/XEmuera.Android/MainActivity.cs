@@ -64,6 +64,19 @@ namespace XEmuera.Droid
 						? Xamarin.Essentials.PermissionStatus.Granted : Xamarin.Essentials.PermissionStatus.Denied;
 					break;
 
+				case GameUtils.FileSelectorRequestCode:
+					if (resultCode == Result.Ok && data?.Data != null)
+					{
+						string path = DroidDependencyService.GetPathFromDocumentTreeUri(data.Data);
+						DroidDependencyService.FolderPickerCallback?.Invoke(path);
+					}
+					else
+					{
+						DroidDependencyService.FolderPickerCallback?.Invoke(null);
+					}
+					DroidDependencyService.FolderPickerCallback = null;
+					break;
+
 				default:
 					break;
 			}

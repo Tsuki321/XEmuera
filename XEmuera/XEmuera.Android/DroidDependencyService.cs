@@ -18,6 +18,8 @@ namespace XEmuera.Droid
 {
 	internal class DroidDependencyService : IPlatformService
 	{
+		internal static Action<string> FolderPickerCallback;
+
 		public void CloseApplication()
 		{
 			MainActivity.Instance.FinishAffinity();
@@ -79,6 +81,14 @@ namespace XEmuera.Droid
 			return (int)Build.VERSION.SdkInt >= 24;
 		}
 
+		public void PickFolder(Action<string> callback)
+		{
+			FolderPickerCallback = callback;
+			Intent intent = new Intent(Intent.ActionOpenDocumentTree);
+			intent.AddFlags(ActivityFlags.GrantReadUriPermission);
+			MainActivity.Instance.StartActivityForResult(intent, GameUtils.FileSelectorRequestCode);
+		}
+
 		public void RequestManageFilesPermissions()
 		{
 			Intent intent = new Intent(Android.Provider.Settings.ActionManageAppAllFilesAccessPermission);
@@ -90,6 +100,34 @@ namespace XEmuera.Droid
 		public void UnlockScreenOrientation()
 		{
 			MainActivity.Instance.RequestedOrientation = ScreenOrientation.Sensor;
+		}
+
+		internal static string GetPathFromDocumentTreeUri(Android.Net.Uri uri)
+		{
+			if (uri == null) return null;
+
+			if ("file".Equals(uri.Scheme, StringComparison.OrdinalIgnoreCase))
+				return uri.Path;
+
+			string docId = Android.Provider.DocumentsContract.GetTreeDocumentId(uri);
+			if (docId == null) return null;
+
+			int colonIndex = docId.IndexOf(':');
+			if (colonIndex < 0) return null;
+
+			string volumeId = docId.Substring(0, colonIndex);
+			string relativePath = docId.Substring(colonIndex + 1);
+
+			if (volumeId.Equals("primary", StringComparison.OrdinalIgnoreCase))
+			{
+				string basePath = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+				return string.IsNullOrEmpty(relativePath)
+					? basePath
+					: basePath + "/" + relativePath;
+			}
+
+			// External SD card / USB OTG
+			return "/storage/" + volumeId + (string.IsNullOrEmpty(relativePath) ? "" : "/" + relativePath);
 		}
 	}
 }

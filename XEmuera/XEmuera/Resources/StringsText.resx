@@ -257,4 +257,10 @@
   <data name="FontAndShape" xml:space="preserve">
     <value>文字与图像</value>
   </data>
+  <data name="AddGameFolder" xml:space="preserve">
+    <value>添加游戏文件夹</value>
+  </data>
+  <data name="RecentlyPlayed" xml:space="preserve">
+    <value>最近游玩</value>
+  </data>
 </root>

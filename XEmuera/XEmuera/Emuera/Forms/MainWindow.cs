@@ -88,7 +88,7 @@ namespace MinorShift.Emuera
 		//private FileVersionInfo emueraVer = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
 		public RelativeLayout MainLayout { get { return mainLayout; } }
 		public EraPictureBox MainPicBox { get { return mainPicBox; } }
-		public Slider ScrollBar { get { return vScrollBar; } }
+		public XEmuera.Views.VerticalSlider ScrollBar { get { return vScrollBar; } }
 		public Entry TextBox { get { return richTextBox1; } }
 
 		//public string InternalEmueraVer { get { return emueraVer.FileVersion; } }
