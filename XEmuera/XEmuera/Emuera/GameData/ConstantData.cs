@@ -639,6 +639,8 @@ check1break:
                     relationDic.Add(tmpl.Callname, (int)tmpl.No);
 				if (!string.IsNullOrEmpty(tmpl.Nickname) && !relationDic.ContainsKey(tmpl.Nickname))
                     relationDic.Add(tmpl.Nickname, (int)tmpl.No);
+				if (!string.IsNullOrEmpty(tmpl.Mastername) && !relationDic.ContainsKey(tmpl.Mastername))
+					relationDic.Add(tmpl.Mastername, (int)tmpl.No);
 			}
 		}
 
@@ -872,6 +874,9 @@ check1break:
 					allowIndex = 1;
 					break;
 				case VariableCode.NAME:
+				case VariableCode.CALLNAME:
+				case VariableCode.NICKNAME:
+				case VariableCode.MASTERNAME:
 					ret = relationDic;
 					errPos = "chara*.csv";
 					allowIndex = -1;
@@ -1200,6 +1205,9 @@ check1break:
 					namearray = nameToIntDics[cstrIndex];//CStrName;
 					errPos = "cstr.csv";
 					break;
+				case "ISASSI":
+				case "助手":
+					return;
 				default:
 					ParserMediator.Warn("\"" + tokens[0] + "\"は解釈できない識別子です", position, 1);
 					return;

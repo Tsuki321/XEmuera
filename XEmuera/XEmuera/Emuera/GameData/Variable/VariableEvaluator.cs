@@ -728,6 +728,8 @@ namespace MinorShift.Emuera.GameData.Variable
 					throw new CodeEE("命令ARRAYSORTの第３引数(" + start.ToString() + ")が配列" + p.Identifier.Name + "の範囲を超えています");
 				if (num <= 0)
 					num = array.Length - start;
+				if (start + num > array.Length)
+					throw new CodeEE("命令ARRAYSORTの第３引数(" + start.ToString() + ")と第4変数(" + num.ToString()+ ")の和が配列" + p.Identifier.Name + "の範囲を超えています");
 				Int64[] temp = new Int64[num];
 				Array.Copy(array, start, temp, 0, num);
 
@@ -749,6 +751,8 @@ namespace MinorShift.Emuera.GameData.Variable
 					throw new CodeEE("命令ARRAYSORTの第３引数(" + start.ToString() + ")が配列" + p.Identifier.Name + "の範囲を超えています");
 				if (num <= 0)
 					num = array.Length - start;
+				if (start + num > array.Length)
+					throw new CodeEE("命令ARRAYSORTの第３引数(" + start.ToString() + ")と第4変数(" + num.ToString()+ ")の和が配列" + p.Identifier.Name + "の範囲を超えています");
 				string[] temp = new string[num];
 				Array.Copy(array, start, temp, 0, num);
 

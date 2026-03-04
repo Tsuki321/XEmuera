@@ -704,6 +704,11 @@ namespace MinorShift.Emuera.GameData.Expression
 
 			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
 			{
+				long ret = arguments[0].GetIntValue(exm);
+				if (ret == long.MinValue)
+				{
+					exm.Console.PrintSystemLine("整数型最小値(" + long.MinValue.ToString() + ")は-を取っても値は変化しません");
+				}
 				return -arguments[0].GetIntValue(exm);
 			}
 		}

@@ -1,28 +1,71 @@
 ## XEmuera
-XEmuera是一款使用[Xamarin.Forms](https://dotnet.microsoft.com/apps/xamarin)构建的安卓软件。软件移植自一款名为[Emuera](https://osdn.net/projects/emuera)、来自Windows平台的文字游戏引擎。
 
-当前使用的Emuera内核版本为[Emuera1824+v15 私家改造版](https://ux.getuploader.com/ninnohito/index)。本项目在该版本基础上删改了大部分仅能在Windows上使用的功能，且整体运行效率不如Windows平台。
+XEmuera is an Android application built with [Xamarin.Forms](https://dotnet.microsoft.com/apps/xamarin). It is a port of [Emuera](https://osdn.net/projects/emuera), a text-based game engine originally for Windows.
 
-当前项目处在不稳定的开发阶段，软件使用时可能会遇到不同程度的问题。
+The Emuera kernel used is based on the [私家改造版 (Custom Fix Edition) Emuera1824+v24](https://ux.getuploader.com/ninnohito/index) — a community-maintained fork of Emuera with ongoing bug fixes. The original XEmuera project was created by [Fegelein](https://github.com/Fegelein21/XEmuera), and this fork builds upon that work.
 
-## 使用 & 注意
-- 初次启动软件的时间较长（6-8秒），请耐心等待。
-- 游戏本体放置在存储根目录的emuera文件夹下。
-- 游戏本体要求存在 `CSV` 和 `ERB` 文件夹。
-- 软件支持添加外部字体，字体文件放置在存储根目录的emuera/fonts文件夹下，格式要求为 `*.ttf` 。
-- 软件已内置 `MS Gothic` 和 `Microsoft YaHei` 字体。
-- 安卓10及以上需要授予文件管理权限。
-- 从屏幕最左侧向右滑动可打开侧拉菜单。
-- 修改游戏配置后需要重新加载游戏才能生效。
+Most Windows-only features have been removed or replaced for compatibility with the Android platform. Overall runtime performance is lower than the Windows version.
 
-## 下载
+This project is in an unstable development stage and may encounter various issues during use.
+
+## Usage & Notes
+
+- The initial startup time is long (6–8 seconds). Please wait patiently.
+- Place game files in the `emuera` folder at the root of your device storage.
+- The game must have both `CSV` and `ERB` folders present.
+- External fonts can be added by placing `*.ttf` files in `emuera/fonts` at the storage root.
+- `MS Gothic` and `Microsoft YaHei` fonts are bundled by default.
+- Android 10 and above requires granting file management permission.
+- Swipe from the far left edge of the screen to open the side menu.
+- Configuration changes require a game reload to take effect.
+
+## Download
+
 https://github.com/Fegelein21/XEmuera/releases
 
-## 目前存在问题
-- 尚未规范本地化翻译。
-- 窘于个人技术力，未能实现真正意义上的纵向滑动条。
+## Known Issues
 
-## 支持作者
-https://afdian.net/@fegelein21
+- Localization/translation is not yet fully standardized.
+- A true vertical scrollbar has not been implemented due to technical limitations.
 
-![](https://img1.imgtp.com/2022/06/28/i6DiqbMT.jpg)
+## Changelog
+
+### Kernel Update: Emuera1824+v15 → v24
+
+The following bug fixes from the upstream 私家改造版 have been applied:
+
+**v24**
+- Fixed: `ISNUMERIC` would throw an error for certain strings instead of returning false. Added a dedicated `NumericCheck` method.
+
+**v23**
+- Fixed: `GETNUM` and `GETNUMB` could not use `NICKNAME` or `MASTERNAME` as lookup keys.
+
+**v22**
+- Fixed: Some code paths could not correctly process `CALLNAME`.
+- Fixed: `GETNUMB` was incorrectly mapped to the same handler as `GETNUM`.
+
+**v21**
+- Fixed: Debug console threw an exception when reaching 100 lines.
+
+**v20**
+- Fixed: `INPUTS` would not accept a single `@` character (it was being intercepted as a debug command prefix).
+
+**v19**
+- Fixed: Missing range-out-of-bounds handling for the 3rd and 4th arguments of `ARRAYSORT`.
+
+**v18**
+- Optimized: `CUSTOMDRAWLINE` performance improved.
+
+**v17**
+- Fixed: `GDRAWSPRITE` displayed unexpected results when enlarging a BMP-loaded image.
+
+**v16**
+- Fixed: `NOSAMES` implementation was completely wrong.
+- Fixed: Using `ISASSI` or `助手` as a CSV key would cause an error; they are now silently skipped.
+- Added: A warning is shown when negating `long.MinValue` (the value does not change).
+
+## Credits
+
+Original XEmuera project: [Fegelein](https://github.com/Fegelein21/XEmuera)
+
+Support the original author: https://afdian.net/@fegelein21

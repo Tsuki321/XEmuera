@@ -1452,21 +1452,25 @@ namespace MinorShift.Emuera.GameData.Function
             {
                 if (arguments[0].GetOperandType() == typeof(Int64))
                 {
-                    Int64 baseValue = arguments[0].GetIntValue(exm);
-                    for (int i = 1; i < arguments.Length; i++)
+                    Int64[] valueArray = new Int64[arguments.Length];
+                    for (int i = 0; i < arguments.Length; i++)
                     {
-                        if (baseValue == arguments[i].GetIntValue(exm))
-                            return 0L;
+                        valueArray[i] = arguments[i].GetIntValue(exm);
                     }
+                    var resultArray = valueArray.Distinct();
+                    if (resultArray.Count() != arguments.Length)
+                        return 0L;
                 }
                 else
                 {
-                    string baseValue = arguments[0].GetStrValue(exm);
-                    for (int i = 1; i < arguments.Length; i++)
+                    string[] stringArray = new string[arguments.Length];
+                    for (int i = 0; i < arguments.Length; i++)
                     {
-                        if (baseValue == arguments[i].GetStrValue(exm))
-                            return 0L;
+                        stringArray[i] = arguments[i].GetStrValue(exm);
                     }
+                    var resultArray = stringArray.Distinct();
+                    if (resultArray.Count() != arguments.Length)
+                        return 0L;
                 }
                 return 1L;
             }
@@ -2565,7 +2569,8 @@ namespace MinorShift.Emuera.GameData.Function
                     return (0);
                 else if ((st.Current == '+' || st.Current == '-') && !char.IsDigit(st.Next))
                     return (0);
-                _ = LexicalAnalyzer.ReadInt64(st, true);
+                if (!LexicalAnalyzer.NumericCheck(st))
+                    return (0);
                 if (!st.EOS)
                 {
                     if (st.Current == '.')
