@@ -37,7 +37,9 @@ namespace XEmuera.Droid
 
 		public string GetStoragePath()
 		{
+#pragma warning disable CS0618
 			return Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+#pragma warning restore CS0618
 		}
 
 		public void LockScreenOrientation()
@@ -120,7 +122,9 @@ namespace XEmuera.Droid
 
 			if (volumeId.Equals("primary", StringComparison.OrdinalIgnoreCase))
 			{
+#pragma warning disable CS0618
 				string basePath = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+#pragma warning restore CS0618
 				return string.IsNullOrEmpty(relativePath)
 					? basePath
 					: basePath + "/" + relativePath;

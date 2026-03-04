@@ -9,7 +9,7 @@ using Android.Views;
 
 namespace XEmuera.Droid
 {
-	[Activity(Label = "XEmuera", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Sensor)]
+	[Activity(Label = "XEmuera", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, Exported = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize, ScreenOrientation = ScreenOrientation.Sensor)]
 	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{
 		public static Activity Instance;
@@ -32,7 +32,9 @@ namespace XEmuera.Droid
 			{
 				Init = true;
 
+#pragma warning disable CS0618
 				UIOptions = (int)Window.DecorView.SystemUiVisibility;
+#pragma warning restore CS0618
 				EmueraUIOptions = UIOptions
 					| (int)SystemUiFlags.HideNavigation
 					| (int)SystemUiFlags.LayoutHideNavigation
@@ -90,9 +92,11 @@ namespace XEmuera.Droid
 				return;
 
 			if (GameUtils.IsEmueraPage)
+#pragma warning disable CS0618
 				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)EmueraUIOptions;
 			else
 				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)UIOptions;
+#pragma warning restore CS0618
 		}
 	}
 }
