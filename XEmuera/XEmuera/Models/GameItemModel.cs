@@ -79,6 +79,25 @@ namespace XEmuera.Models
 				if (!Directory.Exists(mainPath))
 					continue;
 
+				// Check if the folder itself is a game (contains ERB/ directly)
+				if (Directory.Exists(mainPath + directorySeparatorChar + "ERB")
+					&& !AllModels.Any(m => m.Path.Equals(mainPath, StringComparison.OrdinalIgnoreCase)))
+				{
+					gameItem = new GameItemModel
+					{
+						Name = System.IO.Path.GetFileName(mainPath),
+						Path = mainPath,
+					};
+
+					if (!Directory.Exists(mainPath + directorySeparatorChar + "CSV"))
+					{
+						gameItem.HasError = true;
+						gameItem.Error = "(" + StringsText.CSVFolderNotExists + ")";
+					}
+
+					AllModels.Add(gameItem);
+				}
+
 				var gameItemPaths = Directory.GetDirectories(mainPath);
 
 				foreach (var itemPath in gameItemPaths)

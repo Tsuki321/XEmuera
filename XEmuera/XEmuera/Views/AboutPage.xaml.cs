@@ -91,7 +91,7 @@ namespace XEmuera.Views
 				{
 					new AboutModel
 					{
-						Text = "爱发电",
+						Text = "AiFaDian",
 						Detail = AiFaDianUrl,
 						Url = AiFaDianUrl
 					},
@@ -144,9 +144,9 @@ namespace XEmuera.Views
 			AvatarClick++;
 
 			if (AvatarClick >= 10)
-				GameUtils.MainPage.DisplayToastAsync("你成为了一名Super面筋人！");
+				GameUtils.MainPage.DisplayToastAsync("You became a Super Noodle Man!");
 			else if (AvatarClick > 1)
-				GameUtils.MainPage.DisplayToastAsync($"还有{10 - AvatarClick}步成为Super面筋人！");
+				GameUtils.MainPage.DisplayToastAsync($"{10 - AvatarClick} more steps to become a Super Noodle Man!");
 		}
 	}
 }

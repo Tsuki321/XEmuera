@@ -1,63 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-		Microsoft ResX Schema
-
-		Version 1.3
-
-		The primary goals of this format is to allow a simple XML format 
-		that is mostly human readable. The generation and parsing of the 
-		various data types are done through the TypeConverter classes 
-		associated with the data types.
-
-		Example:
-
-		... ado.net/XML headers & schema ...
-		<resheader name="resmimetype">text/microsoft-resx</resheader>
-		<resheader name="version">1.3</resheader>
-		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-		<data name="Name1">this is my long string</data>
-		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-			[base64 mime encoded serialized .NET Framework object]
-		</data>
-		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-			[base64 mime encoded string representing a byte array form of the .NET Framework object]
-		</data>
-
-		There are any number of "resheader" rows that contain simple 
-		name/value pairs.
-
-		Each data row contains a name, and value. The row also contains a 
-		type or mimetype. Type corresponds to a .NET class that support 
-		text/value conversion through the TypeConverter architecture. 
-		Classes that don't support this are serialized and stored with the 
-		mimetype set.
-
-		The mimetype is used for serialized objects, and tells the 
-		ResXResourceReader how to depersist the object. This is currently not 
-		extensible. For a given mimetype the value must be set accordingly:
-
-		Note - application/x-microsoft.net.object.binary.base64 is the format 
-		that the ResXResourceWriter will generate, however the reader can 
-		read any of the formats listed below.
-
-		mimetype: application/x-microsoft.net.object.binary.base64
-		value   : The object must be serialized with 
-			: System.Serialization.Formatters.Binary.BinaryFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.soap.base64
-		value   : The object must be serialized with 
-			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-			: and then encoded with base64 encoding.
-
-		mimetype: application/x-microsoft.net.object.bytearray.base64
-		value   : The object must be serialized into a byte array 
-			: using a System.ComponentModel.TypeConverter
-			: and then encoded with base64 encoding.
-	-->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -98,336 +40,336 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SizableWindow" xml:space="preserve">
-    <value>Allow window width adjustment</value>
+    <value>允许调整窗口宽度</value>
   </data>
   <data name="CompatiRAND" xml:space="preserve">
-    <value>Use eramaker-spec pseudo-variable RAND</value>
+    <value>使用eramaker规范的伪变量RAND</value>
   </data>
   <data name="IgnoreCase" xml:space="preserve">
-    <value>Ignore case sensitivity</value>
+    <value>忽视大小写</value>
   </data>
   <data name="UseRenameFile" xml:space="preserve">
-    <value>Enable _Rename.csv</value>
+    <value>启用_Rename.csv</value>
   </data>
   <data name="UseReplaceFile" xml:space="preserve">
-    <value>Enable _Replace.csv</value>
+    <value>启用_Replace.csv</value>
   </data>
   <data name="UseMouse" xml:space="preserve">
-    <value>Enable mouse</value>
+    <value>启用鼠标</value>
   </data>
   <data name="UseMenu" xml:space="preserve">
-    <value>Show menu bar</value>
+    <value>显示菜单栏</value>
   </data>
   <data name="UseDebugCommand" xml:space="preserve">
-    <value>Enable debug commands</value>
+    <value>启用调试指令</value>
   </data>
   <data name="AllowMultipleInstances" xml:space="preserve">
-    <value>Allow multiple instances</value>
+    <value>允许多重启动</value>
   </data>
   <data name="AutoSave" xml:space="preserve">
-    <value>Auto-save progress</value>
+    <value>自动保存进度</value>
   </data>
   <data name="UseKeyMacro" xml:space="preserve">
-    <value>Enable keyboard macros</value>
+    <value>启用键盘宏</value>
   </data>
   <data name="TextDrawingMode" xml:space="preserve">
-    <value>Drawing interface</value>
+    <value>绘图接口</value>
   </data>
   <data name="UseImageBuffer" xml:space="preserve">
-    <value>Enable image buffer</value>
+    <value>启用图像缓冲</value>
   </data>
   <data name="WindowX" xml:space="preserve">
-    <value>Window width</value>
+    <value>窗口宽度</value>
   </data>
   <data name="WindowY" xml:space="preserve">
-    <value>Window height</value>
+    <value>窗口高度</value>
   </data>
   <data name="WindowPosX" xml:space="preserve">
-    <value>Window X position</value>
+    <value>窗口X坐标</value>
   </data>
   <data name="WindowPosY" xml:space="preserve">
-    <value>Window Y position</value>
+    <value>窗口Y坐标</value>
   </data>
   <data name="SetWindowPos" xml:space="preserve">
-    <value>Fix window position at startup</value>
+    <value>启动时固定窗口位置</value>
   </data>
   <data name="WindowMaximixed" xml:space="preserve">
-    <value>Maximize window at startup</value>
+    <value>启动时将窗口最大化</value>
   </data>
   <data name="MaxLog" xml:space="preserve">
-    <value>Log history line count</value>
+    <value>记录日志的行数</value>
   </data>
   <data name="PrintCPerLine" xml:space="preserve">
-    <value>PRINTC items per line</value>
+    <value>PRINTC并列数量</value>
   </data>
   <data name="PrintCLength" xml:space="preserve">
-    <value>PRINTC max items</value>
+    <value>PRINTC最大数量</value>
   </data>
   <data name="FontName" xml:space="preserve">
-    <value>Font name</value>
+    <value>字体名称</value>
   </data>
   <data name="FontSize" xml:space="preserve">
-    <value>Font size</value>
+    <value>字体大小</value>
   </data>
   <data name="LineHeight" xml:space="preserve">
-    <value>Line height</value>
+    <value>每行高度</value>
   </data>
   <data name="ForeColor" xml:space="preserve">
-    <value>Text color</value>
+    <value>文字色</value>
   </data>
   <data name="BackColor" xml:space="preserve">
-    <value>Background color</value>
+    <value>背景色</value>
   </data>
   <data name="FocusColor" xml:space="preserve">
-    <value>Selected text color</value>
+    <value>选中文字色</value>
   </data>
   <data name="LogColor" xml:space="preserve">
-    <value>History text color</value>
+    <value>历史记录文字色</value>
   </data>
   <data name="FPS" xml:space="preserve">
-    <value>Frames per second</value>
+    <value>每秒帧数</value>
   </data>
   <data name="SkipFrame" xml:space="preserve">
-    <value>Max skip frames</value>
+    <value>最大跳过帧数</value>
   </data>
   <data name="ScrollHeight" xml:space="preserve">
-    <value>Scroll line count</value>
+    <value>滚动行数</value>
   </data>
   <data name="InfiniteLoopAlertTime" xml:space="preserve">
-    <value>Infinite loop timeout warning (ms)</value>
+    <value>死循环超时警告（毫秒）</value>
   </data>
   <data name="DisplayWarningLevel" xml:space="preserve">
-    <value>Minimum warning level to display</value>
+    <value>最低显示警告等级</value>
   </data>
   <data name="DisplayReport" xml:space="preserve">
-    <value>Show report on load</value>
+    <value>加载时显示报告</value>
   </data>
   <data name="ReduceArgumentOnLoad" xml:space="preserve">
-    <value>Parse arguments on load</value>
+    <value>加载时解析参数</value>
   </data>
   <data name="ReduceFormattedStringOnLoad" xml:space="preserve">
     <value></value>
   </data>
   <data name="IgnoreUncalledFunction" xml:space="preserve">
-    <value>Ignore uncalled functions</value>
+    <value>忽略未被调用过的函数</value>
   </data>
   <data name="FunctionNotFoundWarning" xml:space="preserve">
-    <value>Warning when function not found</value>
+    <value>函数未找到时的警告处理</value>
   </data>
   <data name="FunctionNotCalledWarning" xml:space="preserve">
-    <value>Warning when function not called</value>
+    <value>函数未被调用时的警告处理</value>
   </data>
   <data name="IgnoreWarningFiles" xml:space="preserve">
     <value></value>
   </data>
   <data name="ChangeMasterNameIfDebug" xml:space="preserve">
-    <value>Change MASTER name in debug mode</value>
+    <value>Debug模式下变更MASTER的称呼</value>
   </data>
   <data name="ButtonWrap" xml:space="preserve">
-    <value>Disable button line wrap</value>
+    <value>不对按钮行折返换行</value>
   </data>
   <data name="SearchSubdirectory" xml:space="preserve">
-    <value>Search subdirectories</value>
+    <value>检索子目录</value>
   </data>
   <data name="SortWithFilename" xml:space="preserve">
-    <value>Sort by filename</value>
+    <value>按文件名顺序读取</value>
   </data>
   <data name="LastKey" xml:space="preserve">
-    <value>Last update key</value>
+    <value>最后更新口令</value>
   </data>
   <data name="SaveDataNos" xml:space="preserve">
-    <value>Number of save slots</value>
+    <value>使用存档数量</value>
   </data>
   <data name="WarnBackCompatibility" xml:space="preserve">
-    <value>Show eramaker compatibility warnings</value>
+    <value>显示eramaker兼容性相关警告</value>
   </data>
   <data name="AllowFunctionOverloading" xml:space="preserve">
-    <value>Allow system function overloading</value>
+    <value>允许重写系统函数</value>
   </data>
   <data name="WarnFunctionOverloading" xml:space="preserve">
-    <value>Warn when overloading system functions</value>
+    <value>重写系统函数时显示警告</value>
   </data>
   <data name="TextEditor" xml:space="preserve">
-    <value>Associated text editor</value>
+    <value>关联文本编辑器</value>
   </data>
   <data name="EditorType" xml:space="preserve">
     <value></value>
   </data>
   <data name="EditorArgument" xml:space="preserve">
-    <value>Editor launch arguments</value>
+    <value>编辑器运行参数</value>
   </data>
   <data name="WarnNormalFunctionOverloading" xml:space="preserve">
-    <value>Warn when redefining non-event functions</value>
+    <value>重复定义非事件函数时显示警告</value>
   </data>
   <data name="CompatiErrorLine" xml:space="preserve">
-    <value>Force-execute unparseable lines</value>
+    <value>强制执行无法解析的行</value>
   </data>
   <data name="CompatiCALLNAME" xml:space="preserve">
-    <value>Use NAME when CALLNAME is empty</value>
+    <value>CALLNAME为空时用NAME代替</value>
   </data>
   <data name="UseSaveFolder" xml:space="preserve">
-    <value>Create saves in sav folder</value>
+    <value>在sav文件夹中创建存档</value>
   </data>
   <data name="CompatiDRAWLINE" xml:space="preserve">
-    <value>DRAWLINE always prints on new line</value>
+    <value>DRAWLINE始终打印在新行</value>
   </data>
   <data name="CompatiFunctionNoignoreCase" xml:space="preserve">
-    <value>Case-sensitive functions and properties</value>
+    <value>函数、属性的大小写敏感</value>
   </data>
   <data name="SystemAllowFullSpace" xml:space="preserve">
-    <value>Fill blank areas with full-width spaces</value>
+    <value>使用全角空格填充空白区域</value>
   </data>
   <data name="SystemSaveInUTF8" xml:space="preserve">
-    <value>Save files in UTF-8 encoding</value>
+    <value>以UTF-8编码保存文件</value>
   </data>
   <data name="CompatiLinefeedAs1739" xml:space="preserve">
-    <value>Reproduce pre-v1739 non-button line wrap</value>
+    <value>重现ver1739前的非按钮折返</value>
   </data>
   <data name="useLanguage" xml:space="preserve">
-    <value>Internal character encoding</value>
+    <value>内部使用的汉字编码</value>
   </data>
   <data name="AllowLongInputByMouse" xml:space="preserve">
     <value></value>
   </data>
   <data name="CompatiCallEvent" xml:space="preserve">
-    <value>Allow CALL to invoke event functions</value>
+    <value>允许CALL调用事件函数</value>
   </data>
   <data name="CompatiSPChara" xml:space="preserve">
-    <value>Use SP characters</value>
+    <value>使用SP角色</value>
   </data>
   <data name="SystemSaveInBinary" xml:space="preserve">
-    <value>Save data in binary format</value>
+    <value>将存档保存为二进制格式</value>
   </data>
   <data name="CompatiFuncArgOptional" xml:space="preserve">
-    <value>Allow omitting all user function args</value>
+    <value>用户函数允许省略全部参数</value>
   </data>
   <data name="CompatiFuncArgAutoConvert" xml:space="preserve">
-    <value>Auto-complete TOSTR in user functions</value>
+    <value>用户函数自动补全TOSTR</value>
   </data>
   <data name="SystemIgnoreTripleSymbol" xml:space="preserve">
-    <value>Expand triple symbols in FORM</value>
+    <value>展开FORM中的三连记号</value>
   </data>
   <data name="TimesNotRigorousCalculation" xml:space="preserve">
-    <value>Use eramaker-spec TIMES calculation</value>
+    <value>使用eramaker规范的TIMES计算</value>
   </data>
   <data name="ForbidOneCodeVariable" xml:space="preserve">
     <value></value>
   </data>
   <data name="SystemNoTarget" xml:space="preserve">
-    <value>Disable auto-complete for character variable args</value>
+    <value>禁用角色变量的参数自动补全</value>
   </data>
   <data name="SystemIgnoreStringSet" xml:space="preserve">
     <value></value>
   </data>
   <data name="FontScale" xml:space="preserve">
-    <value>Font &amp; image scale factor</value>
+    <value>文字与图像缩放倍数</value>
   </data>
   <data name="PanSpeed" xml:space="preserve">
-    <value>Horizontal pan speed</value>
+    <value>横向平移速度</value>
   </data>
   <data name="QuickButtonColumn" xml:space="preserve">
-    <value>Button column count</value>
+    <value>按钮显示列数</value>
   </data>
   <data name="QuickButtonFontSize" xml:space="preserve">
-    <value>Button font size</value>
+    <value>按钮字体大小</value>
   </data>
   <data name="QuickButtonWidth" xml:space="preserve">
-    <value>Button width</value>
+    <value>按钮长度</value>
   </data>
   <data name="QuickButtonSpacing" xml:space="preserve">
-    <value>Button spacing</value>
+    <value>按钮间隔</value>
   </data>
   <data name="TextAntialias" xml:space="preserve">
-    <value>Text antialiasing</value>
+    <value>文字抗锯齿</value>
   </data>
   <data name="ShapeAntialias" xml:space="preserve">
-    <value>Image antialiasing</value>
+    <value>图像抗锯齿</value>
   </data>
   <data name="TextFilterQuality" xml:space="preserve">
-    <value>Text filter quality</value>
+    <value>文字过滤质量</value>
   </data>
   <data name="ShapeFilterQuality" xml:space="preserve">
-    <value>Image filter quality</value>
+    <value>图像过滤质量</value>
   </data>
   <data name="DebugShowWindow" xml:space="preserve">
-    <value>Show debug window at startup</value>
+    <value>启动时显示调试窗口</value>
   </data>
   <data name="DebugWindowTopMost" xml:space="preserve">
-    <value>Pin debug window on top at startup</value>
+    <value>启动时窗口前置化显示</value>
   </data>
   <data name="DebugWindowWidth" xml:space="preserve">
-    <value>Debug window width</value>
+    <value>调试窗口宽度</value>
   </data>
   <data name="DebugWindowHeight" xml:space="preserve">
-    <value>Debug window height</value>
+    <value>调试窗口高度</value>
   </data>
   <data name="DebugSetWindowPos" xml:space="preserve">
-    <value>Set debug window position</value>
+    <value>指定调试窗口的位置</value>
   </data>
   <data name="DebugWindowPosX" xml:space="preserve">
-    <value>Debug window X position</value>
+    <value>调试窗口X坐标</value>
   </data>
   <data name="DebugWindowPosY" xml:space="preserve">
-    <value>Debug window Y position</value>
+    <value>调试窗口Y坐标</value>
   </data>
   <data name="MoneyLabel" xml:space="preserve">
-    <value>Currency unit</value>
+    <value>货币单位</value>
   </data>
   <data name="MoneyFirst" xml:space="preserve">
-    <value>Unit position</value>
+    <value>单位位置</value>
   </data>
   <data name="LoadLabel" xml:space="preserve">
-    <value>Abbreviated display on startup</value>
+    <value>启动时简略显示</value>
   </data>
   <data name="MaxShopItem" xml:space="preserve">
-    <value>Number of shop items</value>
+    <value>贩售物品数量</value>
   </data>
   <data name="DrawLineString" xml:space="preserve">
-    <value>DRAWLINE character</value>
+    <value>DRAWLINE字符</value>
   </data>
   <data name="BarChar1" xml:space="preserve">
-    <value>BAR character 1</value>
+    <value>BAR字符1</value>
   </data>
   <data name="BarChar2" xml:space="preserve">
-    <value>BAR character 2</value>
+    <value>BAR字符2</value>
   </data>
   <data name="TitleMenuString0" xml:space="preserve">
-    <value>System menu 0</value>
+    <value>系统菜单0</value>
   </data>
   <data name="TitleMenuString1" xml:space="preserve">
-    <value>System menu 1</value>
+    <value>系统菜单1</value>
   </data>
   <data name="ComAbleDefault" xml:space="preserve">
-    <value>COM_ABLE default value</value>
+    <value>COM_ABLE初始值</value>
   </data>
   <data name="StainDefault" xml:space="preserve">
-    <value>Stain default value</value>
+    <value>污秽初始值</value>
   </data>
   <data name="TimeupLabel" xml:space="preserve">
-    <value>Timeout display</value>
+    <value>超时显示</value>
   </data>
   <data name="ExpLvDef" xml:space="preserve">
-    <value>EXPLV default value</value>
+    <value>EXPLV初始值</value>
   </data>
   <data name="PalamLvDef" xml:space="preserve">
-    <value>PALAMLV default value</value>
+    <value>PALAMLV初始值</value>
   </data>
   <data name="pbandDef" xml:space="preserve">
-    <value>PBAND default value</value>
+    <value>PBAND初始值</value>
   </data>
   <data name="RelationDef" xml:space="preserve">
-    <value>RELATION default value</value>
+    <value>RELATION初始值</value>
   </data>
   <data name="LongPressSkip" xml:space="preserve">
-    <value>Long press to skip text</value>
+    <value>长按屏幕跳过文本</value>
   </data>
   <data name="LongPressSkipTime" xml:space="preserve">
-    <value>Long press duration required (ms)</value>
+    <value>长按所需毫秒数</value>
   </data>
   <data name="AdaptiveFont" xml:space="preserve">
-    <value>Adaptive font &amp; image</value>
+    <value>自适应文字与图像</value>
   </data>
   <data name="AdaptiveFontSize" xml:space="preserve">
-    <value>Adaptive font &amp; image size</value>
+    <value>自适应文字与图像大小</value>
   </data>
 </root>
