@@ -339,6 +339,9 @@
   <data name="SystemIgnoreStringSet" xml:space="preserve">
     <value>文字列変数の代入に文字列式を強制する</value>
   </data>
+  <data name="UseUTF8Script" xml:space="preserve">
+    <value>スクリプトファイルをUTF-8で読み込む</value>
+  </data>
   <data name="FontScale" xml:space="preserve">
     <value>文字与图像缩放倍数</value>
   </data>

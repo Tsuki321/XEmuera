@@ -302,7 +302,8 @@ namespace MinorShift.Emuera.GameProc
 					catch (CodeEE e)
 					{
 						ParserMediator.Warn(e.Message, dimline.SC, 2);
-						noError = false;
+						// Issue warning but continue loading; unresolved variables will be reported
+						// as unresolvable identifiers if referenced later
 					}
 				}
 				if (dimlines.Count == count)

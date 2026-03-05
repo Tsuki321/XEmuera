@@ -799,6 +799,15 @@ namespace XEmuera.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Read script files in UTF-8 encoding.
+        /// </summary>
+        internal static string UseUTF8Script {
+            get {
+                return ResourceManager.GetString("UseUTF8Script", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 展开FORM中的三连记号 的本地化字符串。
         /// </summary>
         internal static string SystemIgnoreTripleSymbol {

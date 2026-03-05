@@ -39,7 +39,7 @@ namespace MinorShift.Emuera.Sub
 			try
 			{
 				stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-				reader = new StreamReader(stream, Config.Encode);
+				reader = new StreamReader(stream, Config.Encode, detectEncodingFromByteOrderMarks: true);
 			}
 			catch
 			{
