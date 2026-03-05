@@ -109,6 +109,11 @@ namespace MinorShift.Emuera.GameData.Function
                 ["INRANGECARRAY"] = new InRangeArrayMethod(true),
                 ["GETNUMB"] = new GetnumBMethod(),
 
+                ["EXISTVAR"] = new ExistVarMethod(),
+                ["GETVAR"] = new GetVarMethod(),
+                ["GETVARS"] = new GetVarsMethod(),
+                ["SETVAR"] = new SetVarMethod(),
+
                 ["ARRAYMSORT"] = new ArrayMultiSortMethod(),
 
                 //文字列操作系
