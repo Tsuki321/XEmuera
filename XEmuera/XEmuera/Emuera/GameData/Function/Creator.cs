@@ -151,6 +151,7 @@ namespace MinorShift.Emuera.GameData.Function
                 ["HTML_POPPRINTINGSTR"] = new HtmlPopPrintingStrMethod(),
                 ["HTML_TOPLAINTEXT"] = new HtmlToPlainTextMethod(),
                 ["HTML_ESCAPE"] = new HtmlEscapeMethod(),
+                ["HTML_STRINGLEN"] = new HtmlStringLenMethod(),
 
 
                 //画像処理系
@@ -270,6 +271,7 @@ namespace MinorShift.Emuera.GameData.Function
                 // EE Misc
                 ["CLEARMEMORY"] = new ClearMemoryMethod(),
                 ["EXISTFUNCTION"] = new ExistFunctionMethod(),
+                ["ENUMFILES"] = new EnumFilesMethod(),
             };
 
 
