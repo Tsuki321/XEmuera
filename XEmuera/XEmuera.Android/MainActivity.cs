@@ -28,18 +28,34 @@ namespace XEmuera.Droid
 		{
 			try
 			{
-				string logDir = Application.Context.GetExternalFilesDir(null)?.AbsolutePath
-					?? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-				string logPath = Path.Combine(logDir, "crash_log.txt");
 				string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]\n{ex}\n\n";
 				lock (CrashLogLock)
 				{
-					File.AppendAllText(logPath, entry);
+					// Try user-visible location first (external storage root /XEmuera/)
+					try
+					{
+#pragma warning disable CS0618
+						string extRoot = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+#pragma warning restore CS0618
+						string publicDir = Path.Combine(extRoot, "XEmuera");
+						Directory.CreateDirectory(publicDir);
+						File.AppendAllText(Path.Combine(publicDir, "crash_log.txt"), entry);
+						return;
+					}
+					catch (Exception ioEx)
+					{
+						Android.Util.Log.Warn("XEmuera", $"Failed to write crash log to public storage: {ioEx.Message}");
+					}
+
+					// Fallback to app-specific external files directory
+					string logDir = Application.Context.GetExternalFilesDir(null)?.AbsolutePath
+						?? System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+					File.AppendAllText(Path.Combine(logDir, "crash_log.txt"), entry);
 				}
 			}
-			catch
+			catch (Exception logEx)
 			{
-				// Ignore errors while writing the crash log
+				Android.Util.Log.Error("XEmuera", $"Failed to write crash log: {logEx.Message}");
 			}
 		}
 
