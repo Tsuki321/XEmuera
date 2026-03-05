@@ -45,9 +45,8 @@ namespace MinorShift.Emuera.GameProc
 					string file = headerFiles[i].Value;
 					if (displayReport)
 						output.PrintSystemLine(filename + "読み込み中・・・");
-					noError = loadHeaderFile(file, filename);
-					if (!noError)
-						break;
+					if (!loadHeaderFile(file, filename))
+						noError = false;
 					App.DoEvents();
 				}	
 				//エラーが起きてる場合でも読み込めてる分だけはチェックする
@@ -81,6 +80,7 @@ namespace MinorShift.Emuera.GameProc
 				throw new CodeEE(eReader.Filename + "のオープンに失敗しました");
 				//return false;
 			}
+			bool fileNoError = true;
 			try
 			{
 				while ((st = eReader.ReadEnabledLine()) != null)
@@ -88,39 +88,50 @@ namespace MinorShift.Emuera.GameProc
 					if (!noError)
 						return false;
 					position = new ScriptPosition(filename, eReader.LineNo);
-					LexicalAnalyzer.SkipWhiteSpace(st);
-					if (st.Current != '#')
-						throw new CodeEE("ヘッダーの中に#で始まらない行があります", position);
-					st.ShiftNext();
-					string sharpID = LexicalAnalyzer.ReadSingleIdentifier(st);
-					if (sharpID == null)
+					try
 					{
-						ParserMediator.Warn("解釈できない#行です", position, 1);
-						return false;
+						LexicalAnalyzer.SkipWhiteSpace(st);
+						if (st.Current != '#')
+							throw new CodeEE("ヘッダーの中に#で始まらない行があります", position);
+						st.ShiftNext();
+						string sharpID = LexicalAnalyzer.ReadSingleIdentifier(st);
+						if (sharpID == null)
+						{
+							ParserMediator.Warn("解釈できない#行です", position, 1);
+							continue;
+						}
+						if (Config.ICFunction)
+							sharpID = sharpID.ToUpper();
+						LexicalAnalyzer.SkipWhiteSpace(st);
+						switch (sharpID)
+						{
+							case "DEFINE":
+								analyzeSharpDefine(st, position);
+								break;
+							case "FUNCTION":
+							case "FUNCTIONS":
+								analyzeSharpFunction(st, position, sharpID == "FUNCTIONS");
+								break;
+							case "DIM":
+							case "DIMS":
+								//1822 #DIMは保留しておいて後でまとめてやる
+								{
+									WordCollection wc = LexicalAnalyzer.Analyse(st, LexEndWith.EoL, LexAnalyzeFlag.AllowAssignment);
+									dimlines.Enqueue(new DimLineWC(wc, sharpID == "DIMS", false, position));
+								}
+								//analyzeSharpDim(st, position, sharpID == "DIMS");
+								break;
+							default:
+								ParserMediator.Warn("#" + sharpID + "は解釈できないプリプロセッサです", position, 2);
+								break;
+						}
 					}
-					if (Config.ICFunction)
-						sharpID = sharpID.ToUpper();
-					LexicalAnalyzer.SkipWhiteSpace(st);
-					switch (sharpID)
+					catch (CodeEE e)
 					{
-						case "DEFINE":
-							analyzeSharpDefine(st, position);
-							break;
-						case "FUNCTION":
-						case "FUNCTIONS":
-							analyzeSharpFunction(st, position, sharpID == "FUNCTIONS");
-							break;
-						case "DIM":
-						case "DIMS":
-							//1822 #DIMは保留しておいて後でまとめてやる
-							{
-								WordCollection wc = LexicalAnalyzer.Analyse(st, LexEndWith.EoL, LexAnalyzeFlag.AllowAssignment);
-								dimlines.Enqueue(new DimLineWC(wc, sharpID == "DIMS", false, position));
-							}
-							//analyzeSharpDim(st, position, sharpID == "DIMS");
-							break;
-						default:
-							throw new CodeEE("#" + sharpID + "は解釈できないプリプロセッサです", position);
+						if (e.Position != null)
+							position = e.Position;
+						ParserMediator.Warn(e.Message, position, 2);
+						fileNoError = false;
 					}
 				}
 			}
@@ -129,13 +140,13 @@ namespace MinorShift.Emuera.GameProc
 				if (e.Position != null)
 					position = e.Position;
 				ParserMediator.Warn(e.Message, position, 2);
-				return false;
+				fileNoError = false;
 			}
 			finally
 			{
 				eReader.Close();
 			}
-			return true;
+			return fileNoError;
 		}
 
 		//#define FOO (～～)     id to wc
