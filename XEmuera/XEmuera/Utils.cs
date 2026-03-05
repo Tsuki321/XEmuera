@@ -134,7 +134,14 @@ namespace XEmuera
 				MessageBox.Show(StringsText.NeedManageFilesPermissions);
 				PlatformService.RequestManageFilesPermissions();
 
-				SpinWait.SpinUntil(() => StorageAccess != PermissionStatus.Unknown);
+				var timeoutAt = DateTime.UtcNow.AddSeconds(30);
+				while (StorageAccess == PermissionStatus.Unknown && DateTime.UtcNow < timeoutAt)
+				{
+					Thread.Sleep(100);
+				}
+
+				if (StorageAccess == PermissionStatus.Unknown)
+					return false;
 
 				if (PlatformService.NeedManageFilesPermissions())
 					return false;
@@ -187,7 +194,27 @@ namespace XEmuera
 	{
 		public const int HeightOffset = 4;
 
-		public static readonly double ScreenDensity = DeviceDisplay.MainDisplayInfo.Density;
+		private static double? _screenDensity;
+
+		public static double ScreenDensity
+		{
+			get
+			{
+				if (_screenDensity.HasValue)
+					return _screenDensity.Value;
+
+				try
+				{
+					_screenDensity = DeviceDisplay.MainDisplayInfo.Density;
+				}
+				catch
+				{
+					_screenDensity = 1;
+				}
+
+				return _screenDensity.Value;
+			}
+		}
 
 		public static int ShapeHeightOffset { get; set; }
 

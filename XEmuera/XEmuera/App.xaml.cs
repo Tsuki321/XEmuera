@@ -14,12 +14,12 @@ namespace XEmuera
 		{
 			InitializeComponent();
 
+			MainPage = new MainPage();
+
 			Task.Run(() =>
 			{
 				GameUtils.Load();
 			});
-
-			MainPage = new MainPage();
 		}
 
 		protected override void OnStart()
