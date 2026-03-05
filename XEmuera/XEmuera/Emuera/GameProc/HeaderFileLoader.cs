@@ -296,7 +296,6 @@ namespace MinorShift.Emuera.GameProc
 						else
 						{
 							ParserMediator.Warn(e.Message, dimline.SC, 2);
-							noError = true;
 						}
 					}
 					catch (CodeEE e)
