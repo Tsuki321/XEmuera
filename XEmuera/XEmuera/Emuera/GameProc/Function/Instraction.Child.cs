@@ -802,13 +802,17 @@ namespace MinorShift.Emuera.GameProc.Function
 
 		private sealed class CALLF_Instruction : AbstractInstruction
 		{
-			public CALLF_Instruction(bool form)
+			readonly bool isTry;
+			public CALLF_Instruction(bool form, bool isTry = false)
 			{
+				this.isTry = isTry;
 				if (form)
 					ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.SP_CALLFORMF);
 				else
 					ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.SP_CALLF);
 				flag = EXTENDED | METHOD_SAFE | FORCE_SETARG;
+				if (isTry)
+					flag |= IS_TRY;
 			}
 
 			public override void SetJumpTo(ref bool useCallForm, InstructionLine func, int currentDepth, ref string FunctionoNotFoundName)
@@ -827,15 +831,19 @@ namespace MinorShift.Emuera.GameProc.Function
 				}
 				catch (CodeEE e)
 				{
-					ParserMediator.Warn(e.Message, func, 2, true, false);
+					if (!isTry)
+						ParserMediator.Warn(e.Message, func, 2, true, false);
 					return;
 				}
 				if (callfArg.FuncTerm == null)
 				{
-					if (!Program.AnalysisMode)
-						ParserMediator.Warn("指定された関数名\"@" + callfArg.ConstStr + "\"は存在しません", func, 2, true, false);
-					else
-						ParserMediator.Warn(callfArg.ConstStr, func, 2, true, false);
+					if (!isTry)
+					{
+						if (!Program.AnalysisMode)
+							ParserMediator.Warn("指定された関数名\"@" + callfArg.ConstStr + "\"は存在しません", func, 2, true, false);
+						else
+							ParserMediator.Warn(callfArg.ConstStr, func, 2, true, false);
+					}
 					return;
 				}
 			}
@@ -856,7 +864,11 @@ namespace MinorShift.Emuera.GameProc.Function
 					mToken = ((SpCallFArgment)func.Argument).FuncTerm;
 				}
 				if (mToken == null)
-					throw new CodeEE("式中関数\"@" + labelName + "\"が見つかりません");
+				{
+					if (!isTry)
+						throw new CodeEE("式中関数\"@" + labelName + "\"が見つかりません");
+					return;
+				}
 				mToken.GetValue(exm);
 			}
 		}

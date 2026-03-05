@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using XEmuera;
 
@@ -97,7 +98,15 @@ namespace MinorShift.Emuera.Content
 					//string directory = Path.GetDirectoryName(filepath).ToUpper() + "\\";
 					string directory = Path.GetDirectoryName(filepath) + Path.DirectorySeparatorChar;
 					string filename = Path.GetFileName(filepath);
-					string[] lines = File.ReadAllLines(filepath, Config.Encode);
+					var lines = new List<string>();
+					var reader = new EraStreamReader(false);
+					using (reader)
+					{
+						reader.Open(filepath);
+						string csvLine;
+						while ((csvLine = reader.ReadLine()) != null)
+							lines.Add(csvLine);
+					}
 					int lineNo = 0;
 					foreach (var line in lines)
 					{
@@ -199,7 +208,9 @@ namespace MinorShift.Emuera.Content
 
 			if(arg2.IndexOf('.') < 0)
 			{
-				ParserMediator.Warn("第二引数に拡張子がありません:" + arg2, sp, 1);
+				// Silently skip purely numeric values (e.g. character IDs); only warn for strings that look like filenames
+				if (!arg2.All(char.IsDigit))
+					ParserMediator.Warn("第二引数に拡張子がありません:" + arg2, sp, 1);
 				return null;
 			}
 			string parentName = dir + arg2;

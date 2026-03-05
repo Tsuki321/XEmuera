@@ -169,6 +169,7 @@ namespace MinorShift.Emuera.GameProc.Function
 		ENDFUNC,
 		CALLF,
 		CALLFORMF,
+		TRYCALLFORMF,
 
 		SETCOLOR,
 		SETCOLORBYNAME,

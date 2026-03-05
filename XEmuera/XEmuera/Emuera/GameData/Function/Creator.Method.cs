@@ -4338,5 +4338,145 @@ namespace MinorShift.Emuera.GameData.Function
 		}
 
 		#endregion
+
+		#region 動的変数アクセス系 (EE互換)
+
+		/// <summary>
+		/// EXISTVAR(varname) - Returns a bitmask describing the named variable (0 = not found).
+		/// Bit 0 (1): integer, Bit 1 (2): string, Bit 2 (4): const.
+		/// </summary>
+		private sealed class ExistVarMethod : FunctionMethod
+		{
+			public ExistVarMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				VariableToken token = GlobalStatic.IdentifierDictionary.GetVariableToken(
+					arguments[0].GetStrValue(exm), null, true);
+				if (token == null)
+					return 0L;
+				Int64 res = 0;
+				if (token.IsInteger) res |= 1;
+				if (token.IsString)  res |= 2;
+				if (token.IsConst)   res |= 4;
+				return res;
+			}
+		}
+
+		/// <summary>
+		/// GETVAR(varname) - Dynamically reads the integer value of a variable specified by name string.
+		/// </summary>
+		private sealed class GetVarMethod : FunctionMethod
+		{
+			public GetVarMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string name = arguments[0].GetStrValue(exm);
+				WordCollection wc = LexicalAnalyzer.Analyse(
+					new StringStream(name), LexEndWith.EoL, LexAnalyzeFlag.None);
+				IOperandTerm term = ExpressionParser.ReduceExpressionTerm(wc, TermEndWith.EoL);
+				if (term is VariableTerm varTerm)
+				{
+					if (varTerm.Identifier == null)
+						throw new CodeEE("GETVAR: \"" + name + "\"は変数ではありません");
+					if (!varTerm.Identifier.IsInteger)
+						throw new CodeEE("GETVAR: \"" + name + "\"は整数型変数ではありません");
+					return varTerm.GetIntValue(exm);
+				}
+				throw new CodeEE("GETVAR: \"" + name + "\"は変数ではありません");
+			}
+		}
+
+		/// <summary>
+		/// GETVARS(varname) - Dynamically reads the string value of a variable specified by name string.
+		/// </summary>
+		private sealed class GetVarsMethod : FunctionMethod
+		{
+			public GetVarsMethod()
+			{
+				ReturnType = typeof(string);
+				argumentTypeArray = new Type[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string name = arguments[0].GetStrValue(exm);
+				WordCollection wc = LexicalAnalyzer.Analyse(
+					new StringStream(name), LexEndWith.EoL, LexAnalyzeFlag.None);
+				IOperandTerm term = ExpressionParser.ReduceExpressionTerm(wc, TermEndWith.EoL);
+				if (term is VariableTerm varTerm)
+				{
+					if (varTerm.Identifier == null)
+						throw new CodeEE("GETVARS: \"" + name + "\"は変数ではありません");
+					if (!varTerm.Identifier.IsString)
+						throw new CodeEE("GETVARS: \"" + name + "\"は文字列型変数ではありません");
+					return varTerm.GetStrValue(exm);
+				}
+				throw new CodeEE("GETVARS: \"" + name + "\"は変数ではありません");
+			}
+		}
+
+		/// <summary>
+		/// SETVAR(varname, value) - Dynamically writes a value to a variable specified by name string.
+		/// Returns 1 on success.
+		/// </summary>
+		private sealed class SetVarMethod : FunctionMethod
+		{
+			public SetVarMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null; // variable argument types
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length != 2)
+					return name + "関数には2つの引数が必要です";
+				if (arguments[0] == null)
+					return name + "関数の1番目の引数は省略できません";
+				if (arguments[0].GetOperandType() != typeof(string))
+					return name + "関数の1番目の引数は文字列型でなければなりません";
+				if (arguments[1] == null)
+					return name + "関数の2番目の引数は省略できません";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string name = arguments[0].GetStrValue(exm);
+				WordCollection wc = LexicalAnalyzer.Analyse(
+					new StringStream(name), LexEndWith.EoL, LexAnalyzeFlag.None);
+				IOperandTerm term = ExpressionParser.ReduceExpressionTerm(wc, TermEndWith.EoL);
+				if (term is VariableTerm varTerm)
+				{
+					if (varTerm.Identifier == null || varTerm.Identifier.IsConst)
+						throw new CodeEE("SETVAR: \"" + name + "\"は変数ではありません");
+					if (varTerm.Identifier.IsString)
+					{
+						if (arguments[1].GetOperandType() != typeof(string))
+							throw new CodeEE("SETVAR: \"" + name + "\"は文字列型変数ですが整数値が渡されました");
+						varTerm.SetValue(arguments[1].GetStrValue(exm), exm);
+					}
+					else
+					{
+						if (arguments[1].GetOperandType() != typeof(Int64))
+							throw new CodeEE("SETVAR: \"" + name + "\"は整数型変数ですが文字列値が渡されました");
+						varTerm.SetValue(arguments[1].GetIntValue(exm), exm);
+					}
+					return 1L;
+				}
+				throw new CodeEE("SETVAR: \"" + name + "\"は変数ではありません");
+			}
+		}
+
+		#endregion
 	}
 }
