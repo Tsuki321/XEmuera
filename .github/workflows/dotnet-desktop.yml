@@ -20,16 +20,11 @@ jobs:
 
   build:
 
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
     runs-on: windows-latest
 
     env:
       Solution_Name: XEmuera.sln
       Android_Project_Path: XEmuera\XEmuera.Android\XEmuera.Android.csproj
-      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
     - name: Checkout
@@ -58,56 +53,47 @@ jobs:
         echo "y" | & $sdkmanager "platforms;android-31"
       shell: pwsh
 
-    # Decode the keystore for release signing (requires KEYSTORE_BASE64 secret)
-    - name: Decode keystore for signing
-      if: matrix.configuration == 'Release' && env.KEYSTORE_BASE64 != ''
-      run: |
-        $keystoreBytes = [Convert]::FromBase64String("$env:KEYSTORE_BASE64")
-        [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\xemuera.keystore", $keystoreBytes)
-      shell: pwsh
-
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=Release
 
-    # Build the Android project (unsigned) when no keystore is available
-    - name: Build the Android project (unsigned)
-      if: matrix.configuration == 'Debug' || env.KEYSTORE_BASE64 == ''
-      run: msbuild $env:Android_Project_Path /t:PackageForAndroid /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-    # Build the Android project and generate a signed APK
+    # Build the Android project and generate a signed APK.
+    # Decodes the keystore and uses it when signing secrets are configured;
+    # otherwise falls back to the Android debug keystore so the build never
+    # skips and always produces a signed APK.
     - name: Build the Android project (signed release)
-      if: matrix.configuration == 'Release' && env.KEYSTORE_BASE64 != ''
-      run: >
-        msbuild $env:Android_Project_Path /t:SignAndroidPackage
-        /p:Configuration=$env:Configuration
-        /p:AndroidKeyStore=true
-        /p:AndroidSigningKeyStore="$env:RUNNER_TEMP\xemuera.keystore"
-        /p:AndroidSigningStorePass="$env:KEY_STORE_PASSWORD"
-        /p:AndroidSigningKeyAlias="$env:KEY_ALIAS"
-        /p:AndroidSigningKeyPass="$env:KEY_PASSWORD"
+      run: |
+        $buildArgs = @(
+          "$env:Android_Project_Path",
+          "/t:SignAndroidPackage",
+          "/p:Configuration=Release"
+        )
+        if (![string]::IsNullOrEmpty($env:KEYSTORE_BASE64)) {
+          $keystorePath = "$env:RUNNER_TEMP\xemuera.keystore"
+          try {
+            $keystoreBytes = [Convert]::FromBase64String($env:KEYSTORE_BASE64)
+          } catch {
+            Write-Error "KEYSTORE_BASE64 secret contains invalid base64 data: $_"
+            exit 1
+          }
+          [IO.File]::WriteAllBytes($keystorePath, $keystoreBytes)
+          $buildArgs += "/p:AndroidKeyStore=true"
+          $buildArgs += "/p:AndroidSigningKeyStore=$keystorePath"
+          $buildArgs += "/p:AndroidSigningStorePass=$env:KEY_STORE_PASSWORD"
+          $buildArgs += "/p:AndroidSigningKeyAlias=$env:KEY_ALIAS"
+          $buildArgs += "/p:AndroidSigningKeyPass=$env:KEY_PASSWORD"
+        }
+        & msbuild @buildArgs
+      shell: pwsh
       env:
-        Configuration: ${{ matrix.configuration }}
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     # Upload the signed APK: https://github.com/marketplace/actions/upload-a-build-artifact
     - name: Upload build artifacts (signed release)
-      if: matrix.configuration == 'Release' && env.KEYSTORE_BASE64 != ''
       uses: actions/upload-artifact@v4
       with:
-        name: APK-${{ matrix.configuration }}
-        path: XEmuera/XEmuera.Android/bin/${{ matrix.configuration }}/*-Signed.apk
-
-    # Upload the unsigned APK for Debug builds
-    - name: Upload build artifacts (unsigned)
-      if: matrix.configuration == 'Debug' || env.KEYSTORE_BASE64 == ''
-      uses: actions/upload-artifact@v4
-      with:
-        name: APK-${{ matrix.configuration }}
-        path: XEmuera/XEmuera.Android/bin/${{ matrix.configuration }}/*.apk
+        name: APK-Release
+        path: XEmuera/XEmuera.Android/bin/Release/*-Signed.apk
