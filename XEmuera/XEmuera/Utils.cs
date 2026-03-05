@@ -141,7 +141,10 @@ namespace XEmuera
 				}
 
 				if (StorageAccess == PermissionStatus.Unknown)
+				{
+					System.Diagnostics.Debug.WriteLine("Timed out waiting for manage files permission result.");
 					return false;
+				}
 
 				if (PlatformService.NeedManageFilesPermissions())
 					return false;
@@ -207,8 +210,10 @@ namespace XEmuera
 				{
 					_screenDensity = DeviceDisplay.MainDisplayInfo.Density;
 				}
-				catch
+				catch (Exception ex)
 				{
+					System.Diagnostics.Debug.WriteLine($"Failed to get screen density: {ex}");
+					// Baseline density fallback (160 DPI) when display info is unavailable during startup.
 					_screenDensity = 1;
 				}
 
