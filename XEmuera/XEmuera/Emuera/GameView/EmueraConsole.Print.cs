@@ -24,6 +24,7 @@ namespace MinorShift.Emuera.GameView
 
 		private readonly PrintStringBuffer printBuffer;
 		readonly StringMeasure stringMeasure = new StringMeasure();
+		public StringMeasure StrMeasure => stringMeasure;
 
 		public void ClearDisplay()
 		{

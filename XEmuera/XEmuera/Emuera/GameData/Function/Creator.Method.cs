@@ -2930,6 +2930,42 @@ namespace MinorShift.Emuera.GameData.Function
 				return HtmlManager.Escape(arguments[0].GetStrValue(exm));
 			}
 		}
+
+		/// <summary>
+		/// int HTML_STRINGLEN str html{, int returnPixel}
+		/// Returns the display width of html. If returnPixel is 0 or omitted, returns half-width char units; otherwise pixels.
+		/// </summary>
+		private sealed class HtmlStringLenMethod : FunctionMethod
+		{
+			public HtmlStringLenMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1 || arguments.Length > 2)
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentNum0, name);
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentType0, name, 1);
+				if (arguments.Length == 2 && arguments[1] != null && arguments[1].GetOperandType() != typeof(Int64))
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentType0, name, 2);
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				int len = HtmlManager.HtmlLength(arguments[0].GetStrValue(exm));
+				if (arguments.Length == 1 || arguments[1] == null || arguments[1].GetIntValue(exm) == 0)
+				{
+					if (len >= 0)
+						return 2 * len / Config.FontSize + ((2 * len % Config.FontSize != 0) ? 1 : 0);
+					else
+						return 2 * len / Config.FontSize - ((2 * len % Config.FontSize != 0) ? 1 : 0);
+				}
+				return len;
+			}
+		}
 		#endregion
 
 		#region 画像処理系
@@ -5383,6 +5419,77 @@ namespace MinorShift.Emuera.GameData.Function
 					funcName = funcName.ToUpper();
 				var labelDic = GlobalStatic.LabelDictionary;
 				return labelDic != null && labelDic.GetNonEventLabel(funcName) != null ? 1 : 0;
+			}
+		}
+
+		/// <summary>
+		/// int ENUMFILES str dir{, str pattern, int searchSubfolders}
+		/// Lists files in dir matching pattern, stores their paths in RESULTS. Returns file count, or -1 if dir doesn't exist.
+		/// </summary>
+		private sealed class EnumFilesMethod : FunctionMethod
+		{
+			public EnumFilesMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1 || arguments.Length > 3)
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentNum0, name);
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentType0, name, 1);
+				if (arguments.Length >= 2 && arguments[1] != null && arguments[1].GetOperandType() != typeof(string))
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentType0, name, 2);
+				if (arguments.Length >= 3 && arguments[2] != null && arguments[2].GetOperandType() != typeof(Int64))
+					return string.Format(Properties.Resources.SyntaxErrMesMethodDefaultArgumentType0, name, 3);
+				return null;
+			}
+			private static string GetValidPath(string path)
+			{
+				// Normalize separators
+				path = path.Replace('\\', System.IO.Path.DirectorySeparatorChar)
+				           .Replace('/', System.IO.Path.DirectorySeparatorChar);
+				// Reject directory traversal
+				string dotdot = ".." + System.IO.Path.DirectorySeparatorChar;
+				if (path.Contains(dotdot) || path == "..")
+					return null;
+				// Reject absolute paths
+				if (System.IO.Path.IsPathRooted(path))
+					return null;
+				return path;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string relativePath = arguments[0].GetStrValue(exm);
+				string validPath = GetValidPath(relativePath);
+				if (validPath == null)
+					return -1;
+				string dir = System.IO.Path.Combine(Program.ExeDir, validPath);
+				if (!System.IO.Directory.Exists(dir))
+					return -1;
+				string pattern = (arguments.Length > 1 && arguments[1] != null)
+					? arguments[1].GetStrValue(exm) : "*";
+				if (string.IsNullOrEmpty(pattern))
+					pattern = "*";
+				SearchOption option = (arguments.Length > 2 && arguments[2] != null && arguments[2].GetIntValue(exm) != 0)
+					? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+				string[] files;
+				try
+				{
+					files = FileUtils.GetFiles(dir, pattern, option);
+				}
+				catch
+				{
+					return -1;
+				}
+				string[] output = exm.VEvaluator.RESULTS_ARRAY;
+				int ret = Math.Min(files.Length, output.Length);
+				string exeDir = Program.ExeDir;
+				for (int i = 0; i < ret; i++)
+					output[i] = System.IO.Path.GetRelativePath(exeDir, files[i]).Replace(System.IO.Path.DirectorySeparatorChar, '/');
+				return ret;
 			}
 		}
 		#endregion

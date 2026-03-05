@@ -37,6 +37,19 @@ namespace MinorShift.Emuera.GameView
 	/// </summary>
 	internal static class HtmlManager
 	{
+		/// <summary>
+		/// Returns the display width of the first line of the rendered html, in pixels.
+		/// If there are multiple lines, only the first line's width is returned (matching the spec).
+		/// </summary>
+		public static int HtmlLength(string s)
+		{
+			ConsoleDisplayLine[] lines = Html2DisplayLine(s, GlobalStatic.Console.StrMeasure, null);
+			int len = 0;
+			if (lines.Length <= 0) return 0;
+			foreach (var btn in lines[0].Buttons) len += btn.Width;
+			return len;
+		}
+
 		static HtmlManager()
 		{
 			repDic.Add('&', "&amp;");
