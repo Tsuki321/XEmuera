@@ -109,7 +109,7 @@ namespace MinorShift.Emuera
 
 			configArray.Add(new ConfigItem(ConfigCode.SystemSaveInBinary, ConfigsText.SystemSaveInBinary, false));
 			configArray.Add(new ConfigItem(ConfigCode.CompatiFuncArgOptional, ConfigsText.CompatiFuncArgOptional, false));
-			configArray.Add(new ConfigItem(ConfigCode.CompatiFuncArgAutoConvert, ConfigsText.CompatiFuncArgAutoConvert, false));
+			configArray.Add(new ConfigItem(ConfigCode.CompatiFuncArgAutoConvert, ConfigsText.CompatiFuncArgAutoConvert, true));
 			configArray.Add(new ConfigItem(ConfigCode.SystemIgnoreTripleSymbol, ConfigsText.SystemIgnoreTripleSymbol, false));
 			configArray.Add(new ConfigItem(ConfigCode.TimesNotRigorousCalculation, ConfigsText.TimesNotRigorousCalculation, false));
 			//一文字変数の禁止オプションを考えた名残
