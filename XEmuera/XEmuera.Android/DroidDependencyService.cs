@@ -105,7 +105,8 @@ namespace XEmuera.Droid
 		}
 
 		// Audio playback using Android MediaPlayer
-		private static readonly Android.Media.MediaPlayer[] soundPlayers = new Android.Media.MediaPlayer[10];
+		private const int MaxConcurrentSounds = 10;
+		private static readonly Android.Media.MediaPlayer[] soundPlayers = new Android.Media.MediaPlayer[MaxConcurrentSounds];
 		private static Android.Media.MediaPlayer bgmPlayer;
 
 		public void PlaySound(string filepath, int repeat = 1)
@@ -123,8 +124,8 @@ namespace XEmuera.Droid
 				soundPlayers[i]?.Release();
 				soundPlayers[i] = new Android.Media.MediaPlayer();
 				soundPlayers[i].SetDataSource(filepath);
-				if (repeat > 1)
-					soundPlayers[i].Looping = false;
+				// Android MediaPlayer supports looping (infinite repeat) but not play-N-times natively
+				soundPlayers[i].Looping = (repeat < 0);
 				soundPlayers[i].Prepare();
 				soundPlayers[i].Start();
 			}

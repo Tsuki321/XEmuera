@@ -4539,11 +4539,13 @@ namespace MinorShift.Emuera.GameData.Function
 		{
 			public enum Operation { Create, Check, Remove, Names, Length }
 			private readonly Operation op;
+			// Canonical type names + common aliases (e.g. "str" = "string", "float" = "double")
 			private static readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
 			{
 				["int8"] = typeof(sbyte), ["int16"] = typeof(short), ["int32"] = typeof(int),
-				["int64"] = typeof(long), ["int"] = typeof(long), ["string"] = typeof(string),
-				["str"] = typeof(string), ["float"] = typeof(double), ["double"] = typeof(double),
+				["int64"] = typeof(long), ["int"] = typeof(long),   // int aliases
+				["string"] = typeof(string), ["str"] = typeof(string),  // string aliases
+				["double"] = typeof(double), ["float"] = typeof(double), // float aliases
 			};
 			public DataTableColumnManagementMethod(Operation type)
 			{
@@ -4933,7 +4935,10 @@ namespace MinorShift.Emuera.GameData.Function
 					string xml = arguments[1].GetStrValue(exm);
 					var doc = new System.Xml.XmlDocument();
 					try { doc.LoadXml(xml); }
-					catch (System.Xml.XmlException) { doc = new System.Xml.XmlDocument(); doc.LoadXml("<root/>"); }
+					catch (System.Xml.XmlException e)
+					{
+						throw new CodeEE("XML_DOCUMENT: XMLの解析に失敗しました: " + e.Message);
+					}
 					xmlDict.Add(idx, doc);
 					return 1;
 				}
