@@ -134,13 +134,7 @@ namespace XEmuera
 				MessageBox.Show(StringsText.NeedManageFilesPermissions);
 				PlatformService.RequestManageFilesPermissions();
 
-				var timeoutAt = DateTime.UtcNow.AddSeconds(30);
-				while (StorageAccess == PermissionStatus.Unknown && DateTime.UtcNow < timeoutAt)
-				{
-					Thread.Sleep(100);
-				}
-
-				if (StorageAccess == PermissionStatus.Unknown)
+				if (!SpinWait.SpinUntil(() => StorageAccess != PermissionStatus.Unknown, TimeSpan.FromSeconds(30)))
 				{
 					System.Diagnostics.Debug.WriteLine("Timed out waiting for manage files permission result.");
 					return false;
@@ -213,7 +207,7 @@ namespace XEmuera
 				catch (Exception ex)
 				{
 					System.Diagnostics.Debug.WriteLine($"Failed to get screen density: {ex}");
-					// Baseline density fallback (160 DPI) when display info is unavailable during startup.
+					// 1.0 is the mdpi density multiplier (160 DPI baseline); use it when startup display info is unavailable.
 					_screenDensity = 1;
 				}
 

@@ -55,7 +55,7 @@ namespace XEmuera.Forms
 			var page = GameUtils.MainPage ?? Application.Current?.MainPage;
 			if (page == null)
 			{
-				System.Diagnostics.Debug.WriteLine("DisplayAlert skipped because MainPage is not available.");
+				System.Diagnostics.Debug.WriteLine("Warning: DisplayAlert called during early startup before MainPage initialization.");
 				return false;
 			}
 
