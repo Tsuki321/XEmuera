@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace XEmuera.Forms
 {
@@ -51,14 +52,21 @@ namespace XEmuera.Forms
 
 		private static async Task<bool> DisplayAlert(string title, string message, MessageBoxButtons messageBoxButtons)
 		{
+			var page = GameUtils.MainPage ?? Application.Current?.MainPage;
+			if (page == null)
+			{
+				System.Diagnostics.Debug.WriteLine("Warning: DisplayAlert called during early startup before MainPage initialization.");
+				return false;
+			}
+
 			switch (messageBoxButtons)
 			{
 				case MessageBoxButtons.OKCancel:
-					return await GameUtils.MainPage.DisplayAlert(title, message, "OK", "Cancel");
+					return await page.DisplayAlert(title, message, "OK", "Cancel");
 				case MessageBoxButtons.YesNo:
-					return await GameUtils.MainPage.DisplayAlert(title, message, "Yes", "No");
+					return await page.DisplayAlert(title, message, "Yes", "No");
 				default:
-					await GameUtils.MainPage.DisplayAlert(title, message, "OK");
+					await page.DisplayAlert(title, message, "OK");
 					return false;
 			}
 		}

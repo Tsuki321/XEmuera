@@ -134,7 +134,11 @@ namespace XEmuera
 				MessageBox.Show(StringsText.NeedManageFilesPermissions);
 				PlatformService.RequestManageFilesPermissions();
 
-				SpinWait.SpinUntil(() => StorageAccess != PermissionStatus.Unknown);
+				if (!SpinWait.SpinUntil(() => StorageAccess != PermissionStatus.Unknown, TimeSpan.FromSeconds(30)))
+				{
+					System.Diagnostics.Debug.WriteLine("Timed out waiting for manage files permission result.");
+					return false;
+				}
 
 				if (PlatformService.NeedManageFilesPermissions())
 					return false;
@@ -187,7 +191,29 @@ namespace XEmuera
 	{
 		public const int HeightOffset = 4;
 
-		public static readonly double ScreenDensity = DeviceDisplay.MainDisplayInfo.Density;
+		private static double? _screenDensity;
+
+		public static double ScreenDensity
+		{
+			get
+			{
+				if (_screenDensity.HasValue)
+					return _screenDensity.Value;
+
+				try
+				{
+					_screenDensity = DeviceDisplay.MainDisplayInfo.Density;
+				}
+				catch (Exception ex)
+				{
+					System.Diagnostics.Debug.WriteLine($"Failed to get screen density: {ex}");
+					// 1.0 is the mdpi density multiplier (160 DPI baseline); use it when startup display info is unavailable.
+					_screenDensity = 1;
+				}
+
+				return _screenDensity.Value;
+			}
+		}
 
 		public static int ShapeHeightOffset { get; set; }
 
