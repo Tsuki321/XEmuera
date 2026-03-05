@@ -166,6 +166,9 @@ namespace MinorShift.Emuera
             //一文字変数の禁止オプションを考えた名残
 		   //ForbidOneCodeVariable = instance.GetConfigValue<bool>(ConfigCode.ForbidOneCodeVariable);
 		   SystemNoTarget = instance.GetConfigValue<bool>(ConfigCode.SystemNoTarget);
+			UseUTF8Script = instance.GetConfigValue<bool>(ConfigCode.UseUTF8Script);
+			if (UseUTF8Script)
+				Encode = Encoding.UTF8;
 
 			UseLanguage lang = instance.GetConfigValue<UseLanguage>(ConfigCode.useLanguage);
             switch (lang)
@@ -590,6 +593,7 @@ namespace MinorShift.Emuera
 		public static bool SystemIgnoreTripleSymbol { get; private set; }
 		public static bool SystemNoTarget { get; private set; }
 		public static bool SystemIgnoreStringSet { get; private set; }
+		public static bool UseUTF8Script { get; private set; }
 
 		public static int Language { get; private set; }
 

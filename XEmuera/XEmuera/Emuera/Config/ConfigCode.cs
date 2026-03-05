@@ -130,6 +130,7 @@ namespace MinorShift.Emuera
         //ForbidOneCodeVariable,
 		SystemNoTarget,
 		SystemIgnoreStringSet,
+		UseUTF8Script,
 
 		MoneyLabel = 100,
 		MoneyFirst = 101,
