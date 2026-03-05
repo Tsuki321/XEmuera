@@ -170,8 +170,7 @@ namespace MinorShift.Emuera.GameProc
 				if (!hLoader.LoadHeaderFiles(Program.ErbDir, Config.DisplayReport))
 				{
 					ParserMediator.FlushWarningList();
-					console.PrintSystemLine("ERHの読み込み中にエラーが発生したため処理を終了しました");
-					return false;
+					console.PrintSystemLine("ERHの読み込み中に警告がありましたが処理を続行します");
 				}
 				LexicalAnalyzer.UseMacro = idDic.UseMacro();
 
