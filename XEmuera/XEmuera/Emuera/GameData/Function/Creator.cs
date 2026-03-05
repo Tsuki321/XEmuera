@@ -212,7 +212,64 @@ namespace MinorShift.Emuera.GameData.Function
 
                 ["SPRITEANIMECREATE"] = new SpriteAnimeCreateMethod(),
                 ["SPRITEANIMEADDFRAME"] = new SpriteAnimeAddFrameMethod(),
-                ["SETANIMETIMER"] = new SetAnimeTimerMethod()
+                ["SETANIMETIMER"] = new SetAnimeTimerMethod(),
+
+                // EE DataTable
+                ["DT_CREATE"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Create),
+                ["DT_EXIST"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Check),
+                ["DT_RELEASE"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Release),
+                ["DT_NOCASE"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Case),
+                ["DT_CLEAR"] = new DataTableManagementMethod(DataTableManagementMethod.Operation.Clear),
+                ["DT_COLUMN_ADD"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Create),
+                ["DT_COLUMN_NAMES"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Names),
+                ["DT_COLUMN_EXIST"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Check),
+                ["DT_COLUMN_REMOVE"] = new DataTableColumnManagementMethod(DataTableColumnManagementMethod.Operation.Remove),
+                ["DT_COLUMN_LENGTH"] = new DataTableLengthMethod(DataTableLengthMethod.Operation.Column),
+                ["DT_ROW_ADD"] = new DataTableRowSetMethod(DataTableRowSetMethod.Operation.Add),
+                ["DT_ROW_SET"] = new DataTableRowSetMethod(DataTableRowSetMethod.Operation.Set),
+                ["DT_ROW_REMOVE"] = new DataTableRowRemoveMethod(),
+                ["DT_ROW_LENGTH"] = new DataTableLengthMethod(DataTableLengthMethod.Operation.Row),
+                ["DT_CELL_GET"] = new DataTableCellGetMethod(DataTableCellGetMethod.Operation.Get),
+                ["DT_CELL_ISNULL"] = new DataTableCellGetMethod(DataTableCellGetMethod.Operation.IsNull),
+                ["DT_CELL_GETS"] = new DataTableCellGetMethod(DataTableCellGetMethod.Operation.Gets),
+                ["DT_CELL_SET"] = new DataTableCellSetMethod(),
+                ["DT_SELECT"] = new DataTableSelectMethod(),
+
+                // EE XML
+                ["XML_DOCUMENT"] = new XmlDocumentMethod(XmlDocumentMethod.Operation.Create),
+                ["XML_RELEASE"] = new XmlDocumentMethod(XmlDocumentMethod.Operation.Release),
+                ["XML_EXIST"] = new XmlDocumentMethod(XmlDocumentMethod.Operation.Check),
+                ["XML_TOSTR"] = new XmlToStrMethod(),
+                ["XML_GET"] = new XmlGetMethod(),
+                ["XML_GET_BYNAME"] = new XmlGetMethod(true),
+                ["XML_ADDNODE"] = new XmlAddNodeMethod(XmlAddNodeMethod.Operation.Node),
+                ["XML_ADDNODE_BYNAME"] = new XmlAddNodeMethod(XmlAddNodeMethod.Operation.Node, true),
+                ["XML_REMOVENODE"] = new XmlRemoveNodeMethod(XmlRemoveNodeMethod.Operation.Node),
+                ["XML_REMOVENODE_BYNAME"] = new XmlRemoveNodeMethod(XmlRemoveNodeMethod.Operation.Node, true),
+                ["XML_ADDATTRIBUTE"] = new XmlAddNodeMethod(XmlAddNodeMethod.Operation.Attribute),
+                ["XML_ADDATTRIBUTE_BYNAME"] = new XmlAddNodeMethod(XmlAddNodeMethod.Operation.Attribute, true),
+                ["XML_REMOVEATTRIBUTE"] = new XmlRemoveNodeMethod(XmlRemoveNodeMethod.Operation.Attribute),
+                ["XML_REMOVEATTRIBUTE_BYNAME"] = new XmlRemoveNodeMethod(XmlRemoveNodeMethod.Operation.Attribute, true),
+                ["XML_REPLACE"] = new XmlReplaceMethod(),
+                ["XML_REPLACE_BYNAME"] = new XmlReplaceMethod(true),
+
+                // EE Map
+                ["MAP_CREATE"] = new MapManagementMethod(MapManagementMethod.Operation.Create),
+                ["MAP_EXIST"] = new MapManagementMethod(MapManagementMethod.Operation.Check),
+                ["MAP_RELEASE"] = new MapManagementMethod(MapManagementMethod.Operation.Release),
+                ["MAP_GET"] = new MapGetStrMethod(MapGetStrMethod.Operation.Get),
+                ["MAP_CLEAR"] = new MapDataOperationMethod(MapDataOperationMethod.Operation.Clear),
+                ["MAP_SIZE"] = new MapDataOperationMethod(MapDataOperationMethod.Operation.Size),
+                ["MAP_HAS"] = new MapDataOperationMethod(MapDataOperationMethod.Operation.Has),
+                ["MAP_SET"] = new MapDataOperationMethod(MapDataOperationMethod.Operation.Set),
+                ["MAP_REMOVE"] = new MapDataOperationMethod(MapDataOperationMethod.Operation.Remove),
+                ["MAP_GETKEYS"] = new MapGetStrMethod(MapGetStrMethod.Operation.GetKeys),
+                ["MAP_TOXML"] = new MapGetStrMethod(MapGetStrMethod.Operation.ToXml),
+                ["MAP_FROMXML"] = new MapFromXmlMethod(),
+
+                // EE Misc
+                ["CLEARMEMORY"] = new ClearMemoryMethod(),
+                ["EXISTFUNCTION"] = new ExistFunctionMethod(),
             };
 
 

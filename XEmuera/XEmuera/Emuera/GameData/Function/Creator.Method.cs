@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Data;
+using System.Xml;
 using MinorShift.Emuera.GameData.Expression;
 using MinorShift.Emuera.Sub;
 using MinorShift.Emuera.GameProc;
@@ -4477,6 +4479,907 @@ namespace MinorShift.Emuera.GameData.Function
 			}
 		}
 
+		#endregion
+
+		#region EE_DataTable
+		private sealed class DataTableManagementMethod : FunctionMethod
+		{
+			public enum Operation { Create, Check, Release, Clear, Case }
+			private readonly Operation op;
+			public DataTableManagementMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				if (op == Operation.Case)
+					argumentTypeArray = new[] { typeof(string), typeof(Int64) };
+				else
+					argumentTypeArray = new[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string name = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				switch (op)
+				{
+					case Operation.Create:
+						if (tables.ContainsKey(name)) return 0;
+						var dt = new System.Data.DataTable(name);
+						var idCol = new System.Data.DataColumn("id", typeof(long));
+						idCol.AutoIncrement = true;
+						idCol.AutoIncrementSeed = 0;
+						idCol.AutoIncrementStep = 1;
+						dt.Columns.Add(idCol);
+						dt.PrimaryKey = new[] { idCol };
+						tables.Add(name, dt);
+						return 1;
+					case Operation.Check:
+						return tables.ContainsKey(name) ? 1 : 0;
+					case Operation.Release:
+						if (!tables.ContainsKey(name)) return 0;
+						tables[name].Dispose();
+						tables.Remove(name);
+						return 1;
+					case Operation.Clear:
+						if (!tables.ContainsKey(name)) return -1;
+						tables[name].Rows.Clear();
+						return 1;
+					case Operation.Case:
+						if (!tables.ContainsKey(name)) return -1;
+						bool ignoreCase = arguments.Length > 1 && arguments[1] != null && arguments[1].GetIntValue(exm) != 0;
+						tables[name].CaseSensitive = !ignoreCase;
+						return 1;
+					default:
+						return 0;
+				}
+			}
+		}
+
+		private sealed class DataTableColumnManagementMethod : FunctionMethod
+		{
+			public enum Operation { Create, Check, Remove, Names, Length }
+			private readonly Operation op;
+			private static readonly Dictionary<string, Type> typeMap = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase)
+			{
+				["int8"] = typeof(sbyte), ["int16"] = typeof(short), ["int32"] = typeof(int),
+				["int64"] = typeof(long), ["int"] = typeof(long), ["string"] = typeof(string),
+				["str"] = typeof(string), ["float"] = typeof(double), ["double"] = typeof(double),
+			};
+			public DataTableColumnManagementMethod(Operation type)
+			{
+				op = type;
+				ReturnType = op == Operation.Names ? typeof(string) : typeof(Int64);
+				CanRestructure = false;
+				argumentTypeArray = null;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires at least 1 argument";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be a string (table name)";
+				if (op == Operation.Create)
+				{
+					if (arguments.Length < 2) return name + " requires table name and column name";
+					if (arguments[1] == null || arguments[1].GetOperandType() != typeof(string))
+						return name + " second argument must be a string (column name)";
+				}
+				else if (op == Operation.Check || op == Operation.Remove)
+				{
+					if (arguments.Length < 2) return name + " requires table name and column name";
+					if (arguments[1] == null || arguments[1].GetOperandType() != typeof(string))
+						return name + " second argument must be a string (column name)";
+				}
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				var dt = tables[tableName];
+				switch (op)
+				{
+					case Operation.Create:
+					{
+						string colName = arguments[1].GetStrValue(exm);
+						if (dt.Columns.Contains(colName)) return 0;
+						Type colType = typeof(long);
+						if (arguments.Length > 2 && arguments[2] != null)
+						{
+							string typeName = arguments[2].GetStrValue(exm);
+							if (typeMap.TryGetValue(typeName, out var t)) colType = t;
+						}
+						dt.Columns.Add(colName, colType);
+						return 1;
+					}
+					case Operation.Check:
+					{
+						string colName = arguments[1].GetStrValue(exm);
+						return dt.Columns.Contains(colName) ? 1 : 0;
+					}
+					case Operation.Remove:
+					{
+						string colName = arguments[1].GetStrValue(exm);
+						if (colName == "id") return 0;
+						if (!dt.Columns.Contains(colName)) return -2;
+						dt.Columns.Remove(colName);
+						return 1;
+					}
+					case Operation.Length:
+						return dt.Columns.Count;
+					default:
+						return 0;
+				}
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return "";
+				var dt = tables[tableName];
+				var names = new System.Text.StringBuilder();
+				for (int i = 0; i < dt.Columns.Count; i++)
+				{
+					if (i > 0) names.Append(',');
+					names.Append(dt.Columns[i].ColumnName);
+				}
+				return names.ToString();
+			}
+		}
+
+		private sealed class DataTableLengthMethod : FunctionMethod
+		{
+			public enum Operation { Row, Column }
+			private readonly Operation op;
+			public DataTableLengthMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				return op == Operation.Row ? tables[tableName].Rows.Count : tables[tableName].Columns.Count;
+			}
+		}
+
+		private sealed class DataTableRowSetMethod : FunctionMethod
+		{
+			public enum Operation { Add, Set }
+			private readonly Operation op;
+			public DataTableRowSetMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires at least a table name";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be a string (table name)";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				var dt = tables[tableName];
+				// Parse column=value pairs (col1, val1, col2, val2, ...)
+				var row = op == Operation.Add ? dt.NewRow() : null;
+				System.Data.DataRow targetRow = null;
+				int startIdx = 1;
+				if (op == Operation.Set)
+				{
+					if (arguments.Length < 2) return -1;
+					long rowIdx = arguments[1].GetIntValue(exm);
+					if (rowIdx < 0 || rowIdx >= dt.Rows.Count) return -3;
+					targetRow = dt.Rows[(int)rowIdx];
+					startIdx = 2;
+				}
+				for (int i = startIdx; i + 1 < arguments.Length; i += 2)
+				{
+					if (arguments[i] == null || arguments[i + 1] == null) continue;
+					string colName = arguments[i].GetStrValue(exm);
+					if (!dt.Columns.Contains(colName)) continue;
+					var col = dt.Columns[colName];
+					if (col.ColumnName == "id") continue;
+					object val;
+					if (col.DataType == typeof(string))
+						val = arguments[i + 1].GetStrValue(exm);
+					else
+						val = ConvertVal(arguments[i + 1].GetIntValue(exm), col.DataType);
+					if (op == Operation.Add)
+						row[colName] = val;
+					else
+						targetRow[colName] = val;
+				}
+				if (op == Operation.Add)
+				{
+					dt.Rows.Add(row);
+					return (long)row["id"];
+				}
+				return 1;
+			}
+			internal static object ConvertVal(long val, Type t)
+			{
+				if (t == typeof(sbyte)) return (sbyte)val;
+				if (t == typeof(short)) return (short)val;
+				if (t == typeof(int)) return (int)val;
+				if (t == typeof(long)) return val;
+				if (t == typeof(double)) return (double)val;
+				if (t == typeof(float)) return (float)val;
+				return val;
+			}
+		}
+
+		private sealed class DataTableRowRemoveMethod : FunctionMethod
+		{
+			public DataTableRowRemoveMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 2) return name + " requires table name and row id/index";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				var dt = tables[tableName];
+				long rowId = arguments[1].GetIntValue(exm);
+				// Remove by id value
+				for (int i = 0; i < dt.Rows.Count; i++)
+				{
+					if ((long)dt.Rows[i]["id"] == rowId)
+					{
+						dt.Rows.RemoveAt(i);
+						return 1;
+					}
+				}
+				return 0;
+			}
+		}
+
+		private sealed class DataTableCellGetMethod : FunctionMethod
+		{
+			public enum Operation { Get, Gets, IsNull }
+			private readonly Operation op;
+			public DataTableCellGetMethod(Operation type)
+			{
+				op = type;
+				ReturnType = op == Operation.Gets ? typeof(string) : typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 3) return name + " requires table name, row, and column name";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string (table name)";
+				if (arguments[2] == null || arguments[2].GetOperandType() != typeof(string))
+					return name + " third argument must be string (column name)";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return op == Operation.IsNull ? -1 : 0;
+				var dt = tables[tableName];
+				long rowParam = arguments[1].GetIntValue(exm);
+				string colName = arguments[2].GetStrValue(exm);
+				bool asId = arguments.Length > 3 && arguments[3] != null && arguments[3].GetIntValue(exm) != 0;
+				System.Data.DataRow row = GetRow(dt, rowParam, asId);
+				if (row == null || !dt.Columns.Contains(colName)) return op == Operation.IsNull ? -2 : 0;
+				if (op == Operation.IsNull) return row[colName] == DBNull.Value ? 1 : 0;
+				if (row[colName] == DBNull.Value) return 0;
+				try { return Convert.ToInt64(row[colName]); } catch { return 0; }
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return "";
+				var dt = tables[tableName];
+				long rowParam = arguments[1].GetIntValue(exm);
+				string colName = arguments[2].GetStrValue(exm);
+				bool asId = arguments.Length > 3 && arguments[3] != null && arguments[3].GetIntValue(exm) != 0;
+				System.Data.DataRow row = GetRow(dt, rowParam, asId);
+				if (row == null || !dt.Columns.Contains(colName)) return "";
+				if (row[colName] == DBNull.Value) return "";
+				return row[colName]?.ToString() ?? "";
+			}
+			private static System.Data.DataRow GetRow(System.Data.DataTable dt, long param, bool asId)
+			{
+				if (asId)
+				{
+					for (int i = 0; i < dt.Rows.Count; i++)
+						if ((long)dt.Rows[i]["id"] == param) return dt.Rows[i];
+					return null;
+				}
+				return (param >= 0 && param < dt.Rows.Count) ? dt.Rows[(int)param] : null;
+			}
+		}
+
+		private sealed class DataTableCellSetMethod : FunctionMethod
+		{
+			public DataTableCellSetMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 3) return name + " requires table name, row, and column name";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string (table name)";
+				if (arguments[2] == null || arguments[2].GetOperandType() != typeof(string))
+					return name + " third argument must be string (column name)";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				var dt = tables[tableName];
+				long rowParam = arguments[1].GetIntValue(exm);
+				string colName = arguments[2].GetStrValue(exm);
+				if (colName == "id") return 0;
+				bool asId = arguments.Length > 4 && arguments[4] != null && arguments[4].GetIntValue(exm) != 0;
+				System.Data.DataRow row = GetRow(dt, rowParam, asId);
+				if (row == null || !dt.Columns.Contains(colName)) return -3;
+				if (arguments.Length <= 3 || arguments[3] == null)
+				{
+					row[colName] = DBNull.Value;
+					return 1;
+				}
+				var col = dt.Columns[colName];
+				try
+				{
+					if (col.DataType == typeof(string))
+						row[colName] = arguments[3].GetStrValue(exm);
+					else
+						row[colName] = DataTableRowSetMethod.ConvertVal(arguments[3].GetIntValue(exm), col.DataType);
+					return 1;
+				}
+				catch { return -2; }
+			}
+			private static System.Data.DataRow GetRow(System.Data.DataTable dt, long param, bool asId)
+			{
+				if (asId)
+				{
+					for (int i = 0; i < dt.Rows.Count; i++)
+						if ((long)dt.Rows[i]["id"] == param) return dt.Rows[i];
+					return null;
+				}
+				return (param >= 0 && param < dt.Rows.Count) ? dt.Rows[(int)param] : null;
+			}
+		}
+
+		private sealed class DataTableSelectMethod : FunctionMethod
+		{
+			public DataTableSelectMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 2) return name + " requires table name and filter expression";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string (table name)";
+				if (arguments[1] == null || arguments[1].GetOperandType() != typeof(string))
+					return name + " second argument must be string (filter expression)";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string tableName = arguments[0].GetStrValue(exm);
+				var tables = exm.VEvaluator.VariableData.DataDataTables;
+				if (!tables.ContainsKey(tableName)) return -1;
+				string filter = arguments[1].GetStrValue(exm);
+				try
+				{
+					var rows = tables[tableName].Select(filter);
+					return rows.Length;
+				}
+				catch { return 0; }
+			}
+		}
+		#endregion
+
+		#region EE_XML
+		private sealed class XmlDocumentMethod : FunctionMethod
+		{
+			public enum Operation { Create, Check, Release }
+			private readonly Operation op;
+			public XmlDocumentMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires at least 1 argument";
+				if (op == Operation.Create && arguments.Length < 2) return name + " requires name and xml string";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				if (op == Operation.Create)
+				{
+					if (xmlDict.ContainsKey(idx)) return 0;
+					string xml = arguments[1].GetStrValue(exm);
+					var doc = new System.Xml.XmlDocument();
+					try { doc.LoadXml(xml); }
+					catch (System.Xml.XmlException) { doc = new System.Xml.XmlDocument(); doc.LoadXml("<root/>"); }
+					xmlDict.Add(idx, doc);
+					return 1;
+				}
+				if (xmlDict.ContainsKey(idx))
+				{
+					if (op == Operation.Check) return 1;
+					xmlDict.Remove(idx);
+					return 1;
+				}
+				return 0;
+			}
+		}
+
+		private sealed class XmlGetMethod : FunctionMethod
+		{
+			private readonly bool byName;
+			public XmlGetMethod(bool byname = false)
+			{
+				byName = byname;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 3) return name + " requires at least 3 arguments";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				System.Xml.XmlDocument doc = GetDoc(exm, arguments[0]);
+				if (doc == null) return -1;
+				string path = arguments[1].GetStrValue(exm);
+				long style = arguments.Length > 3 && arguments[3] != null ? arguments[3].GetIntValue(exm) : 0;
+				System.Xml.XmlNodeList nodes;
+				try { nodes = doc.SelectNodes(path); }
+				catch { return -2; }
+				if (nodes == null || nodes.Count == 0) return 0;
+				string val = GetNodeValue(nodes[0], style);
+				if (arguments[2] is VariableTerm vt)
+				{
+					FixedVariableTerm p = vt.GetFixedVariableTerm(exm);
+					if (p != null)
+					{
+						if (p.Identifier.IsInteger)
+						{ if (long.TryParse(val, out long lv)) p.SetValue(lv, exm); }
+						else
+							p.SetValue(val, exm);
+					}
+				}
+				return nodes.Count;
+			}
+			private static string GetNodeValue(System.Xml.XmlNode node, long style)
+			{
+				switch (style)
+				{
+					case 1: return node.InnerText;
+					case 2: return node.InnerXml;
+					case 3: return node.OuterXml;
+					default: return node.Value ?? node.InnerText;
+				}
+			}
+			private System.Xml.XmlDocument GetDoc(ExpressionMediator exm, IOperandTerm arg)
+			{
+				if (!byName && arg.GetOperandType() == typeof(string))
+				{
+					// it's an XML string directly
+					var doc = new System.Xml.XmlDocument();
+					try { doc.LoadXml(arg.GetStrValue(exm)); return doc; } catch { return null; }
+				}
+				string idx = arg.GetOperandType() == typeof(string) ? arg.GetStrValue(exm) : arg.GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				return xmlDict.TryGetValue(idx, out var d) ? d : null;
+			}
+		}
+
+		private sealed class XmlAddNodeMethod : FunctionMethod
+		{
+			public enum Operation { Node, Attribute }
+			private readonly Operation op;
+			private readonly bool byName;
+			public XmlAddNodeMethod(Operation op, bool byname = false)
+			{
+				this.op = op;
+				this.byName = byname;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 3) return name + " requires at least 3 arguments";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				System.Xml.XmlDocument doc = GetDoc(exm, arguments[0]);
+				if (doc == null) return -1;
+				string path = arguments[1].GetStrValue(exm);
+				System.Xml.XmlNodeList nodes;
+				try { nodes = doc.SelectNodes(path); }
+				catch { return -2; }
+				if (nodes == null || nodes.Count == 0) return 0;
+				var targetNode = nodes[0];
+				if (op == Operation.Node)
+				{
+					string childXml = arguments[2].GetStrValue(exm);
+					try
+					{
+						var childDoc = new System.Xml.XmlDocument();
+						childDoc.LoadXml(childXml);
+						var newNode = doc.ImportNode(childDoc.DocumentElement, true);
+						targetNode.AppendChild(newNode);
+					}
+					catch { return -3; }
+				}
+				else
+				{
+					string attrName = arguments[2].GetStrValue(exm);
+					string attrVal = arguments.Length > 3 && arguments[3] != null ? arguments[3].GetStrValue(exm) : "";
+					var attr = doc.CreateAttribute(attrName);
+					attr.Value = attrVal;
+					targetNode.Attributes?.Append(attr);
+				}
+				return 1;
+			}
+			private System.Xml.XmlDocument GetDoc(ExpressionMediator exm, IOperandTerm arg)
+			{
+				string idx = arg.GetOperandType() == typeof(string) ? arg.GetStrValue(exm) : arg.GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				return xmlDict.TryGetValue(idx, out var d) ? d : null;
+			}
+		}
+
+		private sealed class XmlRemoveNodeMethod : FunctionMethod
+		{
+			public enum Operation { Node, Attribute }
+			private readonly Operation op;
+			private readonly bool byName;
+			public XmlRemoveNodeMethod(Operation op, bool byname = false)
+			{
+				this.op = op;
+				this.byName = byname;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 2) return name + " requires at least 2 arguments";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				if (!xmlDict.TryGetValue(idx, out var doc)) return -1;
+				string path = arguments[1].GetStrValue(exm);
+				System.Xml.XmlNodeList nodes;
+				try { nodes = doc.SelectNodes(path); }
+				catch { return -2; }
+				if (nodes == null || nodes.Count == 0) return 0;
+				int count = 0;
+				var toRemove = new System.Xml.XmlNode[nodes.Count];
+				for (int i = 0; i < nodes.Count; i++) toRemove[i] = nodes[i];
+				foreach (var node in toRemove)
+				{
+					if (op == Operation.Attribute && node is System.Xml.XmlAttribute attr)
+						attr.OwnerElement?.Attributes?.Remove(attr);
+					else
+						node.ParentNode?.RemoveChild(node);
+					count++;
+				}
+				return count;
+			}
+		}
+
+		private sealed class XmlToStrMethod : FunctionMethod
+		{
+			public XmlToStrMethod()
+			{
+				ReturnType = typeof(string);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires 1 argument";
+				return null;
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				return xmlDict.TryGetValue(idx, out var doc) ? doc.OuterXml : "";
+			}
+		}
+
+		private sealed class XmlReplaceMethod : FunctionMethod
+		{
+			private readonly bool byName;
+			public XmlReplaceMethod(bool byname = false)
+			{
+				byName = byname;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 3) return name + " requires at least 3 arguments";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string idx = arguments[0].GetOperandType() == typeof(string) ? arguments[0].GetStrValue(exm) : arguments[0].GetIntValue(exm).ToString();
+				var xmlDict = exm.VEvaluator.VariableData.DataXmlDocument;
+				if (!xmlDict.TryGetValue(idx, out var doc)) return -1;
+				string path = arguments[1].GetStrValue(exm);
+				string newXml = arguments[2].GetStrValue(exm);
+				System.Xml.XmlNodeList nodes;
+				try { nodes = doc.SelectNodes(path); }
+				catch { return -2; }
+				if (nodes == null || nodes.Count == 0) return 0;
+				try
+				{
+					var newDoc = new System.Xml.XmlDocument();
+					newDoc.LoadXml(newXml);
+					var newNode = doc.ImportNode(newDoc.DocumentElement, true);
+					nodes[0].ParentNode?.ReplaceChild(newNode, nodes[0]);
+					return 1;
+				}
+				catch { return -3; }
+			}
+		}
+		#endregion
+
+		#region EE_Map
+		private sealed class MapManagementMethod : FunctionMethod
+		{
+			public enum Operation { Create, Check, Release }
+			private readonly Operation op;
+			public MapManagementMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string name = arguments[0].GetStrValue(exm);
+				var maps = exm.VEvaluator.VariableData.DataStringMaps;
+				switch (op)
+				{
+					case Operation.Create:
+						if (maps.ContainsKey(name)) return 0;
+						maps.Add(name, new Dictionary<string, string>());
+						return 1;
+					case Operation.Check:
+						return maps.ContainsKey(name) ? 1 : 0;
+					case Operation.Release:
+						return maps.Remove(name) ? 1 : 0;
+					default:
+						return 0;
+				}
+			}
+		}
+
+		private sealed class MapDataOperationMethod : FunctionMethod
+		{
+			public enum Operation { Clear, Size, Has, Set, Remove }
+			private readonly Operation op;
+			public MapDataOperationMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires at least a map name";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string (map name)";
+				if ((op == Operation.Has || op == Operation.Set || op == Operation.Remove) && arguments.Length < 2)
+					return name + " requires map name and key";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string mapName = arguments[0].GetStrValue(exm);
+				var maps = exm.VEvaluator.VariableData.DataStringMaps;
+				if (!maps.ContainsKey(mapName)) return -1;
+				var map = maps[mapName];
+				switch (op)
+				{
+					case Operation.Clear:
+						map.Clear();
+						return 1;
+					case Operation.Size:
+						return map.Count;
+					case Operation.Has:
+						return map.ContainsKey(arguments[1].GetStrValue(exm)) ? 1 : 0;
+					case Operation.Set:
+					{
+						string key = arguments[1].GetStrValue(exm);
+						string val = arguments.Length > 2 && arguments[2] != null ? arguments[2].GetStrValue(exm) : "";
+						map[key] = val;
+						return 1;
+					}
+					case Operation.Remove:
+						return map.Remove(arguments[1].GetStrValue(exm)) ? 1 : 0;
+					default:
+						return 0;
+				}
+			}
+		}
+
+		private sealed class MapGetStrMethod : FunctionMethod
+		{
+			public enum Operation { Get, GetKeys, ToXml }
+			private readonly Operation op;
+			public MapGetStrMethod(Operation type)
+			{
+				op = type;
+				ReturnType = typeof(string);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 1) return name + " requires at least a map name";
+				if (arguments[0] == null || arguments[0].GetOperandType() != typeof(string))
+					return name + " first argument must be string";
+				if (op == Operation.Get && arguments.Length < 2)
+					return name + " requires map name and key";
+				return null;
+			}
+			public override string GetStrValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string mapName = arguments[0].GetStrValue(exm);
+				var maps = exm.VEvaluator.VariableData.DataStringMaps;
+				if (!maps.ContainsKey(mapName)) return "";
+				var map = maps[mapName];
+				switch (op)
+				{
+					case Operation.Get:
+					{
+						string key = arguments[1].GetStrValue(exm);
+						return map.TryGetValue(key, out var v) ? v : (arguments.Length > 2 && arguments[2] != null ? arguments[2].GetStrValue(exm) : "");
+					}
+					case Operation.GetKeys:
+						return string.Join(",", map.Keys);
+					case Operation.ToXml:
+					{
+						var sb = new System.Text.StringBuilder("<map>");
+						foreach (var kv in map)
+						{
+							sb.Append("<entry key=\"");
+							sb.Append(System.Security.SecurityElement.Escape(kv.Key));
+							sb.Append("\">");
+							sb.Append(System.Security.SecurityElement.Escape(kv.Value));
+							sb.Append("</entry>");
+						}
+						sb.Append("</map>");
+						return sb.ToString();
+					}
+					default:
+						return "";
+				}
+			}
+		}
+
+		private sealed class MapFromXmlMethod : FunctionMethod
+		{
+			public MapFromXmlMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = null;
+				CanRestructure = false;
+			}
+			public override string CheckArgumentType(string name, IOperandTerm[] arguments)
+			{
+				if (arguments.Length < 2) return name + " requires map name and xml string";
+				return null;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string mapName = arguments[0].GetStrValue(exm);
+				var maps = exm.VEvaluator.VariableData.DataStringMaps;
+				if (!maps.ContainsKey(mapName)) return -1;
+				string xml = arguments[1].GetStrValue(exm);
+				try
+				{
+					var doc = new System.Xml.XmlDocument();
+					doc.LoadXml(xml);
+					var map = maps[mapName];
+					map.Clear();
+					foreach (System.Xml.XmlNode node in doc.SelectNodes("/map/entry"))
+					{
+						string key = node.Attributes?["key"]?.Value ?? "";
+						string val = node.InnerText;
+						map[key] = val;
+					}
+					return map.Count;
+				}
+				catch { return -2; }
+			}
+		}
+		#endregion
+
+		#region EE_Misc
+		private sealed class ClearMemoryMethod : FunctionMethod
+		{
+			public ClearMemoryMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new Type[0];
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				return 1;
+			}
+		}
+
+		private sealed class ExistFunctionMethod : FunctionMethod
+		{
+			public ExistFunctionMethod()
+			{
+				ReturnType = typeof(Int64);
+				argumentTypeArray = new[] { typeof(string) };
+				CanRestructure = false;
+			}
+			public override Int64 GetIntValue(ExpressionMediator exm, IOperandTerm[] arguments)
+			{
+				string funcName = arguments[0].GetStrValue(exm);
+				if (Config.ICFunction)
+					funcName = funcName.ToUpper();
+				var labelDic = GlobalStatic.LabelDictionary;
+				return labelDic != null && labelDic.GetNonEventLabel(funcName) != null ? 1 : 0;
+			}
+		}
 		#endregion
 	}
 }

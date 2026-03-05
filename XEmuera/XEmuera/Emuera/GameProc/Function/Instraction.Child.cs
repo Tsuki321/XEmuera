@@ -10,6 +10,7 @@ using MinorShift.Emuera.GameData.Function;
 using System.Drawing;
 using System.IO;
 using XEmuera.Drawing;
+using XEmuera;
 
 namespace MinorShift.Emuera.GameProc.Function
 {
@@ -2448,6 +2449,104 @@ namespace MinorShift.Emuera.GameProc.Function
 				else if (jumpto.IsError)
 					throw new CodeEE("指定されたラベル名\"$" + label + "\"は無効な$ラベル行です");
 				state.JumpTo(jumpto);
+			}
+		}
+		#endregion
+
+		#region EE_AUDIO
+		private sealed class PLAYSOUND_Instruction : AbstractInstruction
+		{
+			public PLAYSOUND_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.STR_EXPRESSION);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				ExpressionArgument arg = (ExpressionArgument)func.Argument;
+				string datFilename;
+				if (arg.IsConst)
+					datFilename = arg.ConstStr;
+				else
+					datFilename = arg.Term.GetStrValue(exm);
+				string filepath = System.IO.Path.GetFullPath(System.IO.Path.Combine(MinorShift._Library.Sys.ExeDir, "sound", datFilename));
+				GameUtils.PlatformService?.PlaySound(filepath);
+			}
+		}
+
+		private sealed class STOPSOUND_Instruction : AbstractInstruction
+		{
+			public STOPSOUND_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.VOID);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				GameUtils.PlatformService?.StopSound();
+			}
+		}
+
+		private sealed class PLAYBGM_Instruction : AbstractInstruction
+		{
+			public PLAYBGM_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.STR_EXPRESSION);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				ExpressionArgument arg = (ExpressionArgument)func.Argument;
+				string datFilename;
+				if (arg.IsConst)
+					datFilename = arg.ConstStr;
+				else
+					datFilename = arg.Term.GetStrValue(exm);
+				string filepath = System.IO.Path.GetFullPath(System.IO.Path.Combine(MinorShift._Library.Sys.ExeDir, "sound", datFilename));
+				GameUtils.PlatformService?.PlayBgm(filepath);
+			}
+		}
+
+		private sealed class STOPBGM_Instruction : AbstractInstruction
+		{
+			public STOPBGM_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.VOID);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				GameUtils.PlatformService?.StopBgm();
+			}
+		}
+
+		private sealed class SETBGMVOLUME_Instruction : AbstractInstruction
+		{
+			public SETBGMVOLUME_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.INT_EXPRESSION);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				ExpressionArgument intExpArg = (ExpressionArgument)func.Argument;
+				int vol = (int)intExpArg.Term.GetIntValue(exm);
+				GameUtils.PlatformService?.SetBgmVolume(vol);
+			}
+		}
+
+		private sealed class SETSOUNDVOLUME_Instruction : AbstractInstruction
+		{
+			public SETSOUNDVOLUME_Instruction()
+			{
+				ArgBuilder = ArgumentParser.GetArgumentBuilder(FunctionArgType.INT_EXPRESSION);
+				flag = METHOD_SAFE | EXTENDED;
+			}
+			public override void DoInstruction(ExpressionMediator exm, InstructionLine func, ProcessState state)
+			{
+				ExpressionArgument intExpArg = (ExpressionArgument)func.Argument;
+				int vol = (int)intExpArg.Term.GetIntValue(exm);
+				GameUtils.PlatformService?.SetSoundVolume(vol);
 			}
 		}
 		#endregion

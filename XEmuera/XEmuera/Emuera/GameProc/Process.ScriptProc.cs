@@ -298,6 +298,9 @@ namespace MinorShift.Emuera.GameProc
 				case FunctionCode.QUIT://ゲームを終了
 					exm.Console.Quit();
 					break;
+				case FunctionCode.QUIT_AND_RESTART:
+					GlobalStatic.MainWindow?.Reboot();
+					break;
 
 				case FunctionCode.VARSIZE:
 					{

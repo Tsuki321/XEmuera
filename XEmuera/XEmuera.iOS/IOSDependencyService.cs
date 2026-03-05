@@ -114,6 +114,13 @@ namespace XEmuera.iOS
 			SetScreenOrientation(orientation);
 		}
 
+		public void PlaySound(string filepath, int repeat = 1) { }
+		public void StopSound() { }
+		public void PlayBgm(string filepath) { }
+		public void StopBgm() { }
+		public void SetBgmVolume(int volume) { }
+		public void SetSoundVolume(int volume) { }
+
 		private void SetScreenOrientation(UIInterfaceOrientation orientation)
 		{
 			DispatchQueue.MainQueue.DispatchAsync(() =>

@@ -104,6 +104,97 @@ namespace XEmuera.Droid
 			MainActivity.Instance.RequestedOrientation = ScreenOrientation.Sensor;
 		}
 
+		// Audio playback using Android MediaPlayer
+		private static readonly Android.Media.MediaPlayer[] soundPlayers = new Android.Media.MediaPlayer[10];
+		private static Android.Media.MediaPlayer bgmPlayer;
+
+		public void PlaySound(string filepath, int repeat = 1)
+		{
+			if (!System.IO.File.Exists(filepath)) return;
+			try
+			{
+				int i;
+				for (i = 0; i < soundPlayers.Length; i++)
+				{
+					if (soundPlayers[i] == null || !soundPlayers[i].IsPlaying)
+						break;
+				}
+				if (i >= soundPlayers.Length) i = 0;
+				soundPlayers[i]?.Release();
+				soundPlayers[i] = new Android.Media.MediaPlayer();
+				soundPlayers[i].SetDataSource(filepath);
+				if (repeat > 1)
+					soundPlayers[i].Looping = false;
+				soundPlayers[i].Prepare();
+				soundPlayers[i].Start();
+			}
+			catch { }
+		}
+
+		public void StopSound()
+		{
+			for (int i = 0; i < soundPlayers.Length; i++)
+			{
+				try
+				{
+					if (soundPlayers[i] != null && soundPlayers[i].IsPlaying)
+					{
+						soundPlayers[i].Stop();
+						soundPlayers[i].Release();
+						soundPlayers[i] = null;
+					}
+				}
+				catch { }
+			}
+		}
+
+		public void PlayBgm(string filepath)
+		{
+			if (!System.IO.File.Exists(filepath)) return;
+			try
+			{
+				bgmPlayer?.Stop();
+				bgmPlayer?.Release();
+				bgmPlayer = new Android.Media.MediaPlayer();
+				bgmPlayer.SetDataSource(filepath);
+				bgmPlayer.Looping = true;
+				bgmPlayer.Prepare();
+				bgmPlayer.Start();
+			}
+			catch { }
+		}
+
+		public void StopBgm()
+		{
+			try
+			{
+				bgmPlayer?.Stop();
+				bgmPlayer?.Release();
+				bgmPlayer = null;
+			}
+			catch { }
+		}
+
+		public void SetBgmVolume(int volume)
+		{
+			try
+			{
+				float vol = System.Math.Max(0f, System.Math.Min(100f, volume)) / 100f;
+				bgmPlayer?.SetVolume(vol, vol);
+			}
+			catch { }
+		}
+
+		public void SetSoundVolume(int volume)
+		{
+			float vol = System.Math.Max(0f, System.Math.Min(100f, volume)) / 100f;
+			for (int i = 0; i < soundPlayers.Length; i++)
+			{
+				try { soundPlayers[i]?.SetVolume(vol, vol); }
+				catch { }
+			}
+		}
+
 		internal static string GetPathFromDocumentTreeUri(Android.Net.Uri uri)
 		{
 			if (uri == null) return null;
