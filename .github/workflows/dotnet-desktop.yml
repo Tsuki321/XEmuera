@@ -29,6 +29,7 @@ jobs:
     env:
       Solution_Name: XEmuera.sln
       Android_Project_Path: XEmuera\XEmuera.Android\XEmuera.Android.csproj
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     steps:
     - name: Checkout
@@ -64,8 +65,6 @@ jobs:
         $keystoreBytes = [Convert]::FromBase64String("$env:KEYSTORE_BASE64")
         [IO.File]::WriteAllBytes("$env:RUNNER_TEMP\xemuera.keystore", $keystoreBytes)
       shell: pwsh
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
@@ -79,7 +78,6 @@ jobs:
       run: msbuild $env:Android_Project_Path /t:PackageForAndroid /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     # Build the Android project and generate a signed APK
     - name: Build the Android project (signed release)
@@ -94,7 +92,6 @@ jobs:
         /p:AndroidSigningKeyPass="$env:KEY_PASSWORD"
       env:
         Configuration: ${{ matrix.configuration }}
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -106,8 +103,6 @@ jobs:
       with:
         name: APK-${{ matrix.configuration }}
         path: XEmuera/XEmuera.Android/bin/${{ matrix.configuration }}/*-Signed.apk
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     # Upload the unsigned APK for Debug builds
     - name: Upload build artifacts (unsigned)
@@ -116,5 +111,3 @@ jobs:
       with:
         name: APK-${{ matrix.configuration }}
         path: XEmuera/XEmuera.Android/bin/${{ matrix.configuration }}/*.apk
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
