@@ -12,6 +12,7 @@ namespace XEmuera.Models
 
 		public static readonly List<CultureInfo> LanguageList = new List<CultureInfo>
 		{
+			new CultureInfo("en"),
 			new CultureInfo("ja-JP"),
 			new CultureInfo("zh-CN"),
 		}.OrderBy(item => item.Name).ToList();
@@ -31,7 +32,7 @@ namespace XEmuera.Models
 		public static void Load()
 		{
 			string languageName = GameUtils.GetPreferences(PrefKeyLanguage, null);
-			Current = Get(languageName ?? CultureInfo.CurrentUICulture.Name) ?? Get("zh-CN");
+			Current = Get(languageName ?? CultureInfo.CurrentUICulture.Name) ?? Get("en");
 		}
 
 		public static void Save()
