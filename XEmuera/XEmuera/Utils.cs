@@ -392,6 +392,18 @@ namespace XEmuera
 		void RequestManageFilesPermissions();
 
 		void UnlockScreenOrientation();
+
+		void PlaySound(string filepath, int repeat = 1);
+
+		void StopSound();
+
+		void PlayBgm(string filepath);
+
+		void StopBgm();
+
+		void SetBgmVolume(int volume);
+
+		void SetSoundVolume(int volume);
 	}
 
 	public static class Strings

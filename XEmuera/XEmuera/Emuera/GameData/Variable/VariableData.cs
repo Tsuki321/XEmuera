@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Data;
+using System.Xml;
 using XEmuera.Forms;
 using MinorShift.Emuera.Sub;
 using MinorShift.Emuera.GameProc;
@@ -48,6 +50,11 @@ namespace MinorShift.Emuera.GameData.Variable
 		public Int64 LastLoadVersion = -1;
 		public Int64 LastLoadNo = -1;
 		public string LastLoadText = "";
+
+		// EE extension data stores
+		public Dictionary<string, XmlDocument> DataXmlDocument { get; } = new Dictionary<string, XmlDocument>();
+		public Dictionary<string, Dictionary<string, string>> DataStringMaps { get; } = new Dictionary<string, Dictionary<string, string>>();
+		public Dictionary<string, DataTable> DataDataTables { get; } = new Dictionary<string, DataTable>();
 
 		Dictionary<string, VariableToken> varTokenDic = new Dictionary<string, VariableToken>();
 		Dictionary<string, VariableLocal> localvarTokenDic = new Dictionary<string, VariableLocal>();

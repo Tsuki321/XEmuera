@@ -1143,6 +1143,12 @@ namespace MinorShift.Emuera.GameData.Variable
 			foreach (CharacterData chara in varData.CharacterList)
 				chara.Dispose();
 			varData.CharacterList.Clear();
+			// Clear EE extension data stores
+			foreach (var dt in varData.DataDataTables.Values)
+				dt.Dispose();
+			varData.DataDataTables.Clear();
+			varData.DataXmlDocument.Clear();
+			varData.DataStringMaps.Clear();
 		}
 
 		public void ResetGlobalData()

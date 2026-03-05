@@ -336,6 +336,7 @@ namespace MinorShift.Emuera.GameProc.Function
 			addFunction(FunctionCode.CALLEVENT, new CALLEVENT_Instruction());
 			addFunction(FunctionCode.CALLF, new CALLF_Instruction(false));
 			addFunction(FunctionCode.CALLFORMF, new CALLF_Instruction(true));
+			addFunction(FunctionCode.TRYCALLF, new CALLF_Instruction(false, isTry: true));
 			addFunction(FunctionCode.TRYCALLFORMF, new CALLF_Instruction(true, isTry: true));
 			addFunction(FunctionCode.RESTART, new RESTART_Instruction());//関数の再開。関数の最初に戻る。
 			addFunction(FunctionCode.GOTO, new GOTO_Instruction(false, false, false));//$ラベルへジャンプ
@@ -380,6 +381,13 @@ namespace MinorShift.Emuera.GameProc.Function
 
 			addFunction(FunctionCode.INPUTMOUSEKEY, new INPUTMOUSEKEY_Instruction());
 			addFunction(FunctionCode.AWAIT, new AWAIT_Instruction());
+			addFunction(FunctionCode.PLAYSOUND, new PLAYSOUND_Instruction());
+			addFunction(FunctionCode.STOPSOUND, new STOPSOUND_Instruction());
+			addFunction(FunctionCode.PLAYBGM, new PLAYBGM_Instruction());
+			addFunction(FunctionCode.STOPBGM, new STOPBGM_Instruction());
+			addFunction(FunctionCode.SETBGMVOLUME, new SETBGMVOLUME_Instruction());
+			addFunction(FunctionCode.SETSOUNDVOLUME, new SETSOUNDVOLUME_Instruction());
+			addFunction(FunctionCode.QUIT_AND_RESTART, argb[FunctionArgType.VOID], EXTENDED);
 			#region 式中関数の引数違い
 			addFunction(FunctionCode.VARSIZE, argb[FunctionArgType.SP_VAR], METHOD_SAFE | EXTENDED);//動作が違うのでMETHOD化できない
 			addFunction(FunctionCode.GETTIME, argb[FunctionArgType.VOID], METHOD_SAFE | EXTENDED);//2つに代入する必要があるのでMETHOD化できない

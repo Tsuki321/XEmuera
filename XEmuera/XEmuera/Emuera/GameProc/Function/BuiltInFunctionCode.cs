@@ -169,6 +169,7 @@ namespace MinorShift.Emuera.GameProc.Function
 		ENDFUNC,
 		CALLF,
 		CALLFORMF,
+		TRYCALLF,
 		TRYCALLFORMF,
 
 		SETCOLOR,
@@ -356,5 +357,14 @@ namespace MinorShift.Emuera.GameProc.Function
 		PRINT_SPACE,
 
 		INPUTMOUSEKEY,
+
+		PLAYSOUND,
+		STOPSOUND,
+		PLAYBGM,
+		STOPBGM,
+		SETBGMVOLUME,
+		SETSOUNDVOLUME,
+
+		QUIT_AND_RESTART,
 	}
 }
